@@ -1,0 +1,10 @@
+# root
+/.vscode
+
+# client
+/client/node_modules
+/client/build
+
+# server
+/server/node_modules
+/server/config/default.json
