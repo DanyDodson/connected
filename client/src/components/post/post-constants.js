@@ -1,0 +1,1 @@
+export const GET_POST = '@@post//GET_POST'

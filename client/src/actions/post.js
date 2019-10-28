@@ -5,6 +5,9 @@ import {
   POST_ERROR,
   UPDATE_LIKES,
   DELETE_POST,
+  CLEAR_POSTS,
+  CLEAR_PROFILES,
+  CLEAR_PROFILE,
   ADD_POST,
   GET_POST,
   ADD_COMMENT,
@@ -13,6 +16,10 @@ import {
 
 // Get posts
 export const getPosts = () => async dispatch => {
+  dispatch({ type: CLEAR_POSTS })
+  dispatch({ type: CLEAR_PROFILE })
+  dispatch({ type: CLEAR_PROFILES })
+
   try {
     const res = await axios.get('/api/posts');
 
