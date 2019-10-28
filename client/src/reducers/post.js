@@ -1,6 +1,5 @@
 import {
-  // GET_POSTS,
-  CLEAR_POSTS,
+  GET_POSTS,
   POST_ERROR,
   UPDATE_LIKES,
   DELETE_POST,
@@ -17,20 +16,14 @@ const initialState = {
   error: {}
 };
 
-export default function (state = initialState, action) {
+export default function(state = initialState, action) {
   const { type, payload } = action;
 
   switch (type) {
-    // case GET_POSTS:
-    //   return {
-    //     ...state,
-    //     posts: payload,
-    //     loading: false
-    //   };
-    case CLEAR_POSTS:
+    case GET_POSTS:
       return {
         ...state,
-        posts: [],
+        posts: payload,
         loading: false
       };
     case GET_POST:

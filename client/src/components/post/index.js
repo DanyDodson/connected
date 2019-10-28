@@ -1,1 +1,1 @@
-export { default } from './post-redux.js'
+export { default } from './post-redux'
