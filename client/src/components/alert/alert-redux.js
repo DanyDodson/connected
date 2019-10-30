@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { ToastContainer } from 'react-toastify'
+import { ToastContainer, Flip } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
 const Alert = ({ alerts }) =>
@@ -11,6 +11,7 @@ const Alert = ({ alerts }) =>
     <ToastContainer
       key={alert.id}
       draggable
+      transition={Flip}
       closeButton={false}
       autoClose={3000}
       newestOnTop={true}

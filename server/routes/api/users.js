@@ -15,7 +15,6 @@ const User = require('../../models/User')
 */
 
 router.post('/',
-
   [
     check('name', 'Name is required').not().isEmpty(),
     check('email', 'Please include a valid email').isEmail(),
@@ -32,18 +31,13 @@ router.post('/',
 
     try {
       let user = await User.findOne({ email })
-
       if (user) {
         return res
           .status(400)
           .json({ errors: [{ msg: 'User already exists' }] })
       }
 
-      const avatar = gravatar.url(email, {
-        s: '200',
-        r: 'x',
-        d: 'mm'
-      })
+      const avatar = gravatar.url(email, { s: '200', r: 'x', d: 'mm' })
 
       user = new User({
         name,
