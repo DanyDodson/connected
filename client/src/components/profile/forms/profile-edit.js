@@ -4,12 +4,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { createProfile, getCurrentProfile } from '../../../actions/profile'
 
-const EditProfile = ({
-  profile: { profile, loading },
-  createProfile,
-  getCurrentProfile,
-  history
-}) => {
+const EditProfile = ({ profile: { profile, loading }, createProfile, getCurrentProfile, history }) => {
   const [formData, setFormData] = useState({
     company: '',
     website: '',
@@ -34,7 +29,7 @@ const EditProfile = ({
       website: loading || !profile.website ? '' : profile.website,
       location: loading || !profile.location ? '' : profile.location,
       status: loading || !profile.status ? '' : profile.status,
-      skills: loading || !profile.skills ? '' : profile.skills.join(','),
+      skills: !profile.skills ? '' : profile.skills.join(','),
       githubusername: loading || !profile.githubusername ? '' : profile.githubusername,
       bio: loading || !profile.bio ? '' : profile.bio,
       twitter: loading || !profile.social ? '' : profile.social.twitter,
@@ -46,14 +41,18 @@ const EditProfile = ({
   }, [
     loading,
     getCurrentProfile,
-    // profile.bio,
     // profile.company,
-    // profile.githubusername,
+    // profile.website,
     // profile.location,
-    // profile.skills,
-    // profile.social,
     // profile.status,
-    // profile.website
+    // profile.skills,
+    // profile.githubusername,
+    // profile.bio,
+    // profile.social.twitter,
+    // profile.social.facebook,
+    // profile.social.linkedin,
+    // profile.social.youtube,
+    // profile.social.instagram,
   ])
 
   const {

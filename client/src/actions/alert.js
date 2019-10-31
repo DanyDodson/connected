@@ -1,5 +1,5 @@
-import uuid from 'uuid'
 import { toast } from 'react-toastify'
+import uuid from 'uuid'
 
 import {
   SET_ALERT,

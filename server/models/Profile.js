@@ -104,10 +104,6 @@ const ProfileSchema = new mongoose.Schema({
       type: String
     }
   },
-  date: {
-    type: Date,
-    default: Date.now
-  }
-})
+}, { timestamps: true })
 
 module.exports = Profile = mongoose.model('profile', ProfileSchema)

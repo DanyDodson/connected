@@ -1,7 +1,11 @@
 import React from 'react'
 import { Route, Switch } from 'react-router-dom'
-import Private from './routes-private'
+
 import Alert from '../alert'
+
+import Private from './routes-private'
+import NotFound from './routes-missing'
+
 import Register from '../auth/auth-register'
 import Login from '../auth/auth-login'
 import Posts from '../posts'
@@ -13,7 +17,6 @@ import CreateProfile from '../profile/forms/profile-create'
 import EditProfile from '../profile/forms/profile-edit'
 import AddExperience from '../profile/forms/profile-experience'
 import AddEducation from '../profile/forms/profile-education'
-import NotFound from './routes-missing'
 
 const Routes = () => {
   return (

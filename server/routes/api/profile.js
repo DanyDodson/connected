@@ -20,7 +20,7 @@ router.get('/me', auth, async (req, res) => {
       .populate('user', ['name', 'avatar'])
 
     if (!profile) {
-      return res.status(400).json({ msg: 'There is no profile for this user' })
+      return res.status(400).json({ msg: 'Create a profile for a better experience' })
     }
     res.json(profile)
   } catch (err) {
@@ -40,9 +40,9 @@ router.post(
       check('status', 'Status is required')
         .not()
         .isEmpty(),
-      check('skills', 'Skills is required')
-        .not()
-        .isEmpty()
+      // check('skills', 'Skills is required')
+      //   .not()
+      //   .isEmpty()
     ]
   ],
   async (req, res) => {
@@ -388,6 +388,56 @@ router.get('/github/:username', (req, res) => {
     })
   } catch (err) {
     console.error(err.message)
+    res.status(500).send('Server Error')
+  }
+})
+
+// @route    POST api/profile/user/:user_id/follow
+// @desc     Start following a user
+// @access   Private
+
+router.post('/user/:user_id/follow', auth, async (req, res) => {
+  try {
+    const profile = await req.params.user_id
+    const user = await User.findById(req.user.id)
+
+    if (!user) {
+      return res.status(401).json({ msg: 'Not logged in' })
+    }
+
+    if (!profile) {
+      return res.status(401).json({ msg: 'Profile not found' })
+    }
+
+    await user.follow(profile)
+    return res.status(200).json({ msg: `Your now following ${profile}` })
+
+  } catch (err) {
+    res.status(500).send('Server Error')
+  }
+})
+
+// @route    DELETE api/profile/user/:user_id/follow
+// @desc     Stop following a user
+// @access   Private
+
+router.delete('/user/:user_id/follow', auth, async (req, res) => {
+  try {
+    const profile = await req.params.user_id
+    const user = await User.findById(req.user.id)
+
+    if (!user) {
+      return res.status(401).json({ msg: 'Profile not found' })
+    }
+
+    if (!profile) {
+      return res.status(401).json({ msg: 'Profile not found' })
+    }
+
+    await user.unfollow(profile)
+    return res.status(200).json({ msg: `Your no longer following ${profile}` })
+
+  } catch (err) {
     res.status(500).send('Server Error')
   }
 })

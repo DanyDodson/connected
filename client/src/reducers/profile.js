@@ -2,6 +2,7 @@ import {
   GET_PROFILE,
   PROFILE_ERROR,
   CLEAR_PROFILE,
+  CLEAR_PROFILES,
   UPDATE_PROFILE,
   GET_PROFILES,
   GET_REPOS
@@ -15,7 +16,7 @@ const initialState = {
   error: {}
 }
 
-export default function(state = initialState, action) {
+export default function (state = initialState, action) {
   const { type, payload } = action
 
   switch (type) {
@@ -42,6 +43,13 @@ export default function(state = initialState, action) {
       return {
         ...state,
         profile: null,
+        repos: [],
+        loading: false
+      }
+    case CLEAR_PROFILES:
+      return {
+        ...state,
+        profiles: [],
         repos: [],
         loading: false
       }
