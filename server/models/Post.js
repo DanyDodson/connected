@@ -1,108 +1,47 @@
 const mongoose = require('mongoose')
-const slugs = require('../middleware/slug')
+const slug = require('../middleware/slug')
 const User = require('./User')
 const Schema = mongoose.Schema
 
 const PostSchema = new Schema({
-  slug: {
-    type: String,
-    // lowercase: true,
-    // unique: true,
-  },
-  url: {
-    type: String,
-  },
-  // user: {
-  //   type: Schema.Types.ObjectId, ref: 'users'
-  // },
-  author: {
-    type: Schema.Types.ObjectId, ref: 'users'
-  },
-  // uploads: [],
-  // text: {
-  //   type: String, required: true
-  // },
-  // name: {
-  //   type: String
-  // },
-  content: {
-    type: String
-  },
-  avatar: {
-    type: String
-  },
-  // tagList: [{
-  //   type: String
-  // }],
-  // likes: [{
-  //   user: { type: Schema.Types.ObjectId, ref: 'users' }
-  // }],
-  likesCount: {
-    type: Number, default: 0
-  },
-  favoritesCount: {
-    type: Number, default: 0
-  },
-  comments: [{
-    type: Schema.Types.ObjectId, ref: 'comments'
-  }],
-  // comments: [
-  //   {
-  //     user: {
-  //       type: Schema.Types.ObjectId, ref: 'users'
-  //     },
-  //     text: {
-  //       type: String, required: true
-  //     },
-  //     name: {
-  //       type: String
-  //     },
-  //     avatar: {
-  //       type: String
-  //     },
-  //     date: {
-  //       type: Date, default: Date.now
-  //     },
-  //   }
-  // ],
+  uploads: [],
+  url: { type: String, required: true },
+  title: { type: String, required: true, trim: true },
+  description: { type: String, required: true, trim: true },
+  tags: [{ type: String, required: true }],
+  mediums: [{ type: String, required: true }],
+  critique: { type: Boolean, default: true },
+  purchasable: { type: Boolean, default: false },
+  price: { type: String, default: null },
+  shareable: { type: Boolean, default: true },
+  avatar: { type: String },
+  featured: { type: Boolean, default: false },
+  favoritesCount: { type: Number, default: 0 },
+  slug: { type: String, index: true, required: true },
+  author: { type: Schema.Types.ObjectId, ref: 'users', },
+  likes: [{ type: Schema.Types.ObjectId, ref: 'users' }],
+  comments: [{ type: Schema.Types.ObjectId, ref: 'comments' }],
 }, { timestamps: true })
 
 
 PostSchema.pre('validate', function (next) {
-  if (!this.slug || !this.url) {
-    this.slugBase()
-    // this.slugFull()
-  }
+  if (!this.slug) this.slugify()
   next()
 })
 
-PostSchema.methods.slugBase = function () {
-  this.url = slugs.getBase(this.url)
+PostSchema.methods.slugify = function () {
+  this.slug = slug.createSlug(this.title)
+  this.url = this.slug + '::' + slug.createTime()
 }
 
-// PostSchema.methods.slugFull = function () {
-//   this.slug = slugs.getBase(this.content) + ':' + slugs.getTime() + ':' + (Math.random() * Math.pow(36, 6) | 0).toString(36)
-// }
-
 PostSchema.methods.like = function (id) {
-  if (this.favorites.indexOf(id) === -1) {
-    this.favorites.push(id)
-  }
-
+  this.likes.unshift(id);
   return this.save()
 }
 
 PostSchema.methods.unlike = function (id) {
-  this.favorites.remove(id)
+  this.likes.remove(id)
   return this.save()
-}
-
-PostSchema.methods.updateLikesCount = function (id) {
-  const post = this
-  return Post.countDocuments({ likes: { $in: [post._id] } }).then(function (count) {
-    post.likesCount = count
-    return post.save()
-  })
 }
 
 PostSchema.methods.updateFavoriteCount = function () {
@@ -115,16 +54,26 @@ PostSchema.methods.updateFavoriteCount = function () {
 
 PostSchema.methods.toJSONFor = function (user) {
   return {
-    slug: this.slug,
-    author: this.author,
-    content: this.content,
+    uploads: this.uploads,
+    url: this.url,
+    title: this.title,
+    description: this.description,
+    critique: this.critique,
+    featured: this.featured,
+    mediums: this.mediums,
+    purchasable: this.purchasable,
+    price: this.price,
+    shareable: this.shareable,
     avatar: this.avatar,
-    likes: this.likes,
-    likesCount: this.likesCount,
+    tags: this.tags,
+    slug: this.slug,
+    author: this.author.toProfileJSONFor(user),
     favoritesCount: this.favoritesCount,
-    favorited: user ? user.isFavorite(this._id) : false,
+    likes: this.likes,
+    comments: this.comments,
     createdAt: this.createdAt,
     updatedAt: this.updatedAt,
+    favorited: user ? user.isFavorite(this._id) : false,
   }
 }
 

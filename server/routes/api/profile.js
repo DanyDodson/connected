@@ -1,18 +1,15 @@
 const express = require('express')
-const request = require('request')
-const config = require('config')
-const router = express.Router()
+const { check } = require('express-validator')
+const { validationResult } = require('express-validator')
 const auth = require('../../middleware/auth')
-const { check, validationResult } = require('express-validator')
-
 const Profile = require('../../models/Profile')
 const User = require('../../models/User')
 const Post = require('../../models/Post')
+const request = require('request')
+const config = require('config')
+const router = express.Router()
 
-// @route    GET api/profile/me
-// @desc     Get current users profile
-// @access   Private
-
+// get current users profile - api/profile/me
 router.get('/me', auth, async (req, res) => {
   try {
     const profile = await Profile
@@ -24,28 +21,21 @@ router.get('/me', auth, async (req, res) => {
     }
     res.json(profile)
   } catch (err) {
-    console.error(err.message)
-    res.status(500).send('Server Error')
+    res.status(500).send({
+      msg: 'Server error',
+      err: err.message,
+    })
   }
 })
 
-// @route    POST api/profile
-// @desc     Create or update user profile
-// @access   Private
-router.post(
-  '/',
-  [
-    auth,
+// create or update user profile - api/profile
+router.post('/',
+  [auth,
     [
-      check('status', 'Status is required')
-        .not()
-        .isEmpty(),
-      // check('skills', 'Skills is required')
-      //   .not()
-      //   .isEmpty()
+      check('status', 'Status is required').not().isEmpty(),
+      check('skills', 'Skills is required').not().isEmpty()
     ]
-  ],
-  async (req, res) => {
+  ], async (req, res) => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() })
@@ -96,8 +86,10 @@ router.post(
       )
       res.json(profile)
     } catch (err) {
-      console.error(err.message)
-      res.status(500).send('Server Error')
+      res.status(500).send({
+        msg: 'Server error',
+        err: err.message,
+      })
     }
   }
 )
@@ -110,8 +102,10 @@ router.get('/', async (req, res) => {
     const profiles = await Profile.find().populate('user', ['name', 'avatar'])
     res.json(profiles)
   } catch (err) {
-    console.error(err.message)
-    res.status(500).send('Server Error')
+    res.status(500).send({
+      msg: 'Server error',
+      err: err.message,
+    })
   }
 })
 
@@ -132,7 +126,10 @@ router.get('/user/:user_id', async (req, res) => {
     if (err.kind == 'ObjectId') {
       return res.status(400).json({ msg: 'Profile not found' })
     }
-    res.status(500).send('Server Error')
+    res.status(500).send({
+      msg: 'Server error',
+      err: err.message,
+    })
   }
 })
 
@@ -151,7 +148,10 @@ router.delete('/', auth, async (req, res) => {
     res.json({ msg: 'User deleted' })
   } catch (err) {
     console.error(err.message)
-    res.status(500).send('Server Error')
+    res.status(500).send({
+      msg: 'Server error',
+      err: err.message,
+    })
   }
 })
 
@@ -202,8 +202,10 @@ router.put('/experience',
 
       res.json(profile)
     } catch (err) {
-      console.error(err.message)
-      res.status(500).send('Server Error')
+      res.status(500).send({
+        msg: 'Server error',
+        err: err.message,
+      })
     }
   }
 )
@@ -251,8 +253,11 @@ router.delete('/experience/:exp_id', auth, async (req, res) => {
       return res.status(200).json(foundProfile)
     }
   } catch (error) {
-    console.error(error)
-    return res.status(500).json({ msg: "Server error" })
+    return res.status(500).send({
+      msg: 'Server error',
+      err: err.message,
+    })
+
   }
 })
 
@@ -304,8 +309,10 @@ router.put('/education',
 
       res.json(profile)
     } catch (err) {
-      console.error(err.message)
-      res.status(500).send('Server Error')
+      res.status(500).send({
+        msg: 'Server error',
+        err: err.message,
+      })
     }
   }
 )
@@ -357,7 +364,10 @@ router.delete("/education/:edu_id", auth, async (req, res) => {
     }
   } catch (error) {
     console.error(error)
-    return res.status(500).json({ msg: "Server error" })
+    return res.status(500).send({
+      msg: 'Server error',
+      err: err.message,
+    })
   }
 })
 
@@ -387,8 +397,10 @@ router.get('/github/:username', (req, res) => {
       res.json(JSON.parse(body))
     })
   } catch (err) {
-    console.error(err.message)
-    res.status(500).send('Server Error')
+    res.status(500).send({
+      msg: 'Server error',
+      err: err.message,
+    })
   }
 })
 
@@ -413,7 +425,10 @@ router.post('/user/:user_id/follow', auth, async (req, res) => {
     return res.status(200).json({ msg: `Your now following ${profile}` })
 
   } catch (err) {
-    res.status(500).send('Server Error')
+    res.status(500).send({
+      msg: 'Server error',
+      err: err.message,
+    })
   }
 })
 
@@ -438,7 +453,10 @@ router.delete('/user/:user_id/follow', auth, async (req, res) => {
     return res.status(200).json({ msg: `Your no longer following ${profile}` })
 
   } catch (err) {
-    res.status(500).send('Server Error')
+    res.status(500).send({
+      msg: 'Server error',
+      err: err.message,
+    })
   }
 })
 

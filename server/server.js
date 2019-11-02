@@ -11,7 +11,8 @@ app.use('/api/users', require('./routes/api/users'))
 app.use('/api/auth', require('./routes/api/auth'))
 app.use('/api/profile', require('./routes/api/profile'))
 app.use('/api/posts', require('./routes/api/posts'))
-app.use('/api/mediums', require('./routes/api/mediums'));
+app.use('/api/mediums', require('./routes/api/mediums'))
+app.use('/api/tags', require('./routes/api/tags'))
 
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static('client/build'))
