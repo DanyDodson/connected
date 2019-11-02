@@ -7,12 +7,12 @@ const secret = config.get('secret')
 const Schema = mongoose.Schema
 
 const UserSchema = new Schema({
-  username: { type: String, lowercase: true, trim: true, index: true, unique: true, required: true, },
-  email: { type: String, lowercase: true, trim: true, index: true, unique: true, required: true, },
+  username: { type: String, trim: true, unique: true, required: true, },
+  email: { type: String, trim: true, unique: true, required: true, },
   password: { type: String, required: true },
-  image: { type: String, default: image, },
-  active: { type: Boolean, default: true, },
-  type: { type: String, default: 'regular' },
+  image: { type: String, default: image, required: true, },
+  active: { type: Boolean, default: true, required: true, },
+  type: { type: String, default: 'regular', required: true, },
   avatar: { type: String, },
   recover: { type: String, trim: true, default: '', },
   joined: { type: Date, default: Date.now },
@@ -28,8 +28,6 @@ const UserSchema = new Schema({
       follows: { type: Boolean, default: true, },
     },
   },
-  following: [{ type: Schema.Types.ObjectId, ref: 'users' }],
-  followers: [{ type: Schema.Types.ObjectId, ref: 'users' }],
 })
 
 UserSchema.methods.validPassword = function (password) {
@@ -74,7 +72,6 @@ UserSchema.methods.favorite = function (id) {
   if (this.counts.favorites.indexOf(id) === -1) {
     this.counts.favorites.push(id)
   }
-
   return this.save()
 }
 
@@ -90,20 +87,19 @@ UserSchema.methods.isFavorite = function (id) {
 }
 
 UserSchema.methods.follow = function (id) {
-  if (this.following.indexOf(id) === -1) {
-    this.following.push(id)
+  if (this.counts.following.indexOf(id) === -1) {
+    this.counts.following.push(id)
   }
-
   return this.save()
 }
 
 UserSchema.methods.unfollow = function (id) {
-  this.following.remove(id)
+  this.counts.following.remove(id)
   return this.save()
 }
 
 UserSchema.methods.isFollowing = function (id) {
-  return this.following.some(function (followId) {
+  return this.counts.following.some(function (followId) {
     return followId.toString() === id.toString()
   })
 }

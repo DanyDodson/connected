@@ -5,6 +5,7 @@ const auth = require('../../middleware/auth')
 const Profile = require('../../models/Profile')
 const User = require('../../models/User')
 const Post = require('../../models/Post')
+const Comment = require('../../models/Comment')
 const request = require('request')
 const config = require('config')
 const router = express.Router()
@@ -14,109 +15,93 @@ router.get('/me', auth, async (req, res) => {
   try {
     const profile = await Profile
       .findOne({ user: req.user.id })
-      .populate('user', ['name', 'avatar'])
-
+      .populate('user', ['username', 'image'])
     if (!profile) {
       return res.status(400).json({ msg: 'Create a profile for a better experience' })
     }
     res.json(profile)
   } catch (err) {
-    res.status(500).send({
-      msg: 'Server error',
-      err: err.message,
-    })
+    console.error(err.message)
+    res.status(500).send('Server Error')
   }
 })
 
-// create or update user profile - api/profile
-router.post('/',
-  [auth,
-    [
-      check('status', 'Status is required').not().isEmpty(),
-      check('skills', 'Skills is required').not().isEmpty()
-    ]
-  ], async (req, res) => {
-    const errors = validationResult(req)
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() })
-    }
+// create or update user profile /api/profile
+router.post('/', [auth,
+  [
+    check('bio', 'bio is required').not().isEmpty(),
+  ]
+], async (req, res) => {
 
-    const {
-      company,
-      website,
-      location,
-      bio,
-      status,
-      githubusername,
-      skills,
-      youtube,
-      facebook,
-      twitter,
-      instagram,
-      linkedin
-    } = req.body
+  const errors = validationResult(req)
 
-    // Build profile object
-    const profileFields = {}
-    profileFields.user = req.user.id
-    if (company) profileFields.company = company
-    if (website) profileFields.website = website
-    if (location) profileFields.location = location
-    if (bio) profileFields.bio = bio
-    if (status) profileFields.status = status
-    if (githubusername) profileFields.githubusername = githubusername
-    if (skills) {
-      profileFields.skills = skills.split(',').map(skill => skill.trim())
-    }
-
-    // Build social object
-    profileFields.social = {}
-    if (youtube) profileFields.social.youtube = youtube
-    if (twitter) profileFields.social.twitter = twitter
-    if (facebook) profileFields.social.facebook = facebook
-    if (linkedin) profileFields.social.linkedin = linkedin
-    if (instagram) profileFields.social.instagram = instagram
-
-    try {
-      // Using upsert option (creates new doc if no match is found):
-      let profile = await Profile.findOneAndUpdate(
-        { user: req.user.id },
-        { $set: profileFields },
-        { new: true, upsert: true }
-      )
-      res.json(profile)
-    } catch (err) {
-      res.status(500).send({
-        msg: 'Server error',
-        err: err.message,
-      })
-    }
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() })
   }
-)
 
-// @route    GET api/profile
-// @desc     Get all profiles
-// @access   Public
+  const {
+    bio,
+    website,
+    status,
+    youtube,
+    twitter,
+    facebook,
+    linkedin,
+    instagram,
+  } = req.body
+
+  // Build profile object
+  const profileFields = {}
+
+  profileFields.user = req.user.id
+
+  if (bio) profileFields.bio = bio
+  if (website) profileFields.website = website
+  if (status) profileFields.status = status
+
+  // if (skills) {
+  //   profileFields.skills = skills.split(',').map(skill => skill.trim())
+  // }
+
+  // Build social object
+  profileFields.social = {}
+  if (youtube) profileFields.social.youtube = youtube
+  if (twitter) profileFields.social.twitter = twitter
+  if (facebook) profileFields.social.facebook = facebook
+  if (linkedin) profileFields.social.linkedin = linkedin
+  if (instagram) profileFields.social.instagram = instagram
+
+  try {
+    // Using upsert option (creates new doc if no match is found):
+    let profile = await Profile.findOneAndUpdate(
+      { user: req.user.id },
+      { $set: profileFields },
+      { new: true, upsert: true }
+    )
+    res.json(profile)
+  } catch (err) {
+    console.error(err.message)
+    res.status(500).send('Server Error')
+  }
+})
+
+// get all profiles /api/profile
 router.get('/', async (req, res) => {
   try {
-    const profiles = await Profile.find().populate('user', ['name', 'avatar'])
+    const profiles = await Profile.find().populate('user', ['username', 'image'])
     res.json(profiles)
   } catch (err) {
-    res.status(500).send({
-      msg: 'Server error',
-      err: err.message,
-    })
+    console.error(err.message)
+    res.status(500).send('Server Error')
   }
 })
 
-// @route    GET api/profile/user/:user_id
-// @desc     Get profile by user ID
-// @access   Public
+// get profile by user ID /api/profile/user/:user_id
 router.get('/user/:user_id', async (req, res) => {
   try {
     const profile = await Profile.findOne({
       user: req.params.user_id
-    }).populate('user', ['name', 'avatar'])
+    }).populate('user', ['username', 'image'])
 
     if (!profile) return res.status(400).json({ msg: 'Profile not found' })
 
@@ -126,32 +111,30 @@ router.get('/user/:user_id', async (req, res) => {
     if (err.kind == 'ObjectId') {
       return res.status(400).json({ msg: 'Profile not found' })
     }
-    res.status(500).send({
-      msg: 'Server error',
-      err: err.message,
-    })
+    res.status(500).send('Server Error')
   }
 })
 
-// @route    DELETE api/profile
-// @desc     Delete profile, user & posts
-// @access   Private
+// delete profile, user & posts /api/profile
 router.delete('/', auth, async (req, res) => {
   try {
-    // Remove user posts
-    await Post.deleteMany({ user: req.user.id })
-    // Remove profile
+
+    await Comment.deleteMany({ author: req.user.id })
+    await Post.deleteMany({ author: req.user.id })
     await Profile.findOneAndRemove({ user: req.user.id })
-    // Remove user
-    await User.findOneAndRemove({ _id: req.user.id })
+    await User.findOneAndRemove({ 'counts.following': { _id: req.user.id } })
+    await User.findOneAndRemove({ 'counts.followers': { _id: req.user.id } })
+
+    // await User.unfollow(req.user.id)
+    // await User.unfavorite()
+    // await Post.updateFavoriteCount()
+
+    // await User.findOneAndRemove({ _id: req.user.id })
 
     res.json({ msg: 'User deleted' })
   } catch (err) {
     console.error(err.message)
-    res.status(500).send({
-      msg: 'Server error',
-      err: err.message,
-    })
+    res.status(500).send('Server Error')
   }
 })
 
@@ -202,10 +185,8 @@ router.put('/experience',
 
       res.json(profile)
     } catch (err) {
-      res.status(500).send({
-        msg: 'Server error',
-        err: err.message,
-      })
+      console.error(err.message)
+      res.status(500).send('Server Error')
     }
   }
 )
@@ -253,11 +234,8 @@ router.delete('/experience/:exp_id', auth, async (req, res) => {
       return res.status(200).json(foundProfile)
     }
   } catch (error) {
-    return res.status(500).send({
-      msg: 'Server error',
-      err: err.message,
-    })
-
+    console.error(err.message)
+    res.status(500).send('Server Error')
   }
 })
 
@@ -309,10 +287,8 @@ router.put('/education',
 
       res.json(profile)
     } catch (err) {
-      res.status(500).send({
-        msg: 'Server error',
-        err: err.message,
-      })
+      console.error(err.message)
+      res.status(500).send('Server Error')
     }
   }
 )
@@ -363,18 +339,12 @@ router.delete("/education/:edu_id", auth, async (req, res) => {
       return res.status(200).json(foundProfile)
     }
   } catch (error) {
-    console.error(error)
-    return res.status(500).send({
-      msg: 'Server error',
-      err: err.message,
-    })
+    console.error(err.message)
+    res.status(500).send('Server Error')
   }
 })
 
-// @route    GET api/profile/github/:username
-// @desc     Get user repos from Github
-// @access   Public
-
+// get user repos from github /api/profile/github/:username
 router.get('/github/:username', (req, res) => {
   try {
     const options = {
@@ -397,19 +367,15 @@ router.get('/github/:username', (req, res) => {
       res.json(JSON.parse(body))
     })
   } catch (err) {
-    res.status(500).send({
-      msg: 'Server error',
-      err: err.message,
-    })
+    console.error(err.message)
+    res.status(500).send('Server Error')
   }
 })
 
-// @route    POST api/profile/user/:user_id/follow
-// @desc     Start following a user
-// @access   Private
-
+// start following a user /api/profile/user/:user_id/follow
 router.post('/user/:user_id/follow', auth, async (req, res) => {
   try {
+
     const profile = await req.params.user_id
     const user = await User.findById(req.user.id)
 
@@ -422,20 +388,15 @@ router.post('/user/:user_id/follow', auth, async (req, res) => {
     }
 
     await user.follow(profile)
-    return res.status(200).json({ msg: `Your now following ${profile}` })
+    return res.status(200).json({ msg: `Your now following id: ${profile}` })
 
   } catch (err) {
-    res.status(500).send({
-      msg: 'Server error',
-      err: err.message,
-    })
+    console.error(err.message)
+    res.status(500).send('Server Error')
   }
 })
 
-// @route    DELETE api/profile/user/:user_id/follow
-// @desc     Stop following a user
-// @access   Private
-
+// stop following a user /api/profile/user/:user_id/follow
 router.delete('/user/:user_id/follow', auth, async (req, res) => {
   try {
     const profile = await req.params.user_id
@@ -450,13 +411,11 @@ router.delete('/user/:user_id/follow', auth, async (req, res) => {
     }
 
     await user.unfollow(profile)
-    return res.status(200).json({ msg: `Your no longer following ${profile}` })
+    return res.status(200).json({ msg: `Your no longer following id: ${profile}` })
 
   } catch (err) {
-    res.status(500).send({
-      msg: 'Server error',
-      err: err.message,
-    })
+    console.error(err.message)
+    res.status(500).send('Server Error')
   }
 })
 

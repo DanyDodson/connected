@@ -11,7 +11,7 @@
 
 # add uri of your mongodb connection for example
 
-> mongoURI": "mongodb://localhost/dev-connected
+> mongo": "mongodb://localhost/dev-connected
 
 ```
 

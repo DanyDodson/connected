@@ -5,8 +5,8 @@ import {
   GET_POSTS,
   CLEAR_POSTS,
   CLEAR_POST,
-  CLEAR_PROFILE,
-  CLEAR_PROFILES,
+  // CLEAR_PROFILE,
+  // CLEAR_PROFILES,
   POST_ERROR,
   UPDATE_LIKES,
   DELETE_POST,
@@ -19,8 +19,8 @@ import {
 // Get posts
 export const getPosts = () => async dispatch => {
   dispatch({ type: CLEAR_POST })
-  dispatch({ type: CLEAR_PROFILE })
-  dispatch({ type: CLEAR_PROFILES })
+  // dispatch({ type: CLEAR_PROFILE })
+  // dispatch({ type: CLEAR_PROFILES })
 
   try {
     const res = await axios.get('/api/posts')
@@ -40,9 +40,9 @@ export const getPosts = () => async dispatch => {
 
 // Get posts
 export const getFeed = () => async dispatch => {
-  dispatch({ type: CLEAR_POST })
-  dispatch({ type: CLEAR_PROFILE })
-  dispatch({ type: CLEAR_PROFILES })
+  // dispatch({ type: CLEAR_POST })
+  // dispatch({ type: CLEAR_PROFILE })
+  // dispatch({ type: CLEAR_PROFILES })
 
   try {
     const res = await axios.get('/api/posts')
@@ -73,8 +73,11 @@ export const addLike = id => async dispatch => {
     dispatch(setAlert('See more by this user ?', 'success'))
 
   } catch (err) {
-    if (err) { dispatch(setAlert(err.response.data.msg, 'error')) }
-    // console.log(err.response.data.msg)
+
+    if (err) {
+      dispatch(setAlert(err.response.data.msg, 'error'))
+    }
+
     dispatch({
       type: POST_ERROR,
       payload: { msg: err.response.statusText, status: err.response.status }
@@ -90,7 +93,7 @@ export const removeLike = id => async dispatch => {
       type: UPDATE_LIKES,
       payload: { id, likes: res.data }
     })
-    dispatch(setAlert('Pin removed from favorites', 'success'))
+    dispatch(setAlert('Pin unliked', 'success'))
   } catch (err) {
     if (err) { dispatch(setAlert(err.response.data.msg, 'error')) }
     dispatch({
@@ -134,14 +137,20 @@ export const addPost = formData => async dispatch => {
       type: ADD_POST,
       payload: res.data
     })
+
     dispatch(setAlert('Post Created', 'success'))
+
   } catch (err) {
-    if (err) { dispatch(setAlert(err.response.data.msg, 'error')) }
+
+    if (err) {
+      dispatch(setAlert(err.response.data.msg, 'error'))
+    }
+
     dispatch({
       type: POST_ERROR,
       payload: { msg: err.response.statusText, status: err.response.status }
     })
-    dispatch(setAlert(err.response.statusText, 'error'))
+
   }
 }
 
@@ -157,7 +166,9 @@ export const getPost = id => async dispatch => {
       payload: res.data
     })
   } catch (err) {
-    if (err) { dispatch(setAlert(err.response.data.msg, 'error')) }
+    if (err) {
+      dispatch(setAlert(err.response.data.msg, 'error'))
+    }
     dispatch({
       type: POST_ERROR,
       payload: { msg: err.response.statusText, status: err.response.status }
@@ -174,11 +185,8 @@ export const addComment = (postId, formData) => async dispatch => {
   }
 
   try {
-    const res = await axios.post(
-      `/api/posts/comment/${postId}`,
-      formData,
-      config
-    )
+    const res = await axios
+      .post(`/api/posts/${postId}/comments`, formData, config)
 
     dispatch({
       type: ADD_COMMENT,
@@ -197,7 +205,7 @@ export const addComment = (postId, formData) => async dispatch => {
 // Delete comment
 export const deleteComment = (postId, commentId) => async dispatch => {
   try {
-    await axios.delete(`/api/posts/comment/${postId}/${commentId}`)
+    await axios.delete(`/api/posts/${postId}/comments/${commentId}`)
 
     dispatch({
       type: REMOVE_COMMENT,

@@ -5,7 +5,7 @@ const { check } = require('express-validator')
 const config = require('config')
 
 const auth = require('../../middleware/auth')
-const slugs = require('../../middleware/slug')
+const getslug = require('../../middleware/slug')
 
 const User = require('../../models/User')
 const Post = require('../../models/Post')
@@ -20,24 +20,33 @@ const cloudinary = require('cloudinary').v2
 // cloudinary
 cloudinary.config({ cloud_name: cloudname, api_key: cloudkey, api_secret: cloudsecret })
 
+// get all posts /api/posts
+router.get('/', auth, async (req, res) => {
+  try {
+    const posts = await Post.find().sort({ date: -1 })
+    res.json(posts)
+  } catch (err) {
+    console.error(err.message)
+    res.status(500).send('Server Error')
+  }
+})
+
 // create post /api/posts
 router.post('/', [auth,
   [
-    check('title', 'title is required').not().isEmpty()
+    check('title', 'title is required').not().isEmpty(),
+    check('description', 'description is required').not().isEmpty(),
   ]
 ], async (req, res) => {
-
   const errors = validationResult(req)
-
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() })
   }
-
   try {
-
     const user = await User.findById(req.user.id).select('-password')
-
     const post = new Post({
+      author: user,
+      userimage: user.image,
       uploads: req.body.uploads,
       title: req.body.title,
       description: req.body.description,
@@ -48,26 +57,9 @@ router.post('/', [auth,
       purchasable: req.body.purchasable,
       price: req.body.price,
       shareable: req.body.shareable,
-      author: user,
-      avatar: req.user.avatar,
     })
-
     await post.save()
     res.json(post)
-
-  } catch (err) {
-    console.error(err.message)
-    res.status(500).send('Server Error')
-  }
-})
-
-// get all posts /api/posts
-router.get('/', auth, async (req, res) => {
-  try {
-    const posts = await Post.find().sort({ date: -1 })
-
-    res.json(posts)
-
   } catch (err) {
     console.error(err.message)
     res.status(500).send('Server Error')
@@ -78,23 +70,83 @@ router.get('/', auth, async (req, res) => {
 router.get('/:id', auth, async (req, res) => {
   try {
     const post = await Post.findById(req.params.id)
-
     if (!post) {
       return res.status(404).json({
         msg: 'Post not found'
       })
     }
-
     res.json(post)
-
   } catch (err) {
-
     if (err.kind === 'ObjectId') {
       return res.status(404).json({
         msg: 'Post not found'
       })
     }
+    console.error(err.message)
+    res.status(500).send('Server Error')
+  }
+})
 
+// update post by id /api/posts/:id
+router.put('/:id', [auth,
+  [
+    check('title', 'title is required').not().isEmpty(),
+    check('description', 'description is required').not().isEmpty(),
+  ]
+], async (req, res) => {
+
+  const errors = validationResult(req)
+
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() })
+  }
+
+  const user = await User.findById(req.user.id).select('-password')
+
+  const {
+    uploads,
+    title,
+    description,
+    mediums,
+    tags,
+    critique,
+    purchasable,
+    price,
+    shareable,
+  } = req.body
+
+  // Build post object
+  const postFields = {}
+
+  if (title) postFields.title = title
+  if (uploads) postFields.uploads = uploads
+  if (description) postFields.description = description
+  if (critique) postFields.critique = critique
+  if (purchasable) postFields.purchasable = purchasable
+  if (price) postFields.price = price
+  if (shareable) postFields.shareable = shareable
+
+  if (mediums) {
+    postFields.mediums = mediums.split(',').map(medium => medium.trim())
+  }
+  if (tags) {
+    postFields.tags = tags.split(',').map(tag => tag.trim())
+  }
+
+  postFields.slug = getslug.createSlug(title)
+  postFields.url = postFields.slug + '::' + getslug.createTime()
+
+  try {
+    // Using upsert option 
+    // (creates new doc if no match is found)
+    let post = await Post.findOneAndUpdate(
+      { _id: req.params.id },
+      { $set: postFields },
+      { new: true, upsert: true }
+    )
+    res.json(post)
+
+  } catch (err) {
     console.error(err.message)
     res.status(500).send('Server Error')
   }
@@ -211,7 +263,7 @@ router.post('/favorite/:id', auth, async (req, res) => {
       })
     }
 
-    if (user.favorites.indexOf(postId) >= 0) {
+    if (user.counts.favorites.indexOf(postId) >= 0) {
       return res.status(200).json({
         msg: `Post already exists in your favorites`
       })
@@ -308,7 +360,7 @@ router.post('/:id/comments', [auth,
     await post.comments.push(comment)
     await post.save()
 
-    res.status(200).send('Created Post')
+    res.status(200).send('Created Comment')
     // res.json(comment)
 
   } catch (err) {
@@ -330,7 +382,7 @@ router.delete('/:id/comments/:comment', auth, async (req, res) => {
       })
     }
 
-    if (comment._id.toString() !== req.user.id) {
+    if (comment.author.toString() !== req.user.id) {
       res.status(401).send({
         msg: 'You must be logged in to do that !'
       })
@@ -340,10 +392,7 @@ router.delete('/:id/comments/:comment', auth, async (req, res) => {
     await post.save()
     await Comment.deleteOne({ _id: req.params.comment })
 
-    res.json({
-      msg: 'Successfully removed comment !',
-      comments: post.comments
-    })
+    res.json({ msg: 'Successfully removed comment !' })
 
   } catch (err) {
     console.error(err.message)

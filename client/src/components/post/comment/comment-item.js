@@ -7,7 +7,7 @@ import { deleteComment } from '../../../actions/post'
 
 const CommentItem = ({
   postId,
-  comment: { _id, text, name, avatar, user, date },
+  comment: { _id, content, name, avatar, user, date },
   auth,
   deleteComment
 }) => (
@@ -19,7 +19,7 @@ const CommentItem = ({
         </Link>
       </div>
       <div>
-        <p className='my-1'>{text}</p>
+        <p className='my-1'>{content}</p>
         <p className='post-date'>
           Posted on <Moment format='YYYY/MM/DD'>{date}</Moment>
         </p>
