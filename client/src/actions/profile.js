@@ -72,6 +72,12 @@ export const getProfileById = userId => async dispatch => {
   }
 }
 
+// Follow a userSelect
+
+
+// Unfollow a userSelect
+
+
 // Get Github repos
 export const getGithubRepos = username => async dispatch => {
   try {
@@ -90,11 +96,7 @@ export const getGithubRepos = username => async dispatch => {
 }
 
 // Create or update profile
-export const createProfile = (
-  formData,
-  history,
-  edit = false
-) => async dispatch => {
+export const createProfile = (formData, history, edit = false) => async dispatch => {
   try {
     const config = {
       headers: {
@@ -115,11 +117,11 @@ export const createProfile = (
       history.push('/dashboard')
     }
   } catch (err) {
-    const errors = err.response.data.errors
+    // const errors = err.response.data.errors
 
-    if (errors) {
-      errors.forEach(error => dispatch(setAlert(error.msg, 'error')))
-    }
+    // if (errors) {
+    //   errors.forEach(error => dispatch(setAlert(error.msg, 'error')))
+    // }
 
     dispatch({
       type: PROFILE_ERROR,

@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
+const logs = require('../logs/chalk')
 const config = require('config')
-const db = config.get('mongo')
+const db = config.get('db.atlas')
 
 const connectDB = async () => {
   try {
@@ -10,11 +11,9 @@ const connectDB = async () => {
       useFindAndModify: false,
       useUnifiedTopology: true,
     })
-
-    console.log('[mongodb] connected to db ✔️')
+    logs.data('[mongodb] connected to db ✔️')
   } catch (err) {
     console.error(err.message)
-    // Exit process with failure
     process.exit(1)
   }
 }

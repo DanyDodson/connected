@@ -5,57 +5,52 @@ import {
   GET_POSTS,
   CLEAR_POSTS,
   CLEAR_POST,
-  // CLEAR_PROFILE,
-  // CLEAR_PROFILES,
   POST_ERROR,
   UPDATE_LIKES,
   DELETE_POST,
   ADD_POST,
   GET_POST,
-  ADD_COMMENT,
-  REMOVE_COMMENT
+  ADD_NOTE,
+  REMOVE_NOTE
 } from './types'
 
 // Get posts
 export const getPosts = () => async dispatch => {
-  dispatch({ type: CLEAR_POST })
-  // dispatch({ type: CLEAR_PROFILE })
-  // dispatch({ type: CLEAR_PROFILES })
-
+  dispatch({
+    type: CLEAR_POST
+  })
   try {
     const res = await axios.get('/api/posts')
-
     dispatch({
       type: GET_POSTS,
       payload: res.data
     })
   } catch (err) {
-
     dispatch({
       type: POST_ERROR,
-      payload: { msg: err.response.statusText, status: err.response.status }
+      payload: {
+        msg: err.response.statusText,
+        status: err.response.status
+      }
     })
   }
 }
 
 // Get posts
 export const getFeed = () => async dispatch => {
-  // dispatch({ type: CLEAR_POST })
-  // dispatch({ type: CLEAR_PROFILE })
-  // dispatch({ type: CLEAR_PROFILES })
-
   try {
     const res = await axios.get('/api/posts')
-
     dispatch({
       type: GET_POSTS,
       payload: res.data
     })
   } catch (err) {
-
     dispatch({
       type: POST_ERROR,
-      payload: { msg: err.response.statusText, status: err.response.status }
+      payload: {
+        msg: err.response.statusText,
+        status: err.response.status
+      }
     })
   }
 }
@@ -64,23 +59,23 @@ export const getFeed = () => async dispatch => {
 export const addLike = id => async dispatch => {
   try {
     const res = await axios.put(`/api/posts/like/${id}`)
-
     dispatch({
       type: UPDATE_LIKES,
-      payload: { id, likes: res.data }
+      payload: {
+        id, likes: res.data
+      }
     })
-
     dispatch(setAlert('See more by this user ?', 'success'))
-
   } catch (err) {
-
     if (err) {
       dispatch(setAlert(err.response.data.msg, 'error'))
     }
-
     dispatch({
       type: POST_ERROR,
-      payload: { msg: err.response.statusText, status: err.response.status }
+      payload: {
+        msg: err.response.statusText,
+        status: err.response.status
+      }
     })
   }
 }
@@ -91,14 +86,19 @@ export const removeLike = id => async dispatch => {
     const res = await axios.put(`/api/posts/unlike/${id}`)
     dispatch({
       type: UPDATE_LIKES,
-      payload: { id, likes: res.data }
+      payload: {
+        id, likes: res.data
+      }
     })
     dispatch(setAlert('Pin unliked', 'success'))
   } catch (err) {
     if (err) { dispatch(setAlert(err.response.data.msg, 'error')) }
     dispatch({
       type: POST_ERROR,
-      payload: { msg: err.response.statusText, status: err.response.status }
+      payload: {
+        msg: err.response.statusText,
+        status: err.response.status
+      }
     })
   }
 }
@@ -107,18 +107,19 @@ export const removeLike = id => async dispatch => {
 export const deletePost = id => async dispatch => {
   try {
     await axios.delete(`/api/posts/${id}`)
-
     dispatch({
       type: DELETE_POST,
       payload: id
     })
-
     dispatch(setAlert('Post Removed', 'success'))
   } catch (err) {
     if (err) { dispatch(setAlert(err.response.data.msg, 'error')) }
     dispatch({
       type: POST_ERROR,
-      payload: { msg: err.response.statusText, status: err.response.status }
+      payload: {
+        msg: err.response.statusText,
+        status: err.response.status
+      }
     })
     dispatch(setAlert(err.response.statusText, 'error'))
   }
@@ -137,18 +138,17 @@ export const addPost = formData => async dispatch => {
       type: ADD_POST,
       payload: res.data
     })
-
     dispatch(setAlert('Post Created', 'success'))
-
   } catch (err) {
-
     if (err) {
       dispatch(setAlert(err.response.data.msg, 'error'))
     }
-
     dispatch({
       type: POST_ERROR,
-      payload: { msg: err.response.statusText, status: err.response.status }
+      payload: {
+        msg: err.response.statusText,
+        status: err.response.status
+      }
     })
 
   }
@@ -156,11 +156,11 @@ export const addPost = formData => async dispatch => {
 
 // Get post
 export const getPost = id => async dispatch => {
-  dispatch({ type: CLEAR_POSTS })
-
+  dispatch({
+    type: CLEAR_POSTS
+  })
   try {
     const res = await axios.get(`/api/posts/${id}`)
-
     dispatch({
       type: GET_POST,
       payload: res.data
@@ -171,52 +171,56 @@ export const getPost = id => async dispatch => {
     }
     dispatch({
       type: POST_ERROR,
-      payload: { msg: err.response.statusText, status: err.response.status }
+      payload: {
+        msg: err.response.statusText,
+        status: err.response.status
+      }
     })
   }
 }
 
-// Add comment
-export const addComment = (postId, formData) => async dispatch => {
+// Add note
+export const addNOTE = (postId, formData) => async dispatch => {
   const config = {
     headers: {
       'Content-Type': 'application/json'
     }
   }
-
   try {
     const res = await axios
-      .post(`/api/posts/${postId}/comments`, formData, config)
-
+      .post(`/api/posts/${postId}/notes`, formData, config)
     dispatch({
-      type: ADD_COMMENT,
+      type: ADD_NOTE,
       payload: res.data
     })
-
-    dispatch(setAlert('Comment Added', 'success'))
+    dispatch(setAlert('Note Added', 'success'))
   } catch (err) {
     dispatch({
       type: POST_ERROR,
-      payload: { msg: err.response.statusText, status: err.response.status }
+      payload: {
+        msg: err.response.statusText,
+        status: err.response.status
+      }
     })
   }
 }
 
-// Delete comment
-export const deleteComment = (postId, commentId) => async dispatch => {
+// Delete note
+export const deleteNOTE = (postId, noteId) => async dispatch => {
   try {
-    await axios.delete(`/api/posts/${postId}/comments/${commentId}`)
-
+    await axios.delete(`/api/posts/${postId}/notes/${noteId}`)
     dispatch({
-      type: REMOVE_COMMENT,
-      payload: commentId
+      type: REMOVE_NOTE,
+      payload: noteId
     })
-
-    dispatch(setAlert('Comment Removed', 'success'))
+    dispatch(setAlert('Note Removed', 'success'))
   } catch (err) {
     dispatch({
       type: POST_ERROR,
-      payload: { msg: err.response.statusText, status: err.response.status }
+      payload: {
+        msg: err.response.statusText,
+        status: err.response.status
+      }
     })
   }
 }

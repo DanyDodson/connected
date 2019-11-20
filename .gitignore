@@ -9,3 +9,4 @@ node_modules
 # server
 /server/node_modules
 /server/config/default.json
+/server/logs/*.log

@@ -4,8 +4,8 @@ import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import Spinner from '../shared/Spinner'
 import PostItem from '../posts/post-preview'
-import CommentForm from './comment/comment-form'
-import CommentItem from './comment/comment-item'
+import NoteForm from './note/note-form'
+import NoteItem from './note/note-item'
 import { getPost } from '../../actions/post'
 
 const Post = ({ getPost, post: { post, loading }, match }) => {
@@ -21,10 +21,10 @@ const Post = ({ getPost, post: { post, loading }, match }) => {
           Back To Posts
       </Link>
         <PostItem post={post} showActions={false} />
-        <CommentForm postId={post._id} />
-        <div className='comments'>
-          {post.comments.map(comment => (
-            <CommentItem key={comment._id} comment={comment} postId={post._id} />
+        <NoteForm postId={post._id} />
+        <div className='notes'>
+          {post.notes.map(note => (
+            <NoteItem key={note._id} note={note} postId={post._id} />
           ))}
         </div>
       </Fragment>

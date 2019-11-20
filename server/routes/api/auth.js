@@ -1,78 +1,47 @@
-const express = require('express')
-const { check } = require('express-validator')
-const { validationResult } = require('express-validator')
-const router = express.Router()
-const auth = require('../../middleware/auth')
-const jwt = require('jsonwebtoken')
-const bcrypt = require('bcryptjs')
-const config = require('config')
+const {
+    signup,
+    signin,
+    account,
+    verify,
+    verified,
+    recover,
+    recovered,
+    signout,
+    destroy,
+} = require('../../controllers/auth')
 
-const User = require('../../models/User')
+const {
+    checkSignup,
+    checkSignin,
+    checkRecovery,
+    checkResults,
+} = require('../../validator')
 
-// test route - GET api/auth
-router.get('/', auth, async (req, res) => {
-  try {
-    const user = await User.findById(req.user.id).select('-password')
-    res.json(user)
-  } catch (err) {
-    console.error(err.message)
-    res.status(500).send('Server Error')
-  }
-})
+const auth = require('../auth')
+const router = require('express').Router()
 
-// authenticate user & get token - POST api/auth
-router.post('/',
-  [
-    check('email', 'Please include a valid email').isEmail(),
-    check('password', 'Password is required').exists()
-  ],
-  async (req, res) => {
+router.post('/signup', checkSignup, checkResults, signup, verify)
+router.post('/signin', checkSignin, checkResults, signin)
 
-    const errors = validationResult(req)
+router.get('/account', auth.required, account)
 
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() })
-    }
+router.put('/verify', auth.required, verify)
+router.put('/verified/:verifyToken', auth.required, verified)
 
-    const { email, password } = req.body
+router.put('/recover', auth.required, recover)
+router.put('/recovered/:recoveryToken', auth.required, checkRecovery, checkResults, recovered)
 
-    try {
-      let user = await User.findOne({ email })
-
-      if (!user) {
-        return res
-          .status(400)
-          .json({ errors: [{ msg: 'Invalid Credentials' }] })
-      }
-
-      const isMatch = await bcrypt.compare(password, user.password)
-
-      if (!isMatch) {
-        return res
-          .status(400)
-          .json({ errors: [{ msg: 'Invalid Credentials' }] })
-      }
-
-      const payload = {
-        user: {
-          id: user.id
-        }
-      }
-
-      jwt.sign(
-        payload,
-        config.get('secret'),
-        { expiresIn: 3600 },
-        (err, token) => {
-          if (err) throw err
-          res.json({ token })
-        }
-      )
-    } catch (err) {
-      console.error(err.message)
-      res.status(500).send('Server error')
-    }
-  }
-)
+router.get('/signout', auth.required, signout)
+router.delete('/destroy', auth.required, destroy)
 
 module.exports = router
+
+// Token Name: Imgur - Postman Collection
+// Access Token: 3e91359c2f8b96873f1a964001eca7ce1edae3d1
+// Access Token new: 9b255219d8f0143aa88a2bad4144d13d1b70e63a
+// Token Type: bearer
+// expires_in: 315360000
+// refresh_token: 52549583feca065f86f485e5857ca11dabcd30e1
+// refresh_token new: 7e47300895e8aefd5546ffddb0e41c42feb64b5e
+// account_id: 54253253
+// account_username: ugly00casanova

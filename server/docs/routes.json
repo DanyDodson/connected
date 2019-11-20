@@ -1,0 +1,28 @@
+{
+    "/api": "api docs",
+
+    "/api/signup": "create a new user",
+    "/api/signin": "signin user",
+    "/api/account": "get auth users account",
+    "/api/verify": "send verify email",
+    "/api/verified/:verifyToken": "send verification token",
+    "/api/recover": "send recover email",
+    "/api/recovered/:recoveryToken": "send recover token",
+    "/api/signout": "signout",
+    "/api/destroy": "destroy",
+
+
+    "/api/artists": "get all profiles",
+    "/api/artists/me": "get auth users profile",
+    "/api/artists/new": "create new profile",
+    "/api/artists/:username": "get/update/delete profile",
+
+    "/api/sees": "get all posts",
+    "/api/sees/new/:username": "create new post",
+    "/api/sees/by/:username": "get posts by user",
+    "/api/sees/:postSlug": "update/delete post",
+
+    "/api/mediums": "get all mediums",
+
+    "/api/tags": "get all tags"
+}

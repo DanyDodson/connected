@@ -8,7 +8,19 @@ import Navbar from '../navbar'
 import Landing from '../landing'
 import Routes from '../routes/routes-view'
 
+// import LogRocket from 'logrocket'
+// import setupLogRocketReact from 'logrocket-react'
+
 import './App.css'
+
+// LogRocket.init('r5uhu6/seesee')
+// setupLogRocketReact(LogRocket)
+
+// LogRocket.identify('r5uhu6', {
+//   name: 'Dany Dodson',
+//   email: 'danydodson@gmail.com',
+//   subscriptionType: 'pro'
+// })
 
 if (localStorage.token) {
   setToken(localStorage.token)

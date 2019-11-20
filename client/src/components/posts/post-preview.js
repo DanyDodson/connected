@@ -10,7 +10,7 @@ const PostItem = ({
   removeLike,
   deletePost,
   auth,
-  post: { _id, text, name, avatar, user, likes, comments, date },
+  post: { _id, text, name, avatar, user, likes, notes, date },
   showActions
 }) => (
   <div className='post bg-white p-1 my-1'>
@@ -45,8 +45,8 @@ const PostItem = ({
           </button>
           <Link to={`/posts/${_id}`} className='btn btn-primary'>
             Discussion{' '}
-            {comments.length > 0 && (
-              <span className='comment-count'>{comments.length}</span>
+            {notes.length > 0 && (
+              <span className='note-count'>{notes.length}</span>
             )}
           </Link>
           {!auth.loading && user === auth.user._id && (
