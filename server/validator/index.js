@@ -1,13 +1,13 @@
 const { validationResult } = require('express-validator')
-const { checkSignup } = require('./signup')
-const { checkSignin } = require('./signin')
-const { checkProfile } = require('./profile')
-const { checkUpdate } = require('./update')
-const { checkPost } = require('./post')
-const { checkComment } = require('./comment')
-const { checkRecovery } = require('./recover')
+const { ckSignup } = require('./signup')
+const { ckSignin } = require('./signin')
+const { ckVerify } = require('./verify')
+const { ckReset } = require('./reset')
+const { ckProfile } = require('./profile')
+const { ckPost } = require('./post')
+const { ckComment } = require('./comment')
 
-let checkResults = (req, res, next) => {
+let ckResults = (req, res, next) => {
     // const format = ({ location, param, msg }) => `${location} [${param}]: ${msg}`
     const format = ({ location, param, msg }) => `${msg}`
     const results = validationResult(req).formatWith(format)
@@ -20,12 +20,12 @@ let checkResults = (req, res, next) => {
 }
 
 module.exports = {
-    checkSignup,
-    checkSignin,
-    checkProfile,
-    checkUpdate,
-    checkPost,
-    checkComment,
-    checkRecovery,
-    checkResults,
+    ckSignup,
+    ckSignin,
+    ckReset,
+    ckVerify,
+    ckProfile,
+    ckPost,
+    ckComment,
+    ckResults,
 }

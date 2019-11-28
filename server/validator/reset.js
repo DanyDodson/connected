@@ -1,7 +1,7 @@
 const { param, query, cookies, header, body, check } = require('express-validator')
 const { sanitizeBody } = require('express-validator')
 
-exports.checkRecovery = [
+exports.ckReset = [
     check('newPassword')
         .trim()
         .escape()

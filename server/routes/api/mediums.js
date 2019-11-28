@@ -1,9 +1,9 @@
 const {
-    getMediums
+    mediums
 } = require('../../controllers/medium')
 
 const router = require('express').Router()
 
-router.get('/', getMediums)
+router.get('/', mediums)
 
 module.exports = router

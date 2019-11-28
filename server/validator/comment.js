@@ -1,7 +1,7 @@
 const { param, query, cookies, header, body, check } = require('express-validator')
 const { sanitizeBody } = require('express-validator')
 
-exports.checkComment = [
+exports.ckComment = [
     check('content')
         .trim()
         .escape()

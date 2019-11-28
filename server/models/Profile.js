@@ -2,23 +2,21 @@ const mongoose = require('mongoose')
 const { ObjectId } = mongoose.Schema
 const config = require('config')
 const client = config.get('app.client')
-const shortid = require("shortid")
-const slugify = require("slugify")
 
 const ProfileSchema = new mongoose.Schema({
     details: {
         email: { type: String },
         image: { type: String },
+        username: { type: String },
         name: { type: String, default: '' },
         about: { type: String, default: '' },
-        username: { type: String, unique: true },
         active: { type: Boolean, default: false },
     },
     links: {
         url: { type: String, default: '' },
     },
     posted: {
-        posted: [{ type: ObjectId, ref: 'Post' }],
+        posts: [{ type: ObjectId, ref: 'Post' }],
         postedCount: { type: Number, default: 0 },
     },
     listed: {
@@ -41,8 +39,6 @@ const ProfileSchema = new mongoose.Schema({
         twitter: { type: String, default: 'twitter.com' },
         facebook: { type: String, default: 'facebook.com' },
         youtube: { type: String, default: 'youtube.com' },
-        unsplash: { type: String, default: 'unsplash.com' },
-        deviantart: { type: String, default: 'deviantart.com' },
         linkedin: { type: String, default: 'linkedin.com' },
     },
     colors: {
@@ -52,15 +48,27 @@ const ProfileSchema = new mongoose.Schema({
         profile_menu_bg_color: { type: String, default: '#FFEDD4' },
         profile_menu_fg_color: { type: String, default: '#7A7A7A' },
     },
-    notifications: {
-        type: { type: String, optional: false, default: '' },
-        url: { type: String, optional: false, default: '' },
-        to: { type: String, optional: false, default: '' },
-        message: { type: String, optional: false, default: '' },
-        hasDetails: { type: Boolean, optional: false, default: true },
-        details: { type: String, optional: true, default: '' },
-        status: String,
-        timeSent: Date,
+    vender: {
+        role: { type: String, default: 'seller' },
+        status: { type: String, default: 'dormant' },
+        phone: { type: Number, default: 0 },
+        reviews: [{
+            stars: { type: Number, default: 0 },
+            critique: { type: String, default: '' },
+        }],
+        location: {
+            address: {
+                street: { type: String, default: '' },
+                city: { type: String, default: '' },
+                state: { type: String, default: '' },
+                zip: { type: Number, default: 0 },
+            },
+            geo: {
+                type: { type: String, default: 'Point' },
+                coordinates: [{ type: Array }],
+
+            },
+        },
     },
     user: { type: ObjectId, ref: 'User' },
     created: { type: Date, default: Date.now },
@@ -68,24 +76,48 @@ const ProfileSchema = new mongoose.Schema({
 })
 
 
-// creates a url for users profile
-ProfileSchema.pre('validate', function (next) {
+ProfileSchema.pre('save', function (next) {
     if (!this.links.url) this.links.url = client + '/artists/' + this.details.username
     next()
 })
 
-// creates a url for users profile
-ProfileSchema.methods.updateUrl = function (username) {
-    return this.links.url = client + '/artists/' + username
+ProfileSchema.methods.setUrl = function () {
+    this.links.url = client + '/artists/' + this.details.username
+    return this.save()
 }
 
-// get profile by username
-ProfileSchema.methods.getProfileByUsername = function (username, cb) {
-    const query = { username: username }
-    Profile.findOne(query, cb)
+ProfileSchema.methods.addPosted = function (id) {
+    if (this.listed.listed.indexOf(id) !== -1) this.listed.listed.remove(id)
+    if (this.posted.posts.indexOf(id) === -1) this.posted.posts.push(id)
+    const count = this.posted.posts.length
+    this.posted.postedCount = count
+    return this.save()
 }
 
-// add posts to favorites
+ProfileSchema.methods.delPosted = function (id) {
+    this.posted.posts.remove(id)
+    return this.save()
+}
+
+ProfileSchema.methods.addListed = function (id) {
+    if (this.posted.posts.indexOf(id) !== -1) this.posted.posts.remove(id)
+    if (this.listed.listed.indexOf(id) === -1) this.listed.listed.push(id)
+    const count = this.listed.listed.length
+    this.listed.listedCount = count
+    return this.save()
+}
+
+ProfileSchema.methods.delListed = function (id) {
+    this.listed.listed.remove(id)
+    return this.save()
+}
+
+ProfileSchema.methods.isFavorite = function (post) {
+    return this.favorites.favorited.some(function (favoritedId) {
+        return favoritedId.toString() === post.toString()
+    })
+}
+
 ProfileSchema.methods.favorite = function (id) {
     if (this.favorites.favorited.indexOf(id) === -1) {
         this.favorites.favorited.push(id)
@@ -93,57 +125,79 @@ ProfileSchema.methods.favorite = function (id) {
     return this.save()
 }
 
-// remove posts to favorites
 ProfileSchema.methods.unfavorite = function (id) {
     this.favorites.favorited.remove(id)
     return this.save()
 }
 
-// check if post is favorited
-ProfileSchema.methods.isFavorite = function (id) {
-    return this.favorites.favorited.some(function (favoriteId) {
-        return favoriteId.toString() === id.toString()
-    })
-}
-
-// follow users
-ProfileSchema.methods.follow = function (id) {
-    if (this.friends.following.indexOf(id) === -1) {
-        this.friends.following.push(id)
-    }
+ProfileSchema.methods.favoriteCount = function () {
+    const count = this.favorites.favorited.length
+    this.favorites.favoritedCount = count
     return this.save()
 }
 
-// unfollow users
-ProfileSchema.methods.unfollow = function (id) {
-    this.friends.following.remove(id)
-    return this.save()
-}
-
-// check if user is following
 ProfileSchema.methods.isFollowing = function (id) {
     return this.friends.following.some(function (followId) {
         return followId.toString() === id.toString()
     })
 }
 
-// fills user when loading other schemas
-ProfileSchema.methods.toJSONFor = function (profile) {
+ProfileSchema.methods.setFollowing = function (id) {
+    if (this.friends.following.indexOf(id) === -1) {
+        this.friends.following.push(id)
+    }
+    return this.save()
+}
+
+ProfileSchema.methods.delFollowing = function (id) {
+    this.friends.following.remove(id)
+    return this.save()
+}
+
+ProfileSchema.methods.followingCount = function () {
+    const count = this.friends.following.length
+    this.friends.followingCount = count
+    return this.save()
+}
+
+ProfileSchema.methods.setFollower = function (id) {
+    if (this.friends.followers.indexOf(id) === -1) {
+        this.friends.followers.push(id)
+    }
+    return this.save()
+}
+
+ProfileSchema.methods.delFollower = function (id) {
+    this.friends.followers.remove(id)
+    return this.save()
+}
+
+ProfileSchema.methods.followerCount = function () {
+    const count = this.friends.followers.length
+    this.friends.followersCount = count
+    return this.save()
+}
+
+ProfileSchema.methods.profileToJson = function (profile) {
     return {
+        _id: this._id,
         details: this.details,
+        links: this.links,
         posted: this.posted,
         listed: this.listed,
         friends: this.friends,
         favorites: this.favorites,
-        colors: this.colors,
         socials: this.socials,
-        notifications: this.notifications,
+        colors: this.colors,
         active: this.active,
+        vendor: this.vendor,
+        user: this.user,
         created: this.created,
         updated: this.updated,
-        user: this.user.toProfileJSONFor(profile),
-        // following: profile ? profile.isFollowing(this._id) : false,
+        following: profile ? profile.isFollowing(this._id) : false,
     }
 }
+
+ProfileSchema.index({ 'details.username': 1, }, { unique: true })
 
 mongoose.model('Profile', ProfileSchema)

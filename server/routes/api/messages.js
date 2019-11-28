@@ -1,10 +1,10 @@
 const {
-    test
+    messages
 } = require('../../controllers/message')
 
 const router = require('express').Router()
 
-router.get('/test', test)
+router.get('/test', messages)
 
 module.exports = router
 

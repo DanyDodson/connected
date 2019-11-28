@@ -51,7 +51,7 @@ app.use((req, res, next) => {
 if (!prod) {
     app.use((err, req, res, next) => {
         res.status(err.status || 500)
-        res.json({ 'error': { message: err.message, err: err } })
+        res.json({ 'error': { message: err.message, error: err } })
     })
 }
 

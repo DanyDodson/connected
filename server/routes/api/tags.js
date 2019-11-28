@@ -1,9 +1,9 @@
 const {
-    getTags
+    tags
 } = require('../../controllers/tag')
 
 const router = require('express').Router()
 
-router.get('/', getTags)
+router.get('/', tags)
 
 module.exports = router

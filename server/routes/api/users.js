@@ -1,28 +1,32 @@
+const {
+    viewStore,
+    viewSellers,
+    viewSeller,
+    updateSeller,
+    viewBuyer,
+    updateBuyer,
+    preUserid,
+} = require('../../controllers/user')
 
-
-const { preloadUserId, } = require('../../controllers/user')
-const { preloadUsername, } = require('../../controllers/profile')
+const {
+    preUsername,
+} = require('../../controllers/profile')
 
 const auth = require('../auth')
 const router = require('express').Router()
 
-// follow + unfollow users
-// router.put("/user/follow", auth.required, addFollowing, addFollower)
-// router.put("/user/unfollow", auth.required, removeFollowing, removeFollower)
+router.get("/", auth.req, viewStore)
 
-// router.get("/users", allUsers)
-// router.get("/user/:userId", auth.required, getUser)
-// router.put("/user/:userId", auth.required, hasAuthorization, updateUser)
-// router.delete("/user/:userId", auth.required, hasAuthorization, deleteUser)
+router.get("/sellers", viewSellers)
 
-// photo
-// router.get("/user/photo/:userId", userPhoto)
+router.get("/seller/:username", auth.req, viewSeller)
+router.put("/seller/:username", auth.req, updateSeller)
 
-// who to follow
-// router.get("/user/findpeople/:userId", auth.required, findPeople)
+router.get("/buyer/:username", auth.req, viewBuyer)
+router.put("/buyer/:username", auth.req, updateBuyer)
 
-router.param('userId', preloadUserId)
-router.param('username', preloadUsername)
+router.param('userId', preUserid)
+router.param('username', preUsername)
 
 module.exports = router
 

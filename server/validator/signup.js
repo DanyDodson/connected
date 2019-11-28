@@ -3,7 +3,7 @@ const { sanitizeBody } = require('express-validator')
 const mongoose = require('mongoose')
 const User = mongoose.model('User')
 
-exports.checkSignup = [
+exports.ckSignup = [
     check('email')
         .trim()
         .escape()
@@ -11,7 +11,18 @@ exports.checkSignup = [
         .isString()
         .isEmail().withMessage('a valid email is required')
         .normalizeEmail()
+        .bail()
         .custom((value, { req }) => { return User.findOne({ email: req.body.email }).then(user => { if (user) { return Promise.reject('email already in use') } }) }),
+    check('username')
+        .trim()
+        .escape()
+        .unescape()
+        .isString()
+        .exists({ checkFalsy: true, checkNull: true }).withMessage('username cant be empty')
+        .bail()
+        .isAlphanumeric().withMessage('username can only contain letters and numbers')
+        .isLength({ min: 3, max: 30 }).withMessage('username requires a minimum of 3 characters')
+        .custom((value, { req }) => { return User.findOne({ 'username': req.body.username }).then(user => { if (user) { return Promise.reject('username already in use') } }) }),
     check('password')
         .trim()
         .escape()

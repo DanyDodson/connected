@@ -1,7 +1,7 @@
 const { param, query, cookies, header, body, check } = require('express-validator')
 const { sanitizeBody } = require('express-validator')
 
-exports.checkSignin = [
+exports.ckSignin = [
     check('email')
         .trim()
         .escape()

@@ -1,38 +1,63 @@
 const {
-    viewPosts,
-    viewPost,
-    createPost,
-    updatePost,
-    removePost,
-    viewComments,
-    viewComment,
-    createComment,
-    updateComment,
-    removeComment,
+    posts,
+    newPost,
+    post,
+    upPost,
+    like,
+    unlike,
+    favorite,
+    unfavorite,
+    delPost,
+    comments,
+    newComment,
+    comment,
+    upComment,
+    likeComment,
+    unlikeComment,
+    delComment,
 } = require('../../controllers/post')
 
-const { preloadPost, preloadComment, } = require('../../controllers/post')
-const { preloadUsername, } = require('../../controllers/profile')
+const {
+    prePost,
+    preComment,
+} = require('../../controllers/post')
 
-const { checkPost, checkComment, checkResults, } = require('../../validator')
+const {
+    preUsername,
+} = require('../../controllers/profile')
+
+const {
+    ckPost,
+    ckComment,
+    ckResults,
+} = require('../../validator')
 
 const auth = require('../auth')
 const router = require('express').Router()
 
-router.get('/', auth.optional, viewPosts)
-router.post('/create', auth.required, checkPost, checkResults, createPost)
-router.get('/:slug', auth.optional, viewPost)
-router.put('/:slug', auth.required, checkPost, checkResults, updatePost)
-router.delete('/:slug', auth.required, removePost)
+router.param('post_slug', prePost)
+router.param('comment_slug', preComment)
 
-router.get('/:slug/comments/:comments', viewComments)
-router.post('/:slug/comments/create', auth.required, checkComment, checkResults, createComment)
-router.get('/:slug/comments/:comment', viewComment)
-router.put('/:slug/comments/:comment', auth.required, checkComment, checkResults, updateComment)
-router.delete('/:slug/comments/:comment', auth.required, removeComment)
+router.put('/like/:post_slug', auth.req, like)
+router.put('/unlike/:post_slug', auth.req, unlike)
 
-router.param('slug', preloadPost)
-router.param('comment', preloadComment)
-router.param('username', preloadUsername)
+router.put('/favorite/:post_slug', auth.req, favorite)
+router.put('/unfavorite/:post_slug', auth.req, unfavorite)
+
+router.put('/like/:post_slug/comments/:comment_slug', auth.req, likeComment)
+router.put('/unlike/:post_slug/comments/:comment_slug', auth.req, unlikeComment)
+
+router.put('/:post_slug/comments', auth.req, ckComment, ckResults, newComment)
+router.put('/:post_slug/comments/:comment_slug', auth.req, ckComment, ckResults, upComment)
+
+router.get('/', auth.opt, posts)
+router.post('/', auth.req, ckPost, ckResults, newPost)
+router.get('/:post_slug', auth.opt, post)
+router.put('/:post_slug', auth.req, ckPost, ckResults, upPost)
+router.delete('/:post_slug', auth.req, delPost)
+
+router.get('/:post_slug/comments', auth.opt, comments)
+router.get('/:post_slug/comments/:comment_slug', auth.opt, comment)
+router.delete('/:post_slug/comments/:comment_slug', auth.req, delComment)
 
 module.exports = router
