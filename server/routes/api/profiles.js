@@ -11,8 +11,7 @@ const {
 } = require('../../controllers/profile')
 
 const {
-    loadProfileId,
-    loadProfileUsername,
+    proName,
 } = require('../../controllers/profile')
 
 const {
@@ -27,16 +26,11 @@ router.put('/follow', auth.req, addFollowing, addFollower)
 router.put('/unfollow', auth.req, delFollowing, delFollower)
 
 router.get('/', auth.opt, profiles)
-
 router.put('/new', auth.req, newProfile)
-
-router.get('/:pro_name', auth.opt, profile)
-// router.get('/:pro_id', auth.opt, profile)
-
 router.put('/:pro_name', auth.req, ckProfile, ckResults, upProfile)
+router.get('/:pro_name', auth.opt, profile)
 router.delete('/', auth.req, delProfile)
 
-router.param('pro_id', loadProfileId)
-router.param('pro_name', loadProfileUsername)
+router.param('pro_name', proName)
 
 module.exports = router

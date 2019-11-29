@@ -5,7 +5,7 @@ const img = config.get('user.image')
 const Profile = mongoose.model('Profile')
 const User = mongoose.model('User')
 
-exports.loadProfileUsername = ash(async (req, res, next, pro_name) => {
+exports.proName = ash(async (req, res, next, pro_name) => {
     const profile = await Profile.findOne({ 'details.username': pro_name })
     if (!profile) return res.status(400).json({ err: 'profile with that username not found' })
     req.profile = profile

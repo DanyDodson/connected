@@ -7,10 +7,10 @@ const User = mongoose.model('User')
 exports.ckProfile = [
     check('profiles')
         .custom((value, { req }) => { return Profile.find().then(profiles => { if (!profiles) { return Promise.reject('no profiles found') } return true }) }),
-    param(':username')
+    param(':pro_name')
         .custom((value, { req }) => { return User.findById(req.payload.id).then(user => { if (!user) { return Promise.reject('you must be logged in') } }) })
         .custom((value, { req }) => { return User.findById(req.payload.id).then(user => { if (user.verified !== true) { return Promise.reject('you must verify your account before modifying your profile') } }) })
-        .custom((value, { req }) => { return Profile.findOne({ 'details.username': req.params.username }).then(profile => { if (!profile) { return Promise.reject('profile doesnt exist') } }) }),
+        .custom((value, { req }) => { return Profile.findOne({ 'details.username': req.params.pro_name }).then(profile => { if (!profile) { return Promise.reject('profile doesnt exist') } }) }),
     body('username')
         .trim()
         .escape()

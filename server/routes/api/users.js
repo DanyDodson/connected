@@ -8,7 +8,7 @@ const {
 } = require('../../controllers/user')
 
 const {
-    loadProfileUsername,
+    proName,
 } = require('../../controllers/profile')
 
 const {
@@ -29,7 +29,7 @@ router.get("/buyer/:username", auth.req, viewBuyer)
 router.put("/buyer/:username", auth.req, updateBuyer)
 
 router.param('user_id', loadUserId)
-router.param('pro_name', loadProfileUsername)
+router.param('pro_name', proName)
 
 module.exports = router
 

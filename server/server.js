@@ -29,8 +29,8 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
 
-    // signed: true,
-    // httpOnly: true,
+    signed: true,
+    httpOnly: true,
 }))
 
 if (!prod) app.use(errorhandler())
