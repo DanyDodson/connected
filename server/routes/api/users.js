@@ -5,11 +5,10 @@ const {
     updateSeller,
     viewBuyer,
     updateBuyer,
-    preUserid,
 } = require('../../controllers/user')
 
 const {
-    preUsername,
+    loadUsername,
 } = require('../../controllers/profile')
 
 const auth = require('../auth')
@@ -25,8 +24,7 @@ router.put("/seller/:username", auth.req, updateSeller)
 router.get("/buyer/:username", auth.req, viewBuyer)
 router.put("/buyer/:username", auth.req, updateBuyer)
 
-router.param('userId', preUserid)
-router.param('username', preUsername)
+router.param('username', loadUsername)
 
 module.exports = router
 

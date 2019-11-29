@@ -28,6 +28,9 @@ app.use(session({
     cookie: { maxAge: 60000 },
     resave: false,
     saveUninitialized: false,
+
+    // signed: true,
+    // httpOnly: true,
 }))
 
 if (!prod) app.use(errorhandler())

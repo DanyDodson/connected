@@ -3,9 +3,9 @@ const { ObjectId } = mongoose.Schema
 
 const MessageSchema = new mongoose.Schema({
     details: {
-        message: { type: String, required: true },
-        message_sent: { type: Boolean, default: null },
-        message_recieved: { type: Boolean, default: null },
+        message: { type: String, index: 1 },
+        message_sent: Boolean,
+        message_recieved: Boolean,
         to: [{ type: ObjectId, ref: 'User' }],
         from: [{ type: ObjectId, ref: 'User' }],
     },
@@ -13,6 +13,6 @@ const MessageSchema = new mongoose.Schema({
     updated: { type: Date },
 })
 
-MessageSchema.index({ 'details.message': 1, })
+// MessageSchema.index({ 'details.message': 1, })
 
 mongoose.model('Message', MessageSchema)

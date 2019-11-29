@@ -5,23 +5,15 @@ const client = config.get('app.client')
 
 const ProfileSchema = new mongoose.Schema({
     details: {
-        email: { type: String },
-        image: { type: String },
-        username: { type: String },
-        name: { type: String, default: '' },
-        about: { type: String, default: '' },
+        name: String,
+        email: String,
+        about: String,
+        image: String,
         active: { type: Boolean, default: false },
+        username: { type: String, unique: true, index: 1 },
     },
     links: {
-        url: { type: String, default: '' },
-    },
-    posted: {
-        posts: [{ type: ObjectId, ref: 'Post' }],
-        postedCount: { type: Number, default: 0 },
-    },
-    listed: {
-        listed: [{ type: ObjectId, ref: 'Post' }],
-        listedCount: { type: Number, default: 0 },
+        url: String,
     },
     friends: {
         following: [{ type: ObjectId, ref: 'User' }],
@@ -34,41 +26,40 @@ const ProfileSchema = new mongoose.Schema({
         favoritedCount: { type: Number, default: 0 },
     },
     socials: {
-        blog: { type: String, default: 'userblog.com' },
-        instagram: { type: String, default: 'instagram.com' },
-        twitter: { type: String, default: 'twitter.com' },
-        facebook: { type: String, default: 'facebook.com' },
-        youtube: { type: String, default: 'youtube.com' },
-        linkedin: { type: String, default: 'linkedin.com' },
-    },
-    colors: {
-        profile_bg_color: { type: String, default: '#FFFFFF' },
-        profile_fg_color: { type: String, default: '#AAAAAA' },
-        profile_link_color: { type: String, default: '#24DADA' },
-        profile_menu_bg_color: { type: String, default: '#FFEDD4' },
-        profile_menu_fg_color: { type: String, default: '#7A7A7A' },
+        blog: String,
+        instagram: String,
+        twitter: String,
+        facebook: String,
+        youtube: String,
+        linkedin: String,
     },
     vender: {
-        role: { type: String, default: 'seller' },
+        role: { type: String, default: 'selling' },
         status: { type: String, default: 'dormant' },
-        phone: { type: Number, default: 0 },
-        reviews: [{
-            stars: { type: Number, default: 0 },
-            critique: { type: String, default: '' },
-        }],
-        location: {
+        contact: {
             address: {
-                street: { type: String, default: '' },
-                city: { type: String, default: '' },
-                state: { type: String, default: '' },
-                zip: { type: Number, default: 0 },
+                street: String,
+                city: String,
+                state: String,
+                zip: Number,
             },
             geo: {
                 type: { type: String, default: 'Point' },
-                coordinates: [{ type: Array }],
-
+                points: [{ type: Array }],
             },
+            phone: Number,
         },
+        reviews: [{
+            stars: { type: Number, default: 0 },
+            critique: [String],
+        }],
+    },
+    colors: {
+        bg_color: { type: String, default: '#FFFFFF' },
+        fg_color: { type: String, default: '#AAAAAA' },
+        menu_bg_color: { type: String, default: '#FFEDD4' },
+        menu_fg_color: { type: String, default: '#7A7A7A' },
+        link_color: { type: String, default: '#24DADA' },
     },
     user: { type: ObjectId, ref: 'User' },
     created: { type: Date, default: Date.now },
@@ -86,26 +77,10 @@ ProfileSchema.methods.setUrl = function () {
     return this.save()
 }
 
-ProfileSchema.methods.addPosted = function (id) {
-    if (this.listed.listed.indexOf(id) !== -1) this.listed.listed.remove(id)
-    if (this.posted.posts.indexOf(id) === -1) this.posted.posts.push(id)
-    const count = this.posted.posts.length
-    this.posted.postedCount = count
-    return this.save()
-}
-
-ProfileSchema.methods.delPosted = function (id) {
-    this.posted.posts.remove(id)
-    return this.save()
-}
-
-ProfileSchema.methods.addListed = function (id) {
-    if (this.posted.posts.indexOf(id) !== -1) this.posted.posts.remove(id)
-    if (this.listed.listed.indexOf(id) === -1) this.listed.listed.push(id)
-    const count = this.listed.listed.length
-    this.listed.listedCount = count
-    return this.save()
-}
+ProfileSchema.pre('findOneAndUpdate', function () {
+    this.findOneAndUpdate({}, { $set: { updated: Date.now() } })
+    this.setUrl()
+})
 
 ProfileSchema.methods.delListed = function (id) {
     this.listed.listed.remove(id)
@@ -198,6 +173,6 @@ ProfileSchema.methods.profileToJson = function (profile) {
     }
 }
 
-ProfileSchema.index({ 'details.username': 1, }, { unique: true })
+// ProfileSchema.index({ 'details.username': 1, }, { unique: true })
 
 mongoose.model('Profile', ProfileSchema)

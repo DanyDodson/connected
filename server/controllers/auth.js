@@ -8,46 +8,57 @@ const mongoose = require('mongoose')
 const User = mongoose.model('User')
 const Profile = mongoose.model('Profile')
 
+// let i - i = i ? i < 0 ? Math.max(0, len + i) : i : 0
+
 exports.signup = ash(async (req, res, next) => {
     const user = new User(req.body)
     await user.setPassword(req.body.password)
     await user.save()
-    return res.status(200).json(user.authJson())
+    return res.status(200).json(user)
 })
 
 exports.signin = ash(async (req, res, next) => {
     passport.authenticate('local', { session: false }, (err, user, info) => {
         if (err) return next(err)
         if (!user) return res.status(422).json(info)
-        user.token = user.generateJWT()
-        return res.status(200).json(user.authJson())
+        user.token = user.jwtForUser()
+        return res.status(200).json(user)
     })(req, res, next)
 })
 
-exports.account = ash(async (req, res, next) => {
-    const user = await User.findById(req.payload.id)
+exports.user = ash(async (req, res, next) => {
+    const user = await User.findOne({ _id: req.payload.id })
     if (!user) return res.status(404).json({ msg: 'user not found' })
-    return res.status(200).json(user.authJson())
+    return res.status(200).json(user)
+})
+
+exports.role = ash(async (req, res, next) => {
+    let user = req.payload && req.payload.role === 'user'
+    let admin = req.payload && req.payload.role === 'admin'
+    const auth = user || admin
+    console.log('USER:', user, 'ADMIN:', admin)
+    if (!auth) return res.status(403).json({ err: 'user is not authorized to perform this action' })
+    next()
 })
 
 exports.verify = ash(async (req, res, next) => {
     const user = await User.findOne({ _id: req.payload.id })
     if (user.verified) return res.status(404).json({ msg: 'your account has already been verified' })
-    const token = expMins(user._id, 'seesee', user.username, user.email)
-    await user.updateOne({ verifyToken: token })
+    const token = user.jwtForVerify(user._id)
+    await user.updateOne({ vToken: token })
     await sendMail(verify(user.email, client, token))
     return res.status(200).json({ msg: `Email has been sent to ${user.email}. Follow the instructions to verify your account.` })
 })
 
 exports.verified = ash(async (req, res, next) => {
-    const { verifyToken } = req.body
-    const user = await User.findOne({ verifyToken })
+    const { token } = req.body
+    const user = await User.findOne({ token })
     if (!user) return res.status(401).json({ err: 'invalid link' })
     user.verified = true
-    user.verifyToken = null
+    user.vToken = null
     user.updated = Date.now()
-    const updated = await user.save()
-    if (!updated) return res.status(400).json({ err: err })
+    let up = await user.updateOne()
+    if (!up) return res.status(400).json({ err: err })
     await sendMail(verified(user.email, client))
     next()
 })
@@ -55,21 +66,21 @@ exports.verified = ash(async (req, res, next) => {
 exports.forgot = ash(async (req, res, next) => {
     const user = await User.findOne({ _id: req.payload.id })
     if (!user) return res.status(404).json({ msg: 'user not found' })
-    const token = expMins(user.id, 'seesee', user.username, user.email)
-    await user.updateOne({ 'recoveryToken': token })
+    const token = user.jwtForReset(user.id)
+    await user.updateOne({ 'rToken': token })
     await sendMail(forgot(user.email, client, token))
     return res.status(200).json({ msg: `An email has been sent to ${user.email}. Follow the instructions to reset your password.`, })
 })
 
 exports.reset = ash(async (req, res, next) => {
-    const { recoveryToken, newPassword } = req.body
-    const user = await User.findOne({ recoveryToken })
+    const { token, newPassword } = req.body
+    const user = await User.findOne({ token })
     if (!user) return res.status(401).json({ err: 'invalid link' })
     await user.setPassword(newPassword)
-    user.recoveryToken = null
+    user.rToken = null
     user.updated = Date.now()
-    const updated = await user.save()
-    if (!updated) return res.status(400).json({ err: err })
+    let up = await user.save()
+    if (!up) return res.status(400).json({ err: err })
     await sendMail(reset(user.email, client))
     return res.status(200).json({ msg: 'great! Now you can login with your new password.' })
 })

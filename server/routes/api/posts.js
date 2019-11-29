@@ -18,8 +18,8 @@ const {
 } = require('../../controllers/post')
 
 const {
-    prePost,
-    preComment,
+    loadPost,
+    loadComment,
 } = require('../../controllers/post')
 
 const {
@@ -34,9 +34,6 @@ const {
 
 const auth = require('../auth')
 const router = require('express').Router()
-
-router.param('post_slug', prePost)
-router.param('comment_slug', preComment)
 
 router.put('/like/:post_slug', auth.req, like)
 router.put('/unlike/:post_slug', auth.req, unlike)
@@ -59,5 +56,8 @@ router.delete('/:post_slug', auth.req, delPost)
 router.get('/:post_slug/comments', auth.opt, comments)
 router.get('/:post_slug/comments/:comment_slug', auth.opt, comment)
 router.delete('/:post_slug/comments/:comment_slug', auth.req, delComment)
+
+router.param('post_slug', loadPost)
+router.param('comment_slug', loadComment)
 
 module.exports = router

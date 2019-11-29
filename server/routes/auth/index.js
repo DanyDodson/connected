@@ -13,17 +13,8 @@ function getTokenFromHeader(req) {
 }
 
 var auth = {
-    req: jwt({
-        secret: secret,
-        userProperty: 'payload',
-        getToken: getTokenFromHeader
-    }),
-    opt: jwt({
-        secret: secret,
-        userProperty: 'payload',
-        credentialsRequired: false,
-        getToken: getTokenFromHeader
-    })
+    req: jwt({ secret: secret, userProperty: 'payload', getToken: getTokenFromHeader }),
+    opt: jwt({ secret: secret, userProperty: 'payload', credentialsRequired: false, getToken: getTokenFromHeader })
 }
 
 module.exports = auth

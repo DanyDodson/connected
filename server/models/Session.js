@@ -7,7 +7,7 @@ const SessionSchema = new mongoose.Schema({
     user_id: { type: String },
 })
 
-SessionSchema.methods.generateJWT = function () {
+SessionSchema.methods.jwtForSession = function () {
     let today = new Date()
     let exp = new Date(today)
     exp.setDate(today.getDate() + 1)
@@ -24,7 +24,7 @@ SessionSchema.methods.toSession = function () {
     return {
         _id: this._id,
         user_id: this.user_id,
-        jwt: this.generateJWT(),
+        jwt: this.jwtForSession(),
     }
 }
 

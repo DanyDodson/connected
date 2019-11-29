@@ -6,13 +6,13 @@ const Profile = mongoose.model('Profile')
 const Post = mongoose.model('Post')
 const Comment = mongoose.model('Comment')
 
-exports.prePost = ash(async (req, res, next, post_slug) => {
+exports.loadPost = ash(async (req, res, next, post_slug) => {
     const post = await Post.findOne({ 'links.slug': post_slug })
     req.post = post
     return next()
 })
 
-exports.preComment = ash(async (req, res, next, comment_slug) => {
+exports.loadComment = ash(async (req, res, next, comment_slug) => {
     const comment = await Comment.findOne({ 'links.slug': comment_slug })
     req.comment = comment
     return next()
@@ -30,44 +30,54 @@ exports.post = ash(async (req, res, next) => {
 })
 
 exports.newPost = ash(async (req, res, next) => {
+    const user = await User.findOne({ _id: req.payload.id }).populate('profile', '_id details.username')
     const profile = await Profile.findOne({ user: req.payload.id })
-    const user = await User.findOne({ _id: req.payload.id })
-    const post = new Post(req.body)
+    const post = new Post()
     post.user = user
     post.profile = profile
-    post.details.author = profile.details.username
+    post.details.mediums = req.body.mediums
+    post.details.title = req.body.title
+    post.details.description = req.body.description
+    post.details.tags = req.body.tags
+    post.details.price = req.body.price
+    post.details.author = profile.username
+    post.options.critique = req.body.critique
+    post.options.shareable = req.body.shareable
+    post.options.purchasable = req.body.purchasable
     await post.save()
-    if (post.options.purchasable) { await profile.addListed(post._id) }
-    if (!post.options.purchasable) { await profile.addPosted(post._id) }
-    await post.setkey()
-    await post.setslug()
-    await post.seturl()
-    await post.save()
+    // await post.setkey()
+    // await post.save()
     return res.json(post)
 })
 
 exports.upPost = ash(async (req, res) => {
     const profile = await Profile.findOne({ user: req.payload.id })
-    const { mediums, title, description, tags, price, } = req.body
-    const { critique, shareable, purchasable, } = req.body
-    let postFields = {}
-    postFields.details = {}
-    postFields.options = {}
-    if (mediums) postFields.details.mediums = mediums.split(', ').map(medium => medium.trim())
-    if (title) postFields.details.title = title
-    if (description) postFields.details.description = description
-    if (tags) postFields.details.tags = tags.split(', ').map(tag => tag.trim())
-    if (price) postFields.details.price = price
-    if (critique) postFields.options.critique = critique
-    if (shareable) postFields.options.shareable = shareable
-    if (purchasable) postFields.options.purchasable = purchasable
-    postFields.updated = Date.now()
-    let post = await Post.findOneAndUpdate({ 'links.slug': req.post.links.slug }, { $set: postFields }, { new: true, upsert: true })
+    let post = req.post
+    const {
+        mediums,
+        title,
+        description,
+        tags,
+        price,
+        critique,
+        shareable,
+        purchasable,
+    } = req.body
+    if (mediums) post.details.mediums = mediums.split(', ').map(medium => medium.trim()) || post.details.mediums
+    if (title) post.details.title = title || post.details.title
+    if (description) post.details.description = description || post.details.description
+    if (tags) post.details.tags = tags.split(', ').map(tag => tag.trim()) || post.details.tags
+    if (price) post.details.price = price || post.details.price
+    if (critique) post.options.critique = critique || post.options.critique
+    if (shareable) post.options.shareable = shareable || post.options.shareable
+    if (purchasable) post.options.purchasable = purchasable || post.options.purchasable
+    // post.updated = Date.now()
+    await Post.findOneAndUpdate({ 'links.slug': req.post.links.slug }, { $set: post }, { new: true, upsert: true })
     if (post.options.purchasable) { await profile.addListed(post._id) }
     if (!post.options.purchasable) { await profile.addPosted(post._id) }
-    await post.setslug()
-    await post.seturl()
-    await post.save()
+    // await post.setslug()
+    // await post.seturl()
+    // await post.save()
     if (post.comments.commentCount > 0) {
         await Comment.updateMany({ post: { $in: [post._id] } }, { $set: { 'links.parent': post.links.slug } }, { upsert: true })
         let comments = await Comment.find({ post: { $in: [post._id] } })

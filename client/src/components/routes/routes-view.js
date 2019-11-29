@@ -24,16 +24,16 @@ const Routes = () => {
       <Alert />
       <Switch>
         <Route exact path='/register' component={Register} />
-        <Route exact path='/login' component={Login} />
-        <Route exact path='/profiles' component={Profiles} />
-        <Route exact path='/profile/:id' component={Profile} />
-        <Private exact path='/dashboard' component={Dashboard} />
-        <Private exact path='/create-profile' component={CreateProfile} />
-        <Private exact path='/edit-profile' component={EditProfile} />
-        <Private exact path='/add-experience' component={AddExperience} />
-        <Private exact path='/add-education' component={AddEducation} />
-        <Private exact path='/posts' component={Posts} />
-        <Private exact path='/posts/:id' component={Post} />
+        {/* <Route exact path='/login' component={Login} /> */}
+        {/* <Route exact path='/profiles' component={Profiles} /> */}
+        {/* <Route exact path='/profile/:id' component={Profile} /> */}
+        {/* <Private exact path='/dashboard' component={Dashboard} /> */}
+        {/* <Private exact path='/create-profile' component={CreateProfile} /> */}
+        {/* <Private exact path='/edit-profile' component={EditProfile} /> */}
+        {/* <Private exact path='/add-experience' component={AddExperience} /> */}
+        {/* <Private exact path='/add-education' component={AddEducation} /> */}
+        {/* <Private exact path='/posts' component={Posts} /> */}
+        {/* <Private exact path='/posts/:id' component={Post} /> */}
         <Route component={NotFound} />
       </Switch>
     </section>

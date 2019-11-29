@@ -8,16 +8,16 @@ const Post = require('./Post')
 
 const CommentSchema = new mongoose.Schema({
     details: {
-        text: { type: String },
-        author: { type: String },
-        email: { type: String },
-        image: { type: String },
+        text: String,
+        image: String,
+        email: String,
+        author: String,
     },
     links: {
-        key: { type: String },
-        parent: { type: String },
-        slug: { type: String },
-        url: { type: String },
+        key: String,
+        parent: String,
+        slug: { type: String, unique: true, index: 1 },
+        url: String,
     },
     likes: {
         likedBy: [{ type: ObjectId, ref: 'User' }],
@@ -84,7 +84,7 @@ CommentSchema.methods.commentToJson = function () {
     }
 }
 
-CommentSchema.index({ 'links.slug': 1 }, { unique: true, })
+// CommentSchema.index({ 'links.slug': 1 }, { unique: true, })
 CommentSchema.index({ 'links.parent': 1, created: 1 }, { unique: true, })
 CommentSchema.index({ 'links.parent': 1, 'links.url': 1 }, { unique: true, })
 

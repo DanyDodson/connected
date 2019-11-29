@@ -5,19 +5,24 @@ const secret = config.get('app.secret')
 const chars = config.get('shortid.chars')
 const jwt = require('jsonwebtoken')
 const crypto = require('crypto')
+const uuidv1 = require('uuid/v1')
 
 const UserSchema = new mongoose.Schema({
-    email: { type: String },
-    username: { type: String },
-    hash: { type: String },
-    salt: { type: String },
-    roles: { type: [String], default: ["user"] },
-    profile: { type: ObjectId, ref: 'Profile' },
+    username: String,
+    email: { type: String, unique: true, index: 1 },
+    vToken: { data: String },
+    rToken: { data: String },
+    role: { type: String, default: 'user' },
     verified: { type: Boolean, default: false },
-    verifyToken: { data: String, default: '' },
-    recoveryToken: { data: String, default: '' },
+    salt: String,
+    hash: String,
+    profile: { type: ObjectId, ref: 'Profile' },
     created: { type: Date, default: Date.now },
     updated: { type: Date },
+})
+
+UserSchema.pre('save', function (next) {
+    next()
 })
 
 UserSchema.methods.validPassword = function (password) {
@@ -30,7 +35,7 @@ UserSchema.methods.setPassword = function (password) {
     this.hash = crypto.pbkdf2Sync(password, this.salt, 10000, 512, 'sha512').toString('hex')
 }
 
-UserSchema.methods.generateJWT = function () {
+UserSchema.methods.jwtForUser = function () {
     let today = new Date()
     let exp = new Date(today)
     let iat = new Date(today)
@@ -38,17 +43,44 @@ UserSchema.methods.generateJWT = function () {
     exp.setHours(today.getHours() + 2)
     return jwt.sign({
         id: this._id,
-        iss: 'seesee',
+        iss: 'SEESEE_API',
         iat: parseInt(iat.getTime() / 1000),
         nbf: parseInt(iat.getTime() / 1000),
-        jti: this._id,
         email: this.email,
         username: this.username,
         profile: this.profile,
         verified: this.verified,
-        roles: this.roles,
-        verifyToken: this.verifyToken,
-        recoveryToken: this.recoveryToken,
+        role: this.role,
+        vToken: this.vToken,
+        rToken: this.rToken,
+        exp: parseInt(exp.getTime() / 1000),
+    }, secret)
+}
+
+UserSchema.methods.jwtForVerify = (id) => {
+    let today = new Date()
+    let exp = new Date(today)
+    exp.setMinutes(today.getMinutes() + 10)
+    return jwt.sign({
+        jti: id,
+        iss: 'SEESEE_API',
+        scope: 'verify email',
+        username: this.username,
+        getToken: req => { return req.cookies['access_token'] },
+        exp: parseInt(exp.getTime() / 1000),
+    }, secret)
+}
+
+UserSchema.methods.jwtForReset = (id) => {
+    let today = new Date()
+    let exp = new Date(today)
+    exp.setMinutes(today.getMinutes() + 10)
+    return jwt.sign({
+        jti: id,
+        iss: 'SEESEE_API',
+        scope: 'reset password',
+        username: this.username,
+        getToken: req => { return req.cookies['access_token'] },
         exp: parseInt(exp.getTime() / 1000),
     }, secret)
 }
@@ -60,15 +92,13 @@ UserSchema.methods.authJson = function () {
         username: this.username,
         profile: this.profile,
         verified: this.verified,
-        roles: this.roles,
-        verifyToken: this.verifyToken,
-        recoveryToken: this.recoveryToken,
+        role: this.role,
         created: this.created,
         updated: this.updated,
-        token: this.generateJWT(),
+        token: this.jwtForUser(),
     }
 }
 
-UserSchema.index({ email: 1, }, { unique: true, })
+// UserSchema.index({ email: 1, }, { unique: true, })
 
 mongoose.model('User', UserSchema)

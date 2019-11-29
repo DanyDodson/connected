@@ -1,9 +1,11 @@
 const ash = require('express-async-handler')
 const mongoose = require('mongoose')
+const config = require('config')
+const img = config.get('user.image')
 const Profile = mongoose.model('Profile')
 const User = mongoose.model('User')
 
-exports.preUsername = ash(async (req, res, next, username) => {
+exports.loadUsername = ash(async (req, res, next, username) => {
     const profile = await Profile.findOne({ 'details.username': username })
     req.profile = profile
     return next()
@@ -38,11 +40,12 @@ exports.upProfile = ash(async (req, res, next) => {
     const profileFields = {}
     profileFields.user = user
     profileFields.details = {}
-    profileFields.details.email = user.email
     if (name) profileFields.details.name = name
     if (username) profileFields.details.username = username
     if (about) profileFields.details.about = about
     if (image) profileFields.details.image = image || user.image
+    profileFields.details.image = img
+    profileFields.details.email = user.email
     profileFields.socials = {}
     if (blog) profileFields.socials.blog = blog
     if (instagram) profileFields.socials.instagram = instagram
@@ -66,9 +69,9 @@ exports.upProfile = ash(async (req, res, next) => {
     if (city) profileFields.vender.location.address.city = city
     if (state) profileFields.vender.location.address.state = state
     if (zipcode) profileFields.vender.location.address.zipcode = zipcode
-    profileFields.updated = Date.now()
+    // profileFields.updated = Date.now()
     let profile = await Profile.findOneAndUpdate({ user: req.payload.id }, { $set: profileFields }, { new: true, upsert: true })
-    await profile.setUrl()
+    // await profile.setUrl()
     user.username = username
     await user.save()
     return res.status(200).json(profile)
