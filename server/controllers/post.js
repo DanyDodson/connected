@@ -54,7 +54,7 @@ exports.newPost = ash(async (req, res, next) => {
     post.details.author = profile.details.username
     await post.save()
     await Profile.updateOne({ user: req.payload.id }, { $push: { posts: post } })
-    return res.json(post)
+    return res.json({ post: post })
 })
 
 exports.upPost = ash(async (req, res) => {

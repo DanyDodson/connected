@@ -14,6 +14,16 @@ exports.signup = ash(async (req, res, next) => {
     const user = new User(req.body)
     await user.setPassword(req.body.password)
     await user.save()
+    return res.status(201).json({ user: user.authJson() })
+})
+
+exports.google = ash(async (req, res, next) => {
+    passport.authenticate('google', { scope: ['profile'] })
+    return res.status(200).json({ user: user.authJson() })
+})
+
+exports.googleCb = ash(async (req, res, next) => {
+    passport.authenticate('google', { successRedirect: '/', failureRedirect: '/login' })
     return res.status(200).json({ user: user.authJson() })
 })
 
@@ -47,7 +57,7 @@ exports.verify = ash(async (req, res, next) => {
     const token = user.jwtForVerify(user._id)
     await user.updateOne({ vToken: token })
     await sendMail(verify(user.email, client, token))
-    return res.status(200).json({ msg: `Email has been sent to ${user.email}. Follow the instructions to verify your account.` })
+    return res.status(200).json({ msg: `Email has been sent to ${user.email}. Follow the instructions to verify your account.`, token: token, })
 })
 
 exports.verified = ash(async (req, res, next) => {
@@ -69,7 +79,7 @@ exports.forgot = ash(async (req, res, next) => {
     const token = user.jwtForReset(user.id)
     await user.updateOne({ 'rToken': token })
     await sendMail(forgot(user.email, client, token))
-    return res.status(200).json({ msg: `An email has been sent to ${user.email}. Follow the instructions to reset your password.`, })
+    return res.status(200).json({ msg: `An email has been sent to ${user.email}. Follow the instructions to reset your password.`, token: token, })
 })
 
 exports.reset = ash(async (req, res, next) => {

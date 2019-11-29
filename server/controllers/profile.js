@@ -5,6 +5,13 @@ const img = config.get('user.image')
 const Profile = mongoose.model('Profile')
 const User = mongoose.model('User')
 
+/** 
+ * @desc runs on req paths containing :pro_name 
+ * @route  PARAM /:pro_name
+ * @access Public
+ * 
+*/
+
 exports.proName = ash(async (req, res, next, pro_name) => {
     const profile = await Profile.findOne({ 'details.username': pro_name })
     if (!profile) return res.status(400).json({ err: 'profile with that username not found' })
@@ -12,12 +19,11 @@ exports.proName = ash(async (req, res, next, pro_name) => {
     return next()
 })
 
-exports.loadProfileId = ash(async (req, res, next, pro_id) => {
-    const profile = await Profile.findOne({ _id: pro_id })
-    if (!profile) return res.status(400).json({ err: 'profile with that id not found' })
-    req.profile = profile
-    return next()
-})
+/**
+ * @desc Create a profile
+ * @route POST /api/artists/create
+ * @access Private
+*/
 
 exports.newProfile = ash(async (req, res, next) => {
     const user = await User.findOne({ _id: req.payload.id })
@@ -25,13 +31,25 @@ exports.newProfile = ash(async (req, res, next) => {
     await profile.save()
     user.profile = profile
     await user.save()
-    return res.status(200).json({ msg: 'you\'re accounts been verified.' })
+    return res.status(200).json({ msg: 'you\'re accounts been verified.', profile: profile })
 })
+
+/**
+ * @desc Get all profiles
+ * @route GET /api/artists
+ * @access Public
+*/
 
 exports.profiles = ash(async (req, res, next) => {
     const profiles = await Profile.find({})
     return res.status(200).json(profiles)
 })
+
+/**
+ * @desc Get one profile
+ * @route GET /api/artists/:pro_name
+ * @access Public
+*/
 
 exports.profile = ash(async (req, res, next) => {
     const profile = req.profile
@@ -39,11 +57,17 @@ exports.profile = ash(async (req, res, next) => {
     return res.status(200).json({ profile: profile })
 })
 
+/**
+ * @desc Update one profile
+ * @route PUT /api/artists/:pro_name
+ * @access Private
+*/
+
 exports.upProfile = ash(async (req, res, next) => {
     const user = await User.findOne({ _id: req.payload.id })
     const { name, username, about, image } = req.body
     const { blog, instagram, twitter, facebook, youtube, linkedin } = req.body
-    const { bg, fg, ln, mbg, mfg } = req.body
+    const { pback, pfore, plink, mback, mfore } = req.body
     const { role, status } = req.body
     const { street, city, state, zip } = req.body
     const { type, points } = req.body
@@ -66,11 +90,11 @@ exports.upProfile = ash(async (req, res, next) => {
     youtube ? fresh.socials.youtube = youtube : fresh.socials.youtube = old.socials.youtube
     linkedin ? fresh.socials.linkedin = linkedin : fresh.socials.linkedin = old.socials.linkedin
     fresh.colors = {}
-    bg ? fresh.colors.bg = bg : fresh.colors.bg = old.colors.bg
-    fg ? fresh.colors.fg = fg : fresh.colors.fg = old.colors.fg
-    ln ? fresh.colors.ln = ln : fresh.colors.ln = old.colors.ln
-    mbg ? fresh.colors.mbg = mbg : fresh.colors.mbg = old.colors.mbg
-    mfg ? fresh.colors.mfg = mfg : fresh.colors.mfg = old.colors.mfg
+    pback ? fresh.colors.pback = pback : fresh.colors.pback = old.colors.pback
+    pfore ? fresh.colors.pfore = pfore : fresh.colors.pfore = old.colors.pfore
+    plink ? fresh.colors.plink = plink : fresh.colors.plink = old.colors.plink
+    mback ? fresh.colors.mback = mback : fresh.colors.mback = old.colors.mback
+    mfore ? fresh.colors.mfore = mfore : fresh.colors.mfore = old.colors.mfore
     fresh.vender = {}
     role ? fresh.vender.role = role : fresh.vender.role = old.vender.role
     status ? fresh.vender.status = status : fresh.vender.status = old.vender.status
@@ -94,6 +118,12 @@ exports.upProfile = ash(async (req, res, next) => {
     return res.status(200).json({ profile: profile })
 })
 
+/**
+ * @desc Add one profile._id to following
+ * @route PUT /api/artists/unfollow
+ * @access Private
+*/
+
 exports.addFollowing = ash(async (req, res, next) => {
     const profile = await Profile.findOne({ user: req.payload.id })
     if (profile.isFollowing(req.body.profileId)) return res.status(200).json({ msg: `your already following this user` })
@@ -101,6 +131,12 @@ exports.addFollowing = ash(async (req, res, next) => {
     await profile.followingCount()
     next()
 })
+
+/**
+ * @desc Add one profile._id to followers
+ * @route PUT /api/artists/unfollow
+ * @access Private
+*/
 
 exports.addFollower = ash(async (req, res, next) => {
     const follower = await Profile.findOne({ user: req.payload.id })
@@ -110,6 +146,12 @@ exports.addFollower = ash(async (req, res, next) => {
     return res.status(200).json({ msg: `your now following ${profile.details.username}` })
 })
 
+/**
+ * @desc Remove one profile._id from following
+ * @route PUT /api/artists/unfollow
+ * @access Private
+*/
+
 exports.delFollowing = ash(async (req, res, next) => {
     const profile = await Profile.findOne({ user: req.payload.id })
     if (!profile.isFollowing(req.body.profileId)) return res.status(200).json({ msg: `your not following this user` })
@@ -118,6 +160,12 @@ exports.delFollowing = ash(async (req, res, next) => {
     next()
 })
 
+/**
+ * @desc Remove one profile._id from followers
+ * @route PUT /api/artists/unfollow
+ * @access Private
+*/
+
 exports.delFollower = ash(async (req, res, next) => {
     const follower = await Profile.findOne({ user: req.payload.id })
     const followed = await Profile.findOne({ _id: req.body.profileId })
@@ -125,6 +173,12 @@ exports.delFollower = ash(async (req, res, next) => {
     await followed.followerCount()
     return res.status(200).json({ msg: `your no longer following ${followed.details.username}` })
 })
+
+/**
+ * @desc Delete one profile
+ * @route DELETE /api/artists
+ * @access Private
+*/
 
 exports.delProfile = ash(async (req, res, next) => {
     const profile = await Profile.findOne({ user: req.payload.id })

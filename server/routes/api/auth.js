@@ -1,5 +1,7 @@
 const {
     signup,
+    google,
+    googleCb,
     signin,
     user,
     verify,
@@ -29,6 +31,9 @@ router.put('/verify/return', auth.req, verified, newProfile)
 
 router.put('/forgot/send', auth.req, forgot)
 router.put('/forgot/return', auth.req, ckReset, ckResults, reset)
+
+router.get('/google', auth.req, google)
+router.get('/google/callback', auth.req, googleCb)
 
 router.post('/signup', ckSignup, ckResults, signup)
 router.post('/signin', ckSignin, ckResults, signin)
