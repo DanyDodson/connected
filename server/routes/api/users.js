@@ -8,8 +8,12 @@ const {
 } = require('../../controllers/user')
 
 const {
-    loadUsername,
+    loadProfileUsername,
 } = require('../../controllers/profile')
+
+const {
+    loadUserId,
+} = require('../../controllers/user')
 
 const auth = require('../auth')
 const router = require('express').Router()
@@ -24,7 +28,8 @@ router.put("/seller/:username", auth.req, updateSeller)
 router.get("/buyer/:username", auth.req, viewBuyer)
 router.put("/buyer/:username", auth.req, updateBuyer)
 
-router.param('username', loadUsername)
+router.param('user_id', loadUserId)
+router.param('pro_name', loadProfileUsername)
 
 module.exports = router
 

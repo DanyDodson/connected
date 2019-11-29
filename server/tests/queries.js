@@ -55,12 +55,7 @@ async function seed(amount) {
         timeEnd('query_with_select')
 
         time('query_with_select_index')
-        await AgeWithIndex.find(query).select({
-            name: 1,
-            _id: 1,
-            age: 1,
-            email: 1
-        })
+        await AgeWithIndex.find(query).select({ name: 1, _id: 1, age: 1, email: 1 })
         timeEnd('query_with_select_index')
 
         time('lean_query')
@@ -72,15 +67,11 @@ async function seed(amount) {
         timeEnd('lean_with_index')
 
         time('lean_with_select')
-        await Age.find(query)
-            .select({ name: 1, _id: 1, age: 1, email: 1 })
-            .lean()
+        await Age.find(query).select({ name: 1, _id: 1, age: 1, email: 1 }).lean()
         timeEnd('lean_with_select')
 
         time('lean_select_index')
-        await AgeWithIndex.find(query)
-            .select({ name: 1, _id: 1, age: 1, email: 1 })
-            .lean()
+        await AgeWithIndex.find(query).select({ name: 1, _id: 1, age: 1, email: 1 }).lean()
         timeEnd('lean_select_index')
 
         process.exit(0)

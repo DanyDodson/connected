@@ -6,14 +6,30 @@ const Profile = mongoose.model('Profile')
 const Post = mongoose.model('Post')
 const Comment = mongoose.model('Comment')
 
-exports.loadPost = ash(async (req, res, next, post_slug) => {
+exports.loadPostSlug = ash(async (req, res, next, post_slug) => {
     const post = await Post.findOne({ 'links.slug': post_slug })
+    if (!post) return res.status(400).json({ err: 'post with that slug not found' })
     req.post = post
     return next()
 })
 
-exports.loadComment = ash(async (req, res, next, comment_slug) => {
+exports.loadPostId = ash(async (req, res, next, _id) => {
+    const post = await Post.findOne({ _id: _id })
+    if (!post) return res.status(400).json({ err: 'post with that id not found' })
+    req.post = post
+    return next()
+})
+
+exports.loadCommentSlug = ash(async (req, res, next, comment_slug) => {
     const comment = await Comment.findOne({ 'links.slug': comment_slug })
+    if (!comment) return res.status(400).json({ err: 'comment with that slug not found' })
+    req.comment = comment
+    return next()
+})
+
+exports.loadCommentId = ash(async (req, res, next, comment_id) => {
+    const comment = await Comment.findOne({ _id: comment_id })
+    if (!comment) return res.status(400).json({ err: 'comment with that id not found' })
     req.comment = comment
     return next()
 })
@@ -30,23 +46,14 @@ exports.post = ash(async (req, res, next) => {
 })
 
 exports.newPost = ash(async (req, res, next) => {
-    const user = await User.findOne({ _id: req.payload.id }).populate('profile', '_id details.username')
+    const user = await User.findOne({ _id: req.payload.id })
     const profile = await Profile.findOne({ user: req.payload.id })
-    const post = new Post()
+    const post = new Post(req.body)
     post.user = user
     post.profile = profile
-    post.details.mediums = req.body.mediums
-    post.details.title = req.body.title
-    post.details.description = req.body.description
-    post.details.tags = req.body.tags
-    post.details.price = req.body.price
-    post.details.author = profile.username
-    post.options.critique = req.body.critique
-    post.options.shareable = req.body.shareable
-    post.options.purchasable = req.body.purchasable
+    post.details.author = profile.details.username
     await post.save()
-    // await post.setkey()
-    // await post.save()
+    await Profile.updateOne({ user: req.payload.id }, { $push: { posts: post } })
     return res.json(post)
 })
 
@@ -110,8 +117,9 @@ exports.unlike = ash(async (req, res, next) => {
 exports.favorite = ash(async (req, res, next) => {
     const post = req.post
     const profile = await Profile.findOne({ user: req.payload.id })
-    if (profile.isFavorite(post.id)) return res.status(200).json({ msg: `you\'ve already favorited this post` })
-    await profile.favorite(post.id)
+    // if (profile.isFavorite(post.id)) return res.status(200).json({ msg: `you\'ve already favorited this post` })
+    await Profile.updateOne({ user: req.payload.id }, { $push: { 'favorites.favorited': post } }, { new: true })
+    // await profile.favorite(req.payload.id, post)
     await profile.favoriteCount()
     return res.status(200).json(profile)
 })
@@ -120,7 +128,9 @@ exports.unfavorite = ash(async (req, res, next) => {
     const post = req.post
     const profile = await Profile.findOne({ user: req.payload.id })
     if (!profile.isFavorite(post.id)) return res.status(200).json({ msg: `you\'ve hav\'nt favorited this post yet` })
-    await profile.unfavorite(post.id)
+    await profile.updateOne({ user: req.payload.id }, { $pull: { 'favorites.favorited': post } }, { new: true })
+    await profile.save()
+    // await profile.unfavorite(post.id)
     await profile.favoriteCount()
     return res.status(200).json(profile)
 })

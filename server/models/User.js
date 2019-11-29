@@ -90,11 +90,13 @@ UserSchema.methods.authJson = function () {
         _id: this._id,
         email: this.email,
         username: this.username,
+        role: this.role,
         profile: this.profile,
         verified: this.verified,
-        role: this.role,
         created: this.created,
         updated: this.updated,
+        vToken: this.vToken,
+        rToken: this.rToken,
         token: this.jwtForUser(),
     }
 }

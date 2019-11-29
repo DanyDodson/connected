@@ -9,7 +9,7 @@ const ProfileSchema = new mongoose.Schema({
         email: String,
         about: String,
         image: String,
-        active: { type: Boolean, default: false },
+        active: Boolean,
         username: { type: String, unique: true, index: 1 },
     },
     links: {
@@ -33,6 +33,13 @@ const ProfileSchema = new mongoose.Schema({
         youtube: String,
         linkedin: String,
     },
+    colors: {
+        bg: { type: String, default: '#FFFFFF' },
+        fg: { type: String, default: '#AAAAAA' },
+        mbg: { type: String, default: '#FFEDD4' },
+        mfg: { type: String, default: '#7A7A7A' },
+        ln: { type: String, default: '#24DADA' },
+    },
     vender: {
         role: { type: String, default: 'selling' },
         status: { type: String, default: 'dormant' },
@@ -49,42 +56,25 @@ const ProfileSchema = new mongoose.Schema({
             },
             phone: Number,
         },
-        reviews: [{
+        reviews: {
+            critique: String,
             stars: { type: Number, default: 0 },
-            critique: [String],
-        }],
-    },
-    colors: {
-        bg_color: { type: String, default: '#FFFFFF' },
-        fg_color: { type: String, default: '#AAAAAA' },
-        menu_bg_color: { type: String, default: '#FFEDD4' },
-        menu_fg_color: { type: String, default: '#7A7A7A' },
-        link_color: { type: String, default: '#24DADA' },
+        },
     },
     user: { type: ObjectId, ref: 'User' },
+    posts: [{ type: ObjectId, ref: 'Post' }],
     created: { type: Date, default: Date.now },
     updated: { type: Date },
 })
 
-
-ProfileSchema.pre('save', function (next) {
-    if (!this.links.url) this.links.url = client + '/artists/' + this.details.username
+ProfileSchema.pre('findOneAndUpdate', function (next) {
+    this.findOneAndUpdate({}, { $set: { updated: Date.now() } })
     next()
 })
 
 ProfileSchema.methods.setUrl = function () {
     this.links.url = client + '/artists/' + this.details.username
-    return this.save()
-}
-
-ProfileSchema.pre('findOneAndUpdate', function () {
-    this.findOneAndUpdate({}, { $set: { updated: Date.now() } })
-    this.setUrl()
-})
-
-ProfileSchema.methods.delListed = function (id) {
-    this.listed.listed.remove(id)
-    return this.save()
+    this.save()
 }
 
 ProfileSchema.methods.isFavorite = function (post) {
@@ -108,7 +98,7 @@ ProfileSchema.methods.unfavorite = function (id) {
 ProfileSchema.methods.favoriteCount = function () {
     const count = this.favorites.favorited.length
     this.favorites.favoritedCount = count
-    return this.save()
+    // return this.save()
 }
 
 ProfileSchema.methods.isFollowing = function (id) {
@@ -155,16 +145,13 @@ ProfileSchema.methods.followerCount = function () {
 
 ProfileSchema.methods.profileToJson = function (profile) {
     return {
-        _id: this._id,
+        id: this._id,
         details: this.details,
         links: this.links,
-        posted: this.posted,
-        listed: this.listed,
         friends: this.friends,
         favorites: this.favorites,
         socials: this.socials,
         colors: this.colors,
-        active: this.active,
         vendor: this.vendor,
         user: this.user,
         created: this.created,
@@ -172,7 +159,5 @@ ProfileSchema.methods.profileToJson = function (profile) {
         following: profile ? profile.isFollowing(this._id) : false,
     }
 }
-
-// ProfileSchema.index({ 'details.username': 1, }, { unique: true })
 
 mongoose.model('Profile', ProfileSchema)

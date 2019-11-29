@@ -18,8 +18,10 @@ const {
 } = require('../../controllers/post')
 
 const {
-    loadPost,
-    loadComment,
+    loadPostId,
+    loadCommentId,
+    loadPostSlug,
+    loadCommentSlug,
 } = require('../../controllers/post')
 
 const {
@@ -48,7 +50,7 @@ router.put('/:post_slug/comments', auth.req, ckComment, ckResults, newComment)
 router.put('/:post_slug/comments/:comment_slug', auth.req, ckComment, ckResults, upComment)
 
 router.get('/', auth.opt, posts)
-router.post('/', auth.req, ckPost, ckResults, newPost)
+router.put('/', auth.req, ckPost, ckResults, newPost)
 router.get('/:post_slug', auth.opt, post)
 router.put('/:post_slug', auth.req, ckPost, ckResults, upPost)
 router.delete('/:post_slug', auth.req, delPost)
@@ -57,7 +59,9 @@ router.get('/:post_slug/comments', auth.opt, comments)
 router.get('/:post_slug/comments/:comment_slug', auth.opt, comment)
 router.delete('/:post_slug/comments/:comment_slug', auth.req, delComment)
 
-router.param('post_slug', loadPost)
-router.param('comment_slug', loadComment)
+router.param('post_id', loadPostId)
+router.param('post_slug', loadPostSlug)
+router.param('comment_id', loadCommentId)
+router.param('comment_slug', loadCommentSlug)
 
 module.exports = router

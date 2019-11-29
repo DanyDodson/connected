@@ -6,6 +6,7 @@ const { ckReset } = require('./reset')
 const { ckProfile } = require('./profile')
 const { ckPost } = require('./post')
 const { ckComment } = require('./comment')
+const { ckFavo } = require('./favorite')
 
 let ckResults = (req, res, next) => {
     // const format = ({ location, param, msg }) => `${location} [${param}]: ${msg}`
@@ -27,5 +28,6 @@ module.exports = {
     ckProfile,
     ckPost,
     ckComment,
+    ckFavo,
     ckResults,
 }

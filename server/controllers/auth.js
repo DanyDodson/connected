@@ -14,7 +14,7 @@ exports.signup = ash(async (req, res, next) => {
     const user = new User(req.body)
     await user.setPassword(req.body.password)
     await user.save()
-    return res.status(200).json(user)
+    return res.status(200).json({ user: user.authJson() })
 })
 
 exports.signin = ash(async (req, res, next) => {
@@ -22,14 +22,14 @@ exports.signin = ash(async (req, res, next) => {
         if (err) return next(err)
         if (!user) return res.status(422).json(info)
         user.token = user.jwtForUser()
-        return res.status(200).json(user)
+        return res.status(200).json({ user: user.authJson() })
     })(req, res, next)
 })
 
 exports.user = ash(async (req, res, next) => {
     const user = await User.findOne({ _id: req.payload.id })
     if (!user) return res.status(404).json({ msg: 'user not found' })
-    return res.status(200).json(user)
+    return res.status(200).json({ user: user.authJson() })
 })
 
 exports.role = ash(async (req, res, next) => {
@@ -52,12 +52,12 @@ exports.verify = ash(async (req, res, next) => {
 
 exports.verified = ash(async (req, res, next) => {
     const { token } = req.body
-    const user = await User.findOne({ token })
+    const user = await User.findOne({ vToken: token })
     if (!user) return res.status(401).json({ err: 'invalid link' })
     user.verified = true
     user.vToken = null
     user.updated = Date.now()
-    let up = await user.updateOne()
+    let up = await user.save()
     if (!up) return res.status(400).json({ err: err })
     await sendMail(verified(user.email, client))
     next()
@@ -74,7 +74,7 @@ exports.forgot = ash(async (req, res, next) => {
 
 exports.reset = ash(async (req, res, next) => {
     const { token, newPassword } = req.body
-    const user = await User.findOne({ token })
+    const user = await User.findOne({ rToken: token })
     if (!user) return res.status(401).json({ err: 'invalid link' })
     await user.setPassword(newPassword)
     user.rToken = null

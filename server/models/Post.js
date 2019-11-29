@@ -9,23 +9,14 @@ const Profile = require('./Profile')
 const PostSchema = new mongoose.Schema({
     details: {
         mediums: { type: [String], index: 1 },
-        title: String,
-        description: String,
-        type: String,
-        tags: [String],
-        author: String,
+        title: { type: String, default: '' },
+        description: { type: String, default: '' },
+        tags: { type: [String], default: '' },
+        author: { type: String, default: '' },
         price: { type: Number, default: 0 },
         views: { type: Number, default: 0 },
         image: { type: String, default: image },
         featured: { type: Boolean, default: false },
-    },
-    post: {
-        posts: [{ type: ObjectId, ref: 'Post' }],
-        postsCount: { type: Number, default: 0 },
-    },
-    listing: {
-        listed: [{ type: ObjectId, ref: 'Post' }],
-        listedCount: { type: Number, default: 0 },
     },
     likes: {
         likedBy: [{ type: ObjectId, ref: 'User' }],
@@ -41,9 +32,9 @@ const PostSchema = new mongoose.Schema({
         purchasable: { type: Boolean, default: false },
     },
     links: {
-        key: String,
-        slug: { type: String, unique: true },
-        url: String,
+        key: { type: String, default: '' },
+        slug: { type: String, default: '', unique: true },
+        url: { type: String, default: '' },
     },
     uploads: {
         upload_id: String,
@@ -81,50 +72,21 @@ const PostSchema = new mongoose.Schema({
     updated: { type: Date },
 })
 
-PostSchema.pre('save', function (next) {
-    if (this.options.purchasable === false) this.details.price = 0
-    if (this.options.purchasable === true) this.details.type = 'listing'
-    if (this.options.purchasable === false) this.details.type = 'post'
-    next()
-})
-
 PostSchema.post('save', function () {
-    console.log(this instanceof mongoose.Query); // true
-    this.start = Date.now();
-    this.setkey()
+    if (!this.links.key) this.setkey()
     this.setslug()
     this.seturl()
+    this.save()
 })
 
 PostSchema.pre('findOneAndUpdate', function () {
     this.findOneAndUpdate({}, { $set: { updated: Date.now() } })
-    this.setslug()
-    this.seturl()
-    console.log(this instanceof mongoose.Query); // true
-    // prints returned documents
-    console.log('find() returned ' + JSON.stringify(result));
-    // prints number of milliseconds the query took
-    console.log('find() took ' + (Date.now() - this.start) + ' millis');
 })
-
-// PostSchema.pre('find', function () {
-
-// console.log(this instanceof mongoose.Query); // true
-// this.start = Date.now();
-// })
-
-// PostSchema.post('find', function (result) {
-
-// console.log(this instanceof mongoose.Query); // true
-// prints returned documents
-// console.log('find() returned ' + JSON.stringify(result));
-// prints number of milliseconds the query took
-// console.log('find() took ' + (Date.now() - this.start) + ' millis');
-// })
 
 PostSchema.methods.setkey = function () {
     const random = (Math.random() * Math.pow(36, 6) | 0).toString(36)
     this.links.key = slugify(random, { lower: true })
+    this.save()
 }
 
 PostSchema.methods.setslug = function () {
@@ -134,20 +96,6 @@ PostSchema.methods.setslug = function () {
 PostSchema.methods.seturl = function () {
     const posted = new Date().toUTCString().split(' ').slice(1, 5).join(' ')
     this.links.url = client + '/' + this.links.slug + '-' + slugify(posted, { lower: true })
-}
-
-PostSchema.methods.isaPost = function (id) {
-    if (this.listing.listed.indexOf(id) !== -1) this.listing.listed.remove(id)
-    if (this.post.posts.indexOf(id) === -1) this.post.posts.push(id)
-    const count = this.post.posts.length
-    this.post.postsCount = count
-}
-
-PostSchema.methods.isaLsting = function (id) {
-    if (this.post.posts.indexOf(id) !== -1) this.post.posts.remove(id)
-    if (this.listing.listed.indexOf(id) === -1) this.listing.listed.push(id)
-    const count = this.listing.listed.length
-    this.listing.listedCount = count
 }
 
 PostSchema.methods.setSrc = function () {
@@ -225,7 +173,6 @@ PostSchema.methods.postToJson = function (user) {
     }
 }
 
-// PostSchema.index({ 'details.mediums': 1, })
 PostSchema.index({ 'links.slug': 1, created: 1, }, { unique: true })
 PostSchema.index({ 'links.slug': 1, 'links.url': 1, }, { unique: true })
 

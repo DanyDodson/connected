@@ -2,9 +2,9 @@ const ash = require('express-async-handler')
 const mongoose = require('mongoose')
 const User = mongoose.model('User')
 
-exports.loadUserid = ash(async (req, res, next, id) => {
-    const user = await User.userById(id)
-    if (!user) return res.status(400).json({ error: 'User not found' })
+exports.loadUserId = ash(async (req, res, next, user_id) => {
+    const user = await User.findOne({ _id: user_id })
+    if (!user) return res.status(400).json({ error: 'user not found' })
     req.user = user
     next()
 })
