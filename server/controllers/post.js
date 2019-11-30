@@ -1,10 +1,21 @@
+// Data validation
 const ash = require('express-async-handler')
+
+// Login functions
 const passport = require('passport')
+
+// Database schemas
 const mongoose = require('mongoose')
 const User = mongoose.model('User')
-const Profile = mongoose.model('Profile')
+const Artist = mongoose.model('Artist')
 const Post = mongoose.model('Post')
 const Comment = mongoose.model('Comment')
+
+/** 
+ * @desc runs on paths containing :post_slug 
+ * @route PARAM /:post_slug
+ * @auth Public
+*/
 
 exports.loadPostSlug = ash(async (req, res, next, post_slug) => {
     const post = await Post.findOne({ 'links.slug': post_slug })
@@ -13,12 +24,11 @@ exports.loadPostSlug = ash(async (req, res, next, post_slug) => {
     return next()
 })
 
-exports.loadPostId = ash(async (req, res, next, _id) => {
-    const post = await Post.findOne({ _id: _id })
-    if (!post) return res.status(400).json({ err: 'post with that id not found' })
-    req.post = post
-    return next()
-})
+/** 
+ * @desc runs on paths containing :comment_slug 
+ * @route PARAM /:comment_slug
+ * @auth Public
+*/
 
 exports.loadCommentSlug = ash(async (req, res, next, comment_slug) => {
     const comment = await Comment.findOne({ 'links.slug': comment_slug })
@@ -27,17 +37,22 @@ exports.loadCommentSlug = ash(async (req, res, next, comment_slug) => {
     return next()
 })
 
-exports.loadCommentId = ash(async (req, res, next, comment_id) => {
-    const comment = await Comment.findOne({ _id: comment_id })
-    if (!comment) return res.status(400).json({ err: 'comment with that id not found' })
-    req.comment = comment
-    return next()
-})
+/**
+ * @desc Get all posts
+ * @route GET /api/see
+ * @auth Public
+*/
 
 exports.posts = ash(async (req, res, next) => {
     const posts = await Post.find().sort({ date: -1 })
     return res.status(200).send(posts)
 })
+
+/**
+ * @desc Get one post
+ * @route GET /api/see/:post_slug
+ * @auth Public
+*/
 
 exports.post = ash(async (req, res, next) => {
     const post = req.post
@@ -45,20 +60,32 @@ exports.post = ash(async (req, res, next) => {
     return res.status(200).json(post)
 })
 
+/**
+ * @desc Create post
+ * @route PUT /api/see/create
+ * @auth Private
+*/
+
 exports.newPost = ash(async (req, res, next) => {
     const user = await User.findOne({ _id: req.payload.id })
-    const profile = await Profile.findOne({ user: req.payload.id })
+    const artist = await Artist.findOne({ user: req.payload.id })
     const post = new Post(req.body)
     post.user = user
-    post.profile = profile
-    post.details.author = profile.details.username
+    post.artist = artist
+    post.details.author = artist.details.username
     await post.save()
-    await Profile.updateOne({ user: req.payload.id }, { $push: { posts: post } })
+    await Artist.updateOne({ user: req.payload.id }, { $push: { posts: post } })
     return res.json({ post: post })
 })
 
-exports.upPost = ash(async (req, res) => {
-    const profile = await Profile.findOne({ user: req.payload.id })
+/**
+ * @desc Update one post
+ * @route PUT /api/see/:post_slug
+ * @auth Private
+*/
+
+exports.upPost = ash(async (req, res, next) => {
+    const artist = await Artist.findOne({ user: req.payload.id })
     let post = req.post
     const {
         mediums,
@@ -80,8 +107,8 @@ exports.upPost = ash(async (req, res) => {
     if (purchasable) post.options.purchasable = purchasable || post.options.purchasable
     // post.updated = Date.now()
     await Post.findOneAndUpdate({ 'links.slug': req.post.links.slug }, { $set: post }, { new: true, upsert: true })
-    if (post.options.purchasable) { await profile.addListed(post._id) }
-    if (!post.options.purchasable) { await profile.addPosted(post._id) }
+    if (post.options.purchasable) { await artist.addListed(post._id) }
+    if (!post.options.purchasable) { await artist.addPosted(post._id) }
     // await post.setslug()
     // await post.seturl()
     // await post.save()
@@ -96,61 +123,103 @@ exports.upPost = ash(async (req, res) => {
     return res.status(200).json(post)
 })
 
+/**
+ * @desc Like a post
+ * @route PUT /api/see/like/:post_slug
+ * @auth Private
+*/
+
 exports.like = ash(async (req, res, next) => {
-    const profile = await Profile.findOne({ user: req.payload.id })
+    const artist = await Artist.findOne({ user: req.payload.id })
     const post = await Post.findOne({ _id: req.post })
-    if (post.isLiked(profile._id)) return res.status(200).json({ msg: `you\'ve already liked this post` })
-    await post.like(profile._id)
+    if (post.isLiked(artist._id)) return res.status(200).json({ msg: `you\'ve already liked this post` })
+    await post.like(artist._id)
     await post.likesCount()
     return res.status(200).json(post)
 })
 
+/**
+ * @desc Unlike a post
+ * @routePUT /api/see/unlike/:post_slug
+ * @auth Private
+*/
+
 exports.unlike = ash(async (req, res, next) => {
-    const profile = await Profile.findOne({ user: req.payload.id })
+    const artist = await Artist.findOne({ user: req.payload.id })
     const post = await Post.findOne({ _id: req.post })
-    if (!post.isLiked(profile._id)) return res.status(200).json({ msg: `you\'ve havnt liked this post yet` })
-    await post.unlike(profile._id)
+    if (!post.isLiked(artist._id)) return res.status(200).json({ msg: `you\'ve havnt liked this post yet` })
+    await post.unlike(artist._id)
     await post.likesCount()
     return res.status(200).json(post)
 })
+
+/**
+ * @desc Add post to favorites
+ * @route PUT /api/see/favorite/:post_slug
+ * @auth Private
+*/
 
 exports.favorite = ash(async (req, res, next) => {
     const post = req.post
-    const profile = await Profile.findOne({ user: req.payload.id })
-    // if (profile.isFavorite(post.id)) return res.status(200).json({ msg: `you\'ve already favorited this post` })
-    await Profile.updateOne({ user: req.payload.id }, { $push: { 'favorites.favorited': post } }, { new: true })
-    // await profile.favorite(req.payload.id, post)
-    await profile.favoriteCount()
-    return res.status(200).json(profile)
+    const artist = await Artist.findOne({ user: req.payload.id })
+    // if (artist.isFavorite(post.id)) return res.status(200).json({ msg: `you\'ve already favorited this post` })
+    await Artist.updateOne({ user: req.payload.id }, { $push: { 'favorites.favorited': post } }, { new: true })
+    // await artist.favorite(req.payload.id, post)
+    await artist.favoriteCount()
+    return res.status(200).json(artist)
 })
+
+/**
+ * @desc Remove post from favorites
+ * @route PUT /api/see/unfavorite/:post_slug
+ * @auth Private
+*/
 
 exports.unfavorite = ash(async (req, res, next) => {
     const post = req.post
-    const profile = await Profile.findOne({ user: req.payload.id })
-    if (!profile.isFavorite(post.id)) return res.status(200).json({ msg: `you\'ve hav\'nt favorited this post yet` })
-    await profile.updateOne({ user: req.payload.id }, { $pull: { 'favorites.favorited': post } }, { new: true })
-    await profile.save()
-    // await profile.unfavorite(post.id)
-    await profile.favoriteCount()
-    return res.status(200).json(profile)
+    const artist = await Artist.findOne({ user: req.payload.id })
+    if (!artist.isFavorite(post.id)) return res.status(200).json({ msg: `you\'ve hav\'nt favorited this post yet` })
+    await artist.updateOne({ user: req.payload.id }, { $pull: { 'favorites.favorited': post } }, { new: true })
+    await artist.save()
+    // await artist.unfavorite(post.id)
+    await artist.favoriteCount()
+    return res.status(200).json(artist)
 })
+
+/**
+ * @desc Delete post
+ * @route DELETE /api/see/delete
+ * @auth Private
+*/
 
 exports.delPost = ash(async (req, res, next) => {
     const poster = req.post.user
     const user = req.payload.id
     if (!user) return res.status(401).json({ msg: 'user is unauthenticated' })
     if (poster.toString() !== user.toString()) return res.status(403).json({ msg: 'user is not authorized' })
-    if (post.options.purchasable) await profile.delListed(post._id)
-    if (!post.options.purchasable) await profile.delPosted(post._id)
+    if (post.options.purchasable) await artist.delListed(post._id)
+    if (!post.options.purchasable) await artist.delPosted(post._id)
     await Comment.deleteMany({ post: req.post.id })
     await Post.findOneAndRemove({ user: user })
     return res.status(204).json({ msg: 'your post was removed' })
 })
 
+/**
+ * @desc Get all comments
+ * @route GET /api/see/:post_slug/comments
+ * @auth Public
+*/
+
 exports.comments = ash(async (req, res, next) => {
     const comments = req.post.comments.commented
     return res.status(200).json(comments)
 })
+
+/**
+ * @desc Create a comment
+ * @route PUT /api/see/:post_slug/comments
+ * @auth Private
+*/
 
 exports.newComment = ash(async (req, res, next) => {
     const post = req.post
@@ -171,10 +240,22 @@ exports.newComment = ash(async (req, res, next) => {
     return res.status(200).json(comment)
 })
 
+/**
+ * @desc Get one comment
+ * @route GET /api/see/:post_slug/comments/:comment_slug
+ * @auth Public
+*/
+
 exports.comment = ash(async (req, res, next) => {
     const comment = req.comment
     return res.status(200).json(comment.commentToJson())
 })
+
+/**
+ * @desc Update one comment
+ * @route PUT /api/see/:post_slug/comments/:comment_slug
+ * @auth Private
+*/
 
 exports.upComment = ash(async (req, res, next) => {
     const { text } = req.body
@@ -193,23 +274,41 @@ exports.upComment = ash(async (req, res, next) => {
     return res.status(200).json(comment.commentToJson())
 })
 
+/**
+ * @desc Like a comment
+ * @route PUT /api/see/:post_slug/comments/like/:comment_slug
+ * @auth Private
+*/
+
 exports.likeComment = ash(async (req, res, next) => {
-    const profile = await Profile.findOne({ user: req.payload.id })
+    const artist = await Artist.findOne({ user: req.payload.id })
     const comment = await Comment.findOne({ _id: req.comment.id })
-    if (comment.isLiked(profile._id)) return res.status(200).json({ msg: `you\'ve already liked this comment` })
-    await comment.like(profile._id)
+    if (comment.isLiked(artist._id)) return res.status(200).json({ msg: `you\'ve already liked this comment` })
+    await comment.like(artist._id)
     await comment.likesCount()
     return res.status(200).json(comment)
 })
 
+/**
+ * @desc Unlike a comment
+ * @route PUT /api/see/:post_slug/comments/unlike/:comment_slug
+ * @auth Private
+*/
+
 exports.unlikeComment = ash(async (req, res, next) => {
-    const profile = await Profile.findOne({ user: req.payload.id })
+    const artist = await Artist.findOne({ user: req.payload.id })
     const comment = await Comment.findOne({ _id: req.comment.id })
-    if (!comment.isLiked(profile._id)) return res.status(200).json({ msg: `you\'ve havnt liked this comment yet` })
-    await comment.unlike(profile._id)
+    if (!comment.isLiked(artist._id)) return res.status(200).json({ msg: `you\'ve havnt liked this comment yet` })
+    await comment.unlike(artist._id)
     await comment.likesCount()
     return res.status(200).json(comment)
 })
+
+/**
+ * @desc Delete a comment
+ * @route DELETE /api/see/:post_slug/comments/delete
+ * @auth Private
+*/
 
 exports.delComment = ash(async (req, res, next) => {
     const post = req.post

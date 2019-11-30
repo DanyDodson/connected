@@ -1,69 +1,73 @@
+// Data validation
 const ash = require('express-async-handler')
-const mongoose = require('mongoose')
+
+// Global configs
 const config = require('config')
 const img = config.get('user.image')
-const Profile = mongoose.model('Profile')
+
+// Database schemas
+const mongoose = require('mongoose')
+const Artist = mongoose.model('Artist')
 const User = mongoose.model('User')
 
 /** 
- * @desc runs on req paths containing :pro_name 
- * @route  PARAM /:pro_name
- * @access Public
- * 
+ * @desc runs on paths containing :pro_name 
+ * @route PARAM /:pro_name
+ * @auth public
 */
 
 exports.proName = ash(async (req, res, next, pro_name) => {
-    const profile = await Profile.findOne({ 'details.username': pro_name })
-    if (!profile) return res.status(400).json({ err: 'profile with that username not found' })
-    req.profile = profile
+    const artist = await Artist.findOne({ 'details.username': pro_name })
+    if (!artist) return res.status(400).json({ err: 'artist with that username not found' })
+    req.artist = artist
     return next()
 })
 
 /**
- * @desc Create a profile
+ * @desc creates an artist
  * @route POST /api/artists/create
- * @access Private
+ * @auth private
 */
 
-exports.newProfile = ash(async (req, res, next) => {
+exports.newArtist = ash(async (req, res, next) => {
     const user = await User.findOne({ _id: req.payload.id })
-    const profile = new Profile({ user: user.id, 'details.username': req.payload.username })
-    await profile.save()
-    user.profile = profile
+    const artist = new Artist({ user: user.id, 'details.username': req.payload.username })
+    await artist.save()
+    user.artist = artist
     await user.save()
-    return res.status(200).json({ msg: 'you\'re accounts been verified.', profile: profile })
+    return res.status(200).json({ msg: 'you\'re accounts been verified.', artist: artist })
 })
 
 /**
- * @desc Get all profiles
+ * @desc get all artists
  * @route GET /api/artists
- * @access Public
+ * @auth public
 */
 
-exports.profiles = ash(async (req, res, next) => {
-    const profiles = await Profile.find({})
-    return res.status(200).json(profiles)
+exports.artists = ash(async (req, res, next) => {
+    const artists = await Artist.find({})
+    return res.status(200).json(artists)
 })
 
 /**
- * @desc Get one profile
+ * @desc gets one artist
  * @route GET /api/artists/:pro_name
- * @access Public
+ * @auth public
 */
 
-exports.profile = ash(async (req, res, next) => {
-    const profile = req.profile
-    if (profile === null) return res.status(404).json({ msg: 'profile not found' })
-    return res.status(200).json({ profile: profile })
+exports.artist = ash(async (req, res, next) => {
+    const artist = req.artist
+    if (artist === null) return res.status(404).json({ msg: 'artist not found' })
+    return res.status(200).json({ artist: artist })
 })
 
 /**
- * @desc Update one profile
+ * @desc updates one artist
  * @route PUT /api/artists/:pro_name
- * @access Private
+ * @auth private
 */
 
-exports.upProfile = ash(async (req, res, next) => {
+exports.upArtist = ash(async (req, res, next) => {
     const user = await User.findOne({ _id: req.payload.id })
     const { name, username, about, image } = req.body
     const { blog, instagram, twitter, facebook, youtube, linkedin } = req.body
@@ -73,7 +77,7 @@ exports.upProfile = ash(async (req, res, next) => {
     const { type, points } = req.body
     const { phone } = req.body
     const { stars, critique } = req.body
-    let old = req.profile
+    let old = req.artist
     let fresh = {}
     fresh.user = user
     fresh.details = {}
@@ -111,79 +115,79 @@ exports.upProfile = ash(async (req, res, next) => {
     fresh.vender.contact.geo = {}
     type ? fresh.vender.contact.geo.type = type : fresh.vender.contact.geo.type = old.vender.contact.geo.type
     points ? fresh.vender.contact.geo.points = points : fresh.vender.contact.geo.points = old.vender.contact.geo.points
-    let profile = await Profile.findOneAndUpdate({ user: user._id }, { $set: fresh }, { new: true, upsert: true })
-    await profile.setUrl()
+    let artist = await Artist.findOneAndUpdate({ user: user._id }, { $set: fresh }, { new: true, upsert: true })
+    await artist.setUrl()
     username ? user.username = username : user.username = user.username
     await user.save()
-    return res.status(200).json({ profile: profile })
+    return res.status(200).json({ artist: artist })
 })
 
 /**
- * @desc Add one profile._id to following
+ * @desc adds artist to following
  * @route PUT /api/artists/unfollow
- * @access Private
+ * @auth private
 */
 
 exports.addFollowing = ash(async (req, res, next) => {
-    const profile = await Profile.findOne({ user: req.payload.id })
-    if (profile.isFollowing(req.body.profileId)) return res.status(200).json({ msg: `your already following this user` })
-    await profile.setFollowing(req.body.profileId)
-    await profile.followingCount()
+    const artist = await Artist.findOne({ user: req.payload.id })
+    if (artist.isFollowing(req.body.artistId)) return res.status(200).json({ msg: `your already following this user` })
+    await artist.setFollowing(req.body.artistId)
+    await artist.followingCount()
     next()
 })
 
 /**
- * @desc Add one profile._id to followers
+ * @desc adds artist to followers
  * @route PUT /api/artists/unfollow
- * @access Private
+ * @auth private
 */
 
 exports.addFollower = ash(async (req, res, next) => {
-    const follower = await Profile.findOne({ user: req.payload.id })
-    const profile = await Profile.findOne({ _id: req.body.profileId })
-    await profile.setFollower(follower._id)
-    await profile.followerCount()
-    return res.status(200).json({ msg: `your now following ${profile.details.username}` })
+    const follower = await Artist.findOne({ user: req.payload.id })
+    const artist = await Artist.findOne({ _id: req.body.artistId })
+    await artist.setFollower(follower._id)
+    await artist.followerCount()
+    return res.status(200).json({ msg: `your now following ${artist.details.username}` })
 })
 
 /**
- * @desc Remove one profile._id from following
+ * @desc removes artist from following
  * @route PUT /api/artists/unfollow
- * @access Private
+ * @auth private
 */
 
 exports.delFollowing = ash(async (req, res, next) => {
-    const profile = await Profile.findOne({ user: req.payload.id })
-    if (!profile.isFollowing(req.body.profileId)) return res.status(200).json({ msg: `your not following this user` })
-    await profile.delFollowing(req.body.profileId)
-    await profile.followingCount()
+    const artist = await Artist.findOne({ user: req.payload.id })
+    if (!artist.isFollowing(req.body.artistId)) return res.status(200).json({ msg: `your not following this user` })
+    await artist.delFollowing(req.body.artistId)
+    await artist.followingCount()
     next()
 })
 
 /**
- * @desc Remove one profile._id from followers
+ * @desc removes artist from followers
  * @route PUT /api/artists/unfollow
- * @access Private
+ * @auth private
 */
 
 exports.delFollower = ash(async (req, res, next) => {
-    const follower = await Profile.findOne({ user: req.payload.id })
-    const followed = await Profile.findOne({ _id: req.body.profileId })
+    const follower = await Artist.findOne({ user: req.payload.id })
+    const followed = await Artist.findOne({ _id: req.body.artistId })
     await followed.delFollower(follower._id)
     await followed.followerCount()
     return res.status(200).json({ msg: `your no longer following ${followed.details.username}` })
 })
 
 /**
- * @desc Delete one profile
+ * @desc delete current artist
  * @route DELETE /api/artists
- * @access Private
+ * @auth private
 */
 
-exports.delProfile = ash(async (req, res, next) => {
-    const profile = await Profile.findOne({ user: req.payload.id })
-    if (!profile) return res.status(404).json({ msg: 'cannot remove null profile' })
-    if (profile.user.toString() !== req.payload.id.toString()) return res.status(401).json({ msg: 'user not authenticated to do that' })
-    await profile.remove()
-    return res.status(204).json({ msg: 'successfully removed profile' })
+exports.delArtist = ash(async (req, res, next) => {
+    const artist = await Artist.findOne({ user: req.payload.id })
+    if (!artist) return res.status(404).json({ msg: 'cannot remove null artist' })
+    if (artist.user.toString() !== req.payload.id.toString()) return res.status(401).json({ msg: 'user not authenticated to do that' })
+    await artist.remove()
+    return res.status(204).json({ msg: 'successfully removed artist' })
 })

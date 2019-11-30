@@ -1,7 +1,7 @@
 const {
     signup,
     google,
-    googleCb,
+    googleCB,
     signin,
     user,
     verify,
@@ -13,8 +13,8 @@ const {
 } = require('../../controllers/auth')
 
 const {
-    newProfile
-} = require('../../controllers/profile')
+    newArtist
+} = require('../../controllers/artist')
 
 const {
     ckSignup,
@@ -26,19 +26,21 @@ const {
 const auth = require('../auth')
 const router = require('express').Router()
 
+router.post('/signup', ckSignup, ckResults, signup)
+router.post('/signin', ckSignin, ckResults, signin)
+
+router.get('/google', auth.req, google)
+router.get('/google/callback', auth.req, googleCB)
+
+router.get('/details', auth.req, user)
+
 router.put('/verify/send', auth.req, verify)
-router.put('/verify/return', auth.req, verified, newProfile)
+router.put('/verify/return', auth.req, verified, newArtist)
 
 router.put('/forgot/send', auth.req, forgot)
 router.put('/forgot/return', auth.req, ckReset, ckResults, reset)
 
-router.get('/google', auth.req, google)
-router.get('/google/callback', auth.req, googleCb)
-
-router.post('/signup', ckSignup, ckResults, signup)
-router.post('/signin', ckSignin, ckResults, signin)
-router.get('/', auth.req, user)
 router.get('/signout', auth.req, signout)
-router.delete('/destroy', auth.req, destroy)
+router.delete('/delete', auth.req, destroy)
 
 module.exports = router

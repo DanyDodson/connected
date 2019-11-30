@@ -3,7 +3,7 @@ const { ObjectId } = mongoose.Schema
 const config = require('config')
 const client = config.get('app.client')
 
-const ProfileSchema = new mongoose.Schema({
+const ArtistSchema = new mongoose.Schema({
     details: {
         name: String,
         email: String,
@@ -67,83 +67,83 @@ const ProfileSchema = new mongoose.Schema({
     updated: { type: Date },
 })
 
-ProfileSchema.pre('findOneAndUpdate', function (next) {
+ArtistSchema.pre('findOneAndUpdate', function (next) {
     this.findOneAndUpdate({}, { $set: { updated: Date.now() } })
     next()
 })
 
-ProfileSchema.methods.setUrl = function () {
+ArtistSchema.methods.setUrl = function () {
     this.links.url = client + '/artists/' + this.details.username
     this.save()
 }
 
-ProfileSchema.methods.isFavorite = function (post) {
+ArtistSchema.methods.isFavorite = function (post) {
     return this.favorites.favorited.some(function (favoritedId) {
         return favoritedId.toString() === post.toString()
     })
 }
 
-ProfileSchema.methods.favorite = function (id) {
+ArtistSchema.methods.favorite = function (id) {
     if (this.favorites.favorited.indexOf(id) === -1) {
         this.favorites.favorited.push(id)
     }
     return this.save()
 }
 
-ProfileSchema.methods.unfavorite = function (id) {
+ArtistSchema.methods.unfavorite = function (id) {
     this.favorites.favorited.remove(id)
     return this.save()
 }
 
-ProfileSchema.methods.favoriteCount = function () {
+ArtistSchema.methods.favoriteCount = function () {
     const count = this.favorites.favorited.length
     this.favorites.favoritedCount = count
     // return this.save()
 }
 
-ProfileSchema.methods.isFollowing = function (id) {
+ArtistSchema.methods.isFollowing = function (id) {
     return this.friends.following.some(function (followId) {
         return followId.toString() === id.toString()
     })
 }
 
-ProfileSchema.methods.setFollowing = function (id) {
+ArtistSchema.methods.setFollowing = function (id) {
     if (this.friends.following.indexOf(id) === -1) {
         this.friends.following.push(id)
     }
     return this.save()
 }
 
-ProfileSchema.methods.delFollowing = function (id) {
+ArtistSchema.methods.delFollowing = function (id) {
     this.friends.following.remove(id)
     return this.save()
 }
 
-ProfileSchema.methods.followingCount = function () {
+ArtistSchema.methods.followingCount = function () {
     const count = this.friends.following.length
     this.friends.followingCount = count
     return this.save()
 }
 
-ProfileSchema.methods.setFollower = function (id) {
+ArtistSchema.methods.setFollower = function (id) {
     if (this.friends.followers.indexOf(id) === -1) {
         this.friends.followers.push(id)
     }
     return this.save()
 }
 
-ProfileSchema.methods.delFollower = function (id) {
+ArtistSchema.methods.delFollower = function (id) {
     this.friends.followers.remove(id)
     return this.save()
 }
 
-ProfileSchema.methods.followerCount = function () {
+ArtistSchema.methods.followerCount = function () {
     const count = this.friends.followers.length
     this.friends.followersCount = count
     return this.save()
 }
 
-ProfileSchema.methods.profileToJson = function (profile) {
+ArtistSchema.methods.artistToJson = function (artist) {
     return {
         id: this._id,
         details: this.details,
@@ -156,8 +156,8 @@ ProfileSchema.methods.profileToJson = function (profile) {
         user: this.user,
         created: this.created,
         updated: this.updated,
-        following: profile ? profile.isFollowing(this._id) : false,
+        following: artist ? artist.isFollowing(this._id) : false,
     }
 }
 
-mongoose.model('Profile', ProfileSchema)
+mongoose.model('Artist', ArtistSchema)

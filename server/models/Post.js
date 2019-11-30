@@ -4,7 +4,7 @@ const config = require('config')
 const image = config.get('post.img')
 const client = config.get('app.client')
 const slugify = require('slugify')
-const Profile = require('./Profile')
+const Artist = require('./Artist')
 
 const PostSchema = new mongoose.Schema({
     details: {
@@ -67,7 +67,7 @@ const PostSchema = new mongoose.Schema({
         colors: Object,
     },
     user: { type: ObjectId, ref: 'User' },
-    profile: { type: ObjectId, ref: 'Profile' },
+    artist: { type: ObjectId, ref: 'Artist' },
     created: { type: Date, default: Date.now },
     updated: { type: Date },
 })
@@ -168,7 +168,7 @@ PostSchema.methods.postToJson = function (user) {
         created: this.created,
         updated: this.updated,
         user: this.user.authJson(user),
-        profile: this.profile.profileToJson(user),
+        artist: this.artist.artistToJson(user),
         favorite: user ? user.isFavorite(this._id) : false,
     }
 }

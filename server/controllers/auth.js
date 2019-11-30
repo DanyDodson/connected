@@ -1,14 +1,29 @@
+// async wrapper
 const ash = require('express-async-handler')
+
+// global configs
 const config = require('config')
 const client = config.get('app.client')
-const { sendMail, verify, verified, forgot, reset } = require('../helpers/mailer')
-const { expMins } = require('../helpers/exp')
+
+// login functions
 const passport = require('passport')
+
+
+// db schemas
 const mongoose = require('mongoose')
 const User = mongoose.model('User')
-const Profile = mongoose.model('Profile')
+const Artist = mongoose.model('Artist')
 
-// let i - i = i ? i < 0 ? Math.max(0, len + i) : i : 0
+// nodemailer responses 
+const { sendMail } = require('../helpers/mailer')
+const { verify, verified } = require('../helpers/mailer')
+const { forgot, reset } = require('../helpers/mailer')
+
+/** 
+ * @desc register new user
+ * @route POST /api/signup
+ * @auth public
+*/
 
 exports.signup = ash(async (req, res, next) => {
     const user = new User(req.body)
@@ -17,15 +32,33 @@ exports.signup = ash(async (req, res, next) => {
     return res.status(201).json({ user: user.authJson() })
 })
 
+/** 
+ * @desc google auth
+ * @route GET /api/google/callback
+ * @auth public
+*/
+
 exports.google = ash(async (req, res, next) => {
-    passport.authenticate('google', { scope: ['profile'] })
+    passport.authenticate('google', { scope: ['artist'] })
     return res.status(200).json({ user: user.authJson() })
 })
 
-exports.googleCb = ash(async (req, res, next) => {
+/** 
+ * @desc google callback
+ * @route GET /api/google/callback
+ * @auth public
+*/
+
+exports.googleCB = ash(async (req, res, next) => {
     passport.authenticate('google', { successRedirect: '/', failureRedirect: '/login' })
     return res.status(200).json({ user: user.authJson() })
 })
+
+/** 
+ * @desc User signin
+ * @route GET /api/signin
+ * @auth public
+*/
 
 exports.signin = ash(async (req, res, next) => {
     passport.authenticate('local', { session: false }, (err, user, info) => {
@@ -36,11 +69,23 @@ exports.signin = ash(async (req, res, next) => {
     })(req, res, next)
 })
 
+/** 
+ * @desc Get current user from jwt
+ * @route GET /api
+ * @auth private
+*/
+
 exports.user = ash(async (req, res, next) => {
     const user = await User.findOne({ _id: req.payload.id })
     if (!user) return res.status(404).json({ msg: 'user not found' })
     return res.status(200).json({ user: user.authJson() })
 })
+
+/** 
+ * @desc Checks if user is user or admin
+ * @route GET /api
+ * @auth public
+*/
 
 exports.role = ash(async (req, res, next) => {
     let user = req.payload && req.payload.role === 'user'
@@ -51,6 +96,12 @@ exports.role = ash(async (req, res, next) => {
     next()
 })
 
+/** 
+ * @desc Create & mail verify email token
+ * @route PUT /api/verify/send
+ * @auth Private
+*/
+
 exports.verify = ash(async (req, res, next) => {
     const user = await User.findOne({ _id: req.payload.id })
     if (user.verified) return res.status(404).json({ msg: 'your account has already been verified' })
@@ -59,6 +110,12 @@ exports.verify = ash(async (req, res, next) => {
     await sendMail(verify(user.email, client, token))
     return res.status(200).json({ msg: `Email has been sent to ${user.email}. Follow the instructions to verify your account.`, token: token, })
 })
+
+/** 
+ * @desc Verify token & continue to create artist
+ * @route PUT /api/verify/return
+ * @auth Private
+*/
 
 exports.verified = ash(async (req, res, next) => {
     const { token } = req.body
@@ -73,6 +130,12 @@ exports.verified = ash(async (req, res, next) => {
     next()
 })
 
+/** 
+ * @desc Create & mail password reset token
+ * @route PUT /api/forgot/send
+ * @auth Private
+*/
+
 exports.forgot = ash(async (req, res, next) => {
     const user = await User.findOne({ _id: req.payload.id })
     if (!user) return res.status(404).json({ msg: 'user not found' })
@@ -81,6 +144,12 @@ exports.forgot = ash(async (req, res, next) => {
     await sendMail(forgot(user.email, client, token))
     return res.status(200).json({ msg: `An email has been sent to ${user.email}. Follow the instructions to reset your password.`, token: token, })
 })
+
+/** 
+ * @desc Verify token and set new password
+ * @route PUT /api/forgot/return
+ * @auth Private
+*/
 
 exports.reset = ash(async (req, res, next) => {
     const { token, newPassword } = req.body
@@ -95,14 +164,26 @@ exports.reset = ash(async (req, res, next) => {
     return res.status(200).json({ msg: 'great! Now you can login with your new password.' })
 })
 
+/** 
+ * @desc Clears users jwt cookie
+ * @route GET /api/signout
+ * @auth Private
+*/
+
 exports.signout = ash(async (req, res, next) => {
     return res.status(200).json({ msg: 'signout route working' })
 })
 
+/**
+ * @desc Deletes one user
+ * @route DELETE /api/delete
+ * @auth Private
+*/
+
 exports.destroy = ash(async (req, res, next) => {
     const user = await User.findOne({ _id: req.payload.id })
     if (!user) return res.status(404).json({ msg: 'user not found' })
-    await Profile.findOneAndRemove({ user: user._id })
+    await Artist.findOneAndRemove({ user: user._id })
     await User.findOneAndRemove({ _id: user._id })
     return res.status(204).json({ msg: 'success: user was removed' })
 })

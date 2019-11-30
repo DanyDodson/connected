@@ -1,16 +1,16 @@
 const { param, query, cookies, header, body, check } = require('express-validator')
 const { sanitize, sanitizeBody } = require('express-validator')
 const mongoose = require('mongoose')
-const Profile = mongoose.model('Profile')
+const Artist = mongoose.model('Artist')
 const User = mongoose.model('User')
 
-exports.ckProfile = [
-    check('profiles')
-        .custom((value, { req }) => { return Profile.find().then(profiles => { if (!profiles) { return Promise.reject('no profiles found') } return true }) }),
+exports.ckArtist = [
+    check('artists')
+        .custom((value, { req }) => { return Artist.find().then(artists => { if (!artists) { return Promise.reject('no artists found') } return true }) }),
     param(':pro_name')
         .custom((value, { req }) => { return User.findById(req.payload.id).then(user => { if (!user) { return Promise.reject('you must be logged in') } }) })
-        .custom((value, { req }) => { return User.findById(req.payload.id).then(user => { if (user.verified !== true) { return Promise.reject('you must verify your account before modifying your profile') } }) })
-        .custom((value, { req }) => { return Profile.findOne({ 'details.username': req.params.pro_name }).then(profile => { if (!profile) { return Promise.reject('profile doesnt exist') } }) }),
+        .custom((value, { req }) => { return User.findById(req.payload.id).then(user => { if (user.verified !== true) { return Promise.reject('you must verify your account before modifying your artist') } }) })
+        .custom((value, { req }) => { return Artist.findOne({ 'details.username': req.params.pro_name }).then(artist => { if (!artist) { return Promise.reject('artist doesnt exist') } }) }),
     body('username')
         .trim()
         .escape()
@@ -20,7 +20,7 @@ exports.ckProfile = [
         .bail()
         .isAlphanumeric().withMessage('username can only contain letters and numbers')
         .isLength({ min: 3, max: 30 }).withMessage('username requires a minimum of 3 characters')
-        .custom((value, { req }) => { return Profile.findOne({ 'details.username': value }).then(profile => { if (profile && profile.details.username !== req.payload.username) { return Promise.reject('username already in use') } }) }),
+        .custom((value, { req }) => { return Artist.findOne({ 'details.username': value }).then(artist => { if (artist && artist.details.username !== req.payload.username) { return Promise.reject('username already in use') } }) }),
     body('details.name')
         .trim()
         .escape()

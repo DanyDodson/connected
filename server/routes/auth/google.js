@@ -8,13 +8,13 @@ const strategy = new GoogleStrategy(
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
         callbackURL: '/auth/google/callback'
     },
-    function (token, tokenSecret, profile, done) {
+    function (token, tokenSecret, artist, done) {
         // testing
         console.log('===== GOOGLE PROFILE =======')
-        console.log(profile)
+        console.log(artist)
         console.log('======== END ===========')
         // code
-        const { id, name, photos } = profile
+        const { id, name, photos } = artist
         User.findOne({ 'google.googleId': id }, (err, userMatch) => {
             // handle errors here:
             if (err) {
@@ -29,7 +29,7 @@ const strategy = new GoogleStrategy(
                 // if no user in our db, create a new user with that googleId
                 console.log('====== PRE SAVE =======')
                 console.log(id)
-                console.log(profile)
+                console.log(artist)
                 console.log('====== post save ....')
                 const newGoogleUser = new User({
                     'google.googleId': id,

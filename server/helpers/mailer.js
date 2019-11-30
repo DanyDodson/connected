@@ -36,8 +36,8 @@ exports.verified = (email, client) => {
         from: mailData.from,
         to: email,
         subject: 'Your account has been verified !',
-        text: `Welcome to SeeSee! Create your profile: ${client}/profiles/me`,
-        html: `<p>Welcome to SeeSee! Create your profile: ${client}/profiles/me`
+        text: `Welcome to SeeSee! Create your artist: ${client}/artists/me`,
+        html: `<p>Welcome to SeeSee! Create your artist: ${client}/artists/me`
     }
 }
 

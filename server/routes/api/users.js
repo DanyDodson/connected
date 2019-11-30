@@ -9,7 +9,7 @@ const {
 
 const {
     proName,
-} = require('../../controllers/profile')
+} = require('../../controllers/artist')
 
 const {
     loadUserId,

@@ -3,7 +3,7 @@ const { ckSignup } = require('./signup')
 const { ckSignin } = require('./signin')
 const { ckVerify } = require('./verify')
 const { ckReset } = require('./reset')
-const { ckProfile } = require('./profile')
+const { ckArtist } = require('./artist')
 const { ckPost } = require('./post')
 const { ckComment } = require('./comment')
 const { ckFavo } = require('./favorite')
@@ -25,7 +25,7 @@ module.exports = {
     ckSignin,
     ckReset,
     ckVerify,
-    ckProfile,
+    ckArtist,
     ckPost,
     ckComment,
     ckFavo,

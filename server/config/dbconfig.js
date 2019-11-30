@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const logs = require('../logs/chalk')
+const logs = require('../logs/log')
 const config = require('config')
 const db = config.get('db.atlas')
 

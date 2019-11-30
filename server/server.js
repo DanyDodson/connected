@@ -1,24 +1,23 @@
 const express = require('express')
-const session = require('express-session')
 const config = require('config')
 const secret = config.get('app.secret')
+const session = require('express-session')
 const connectDB = require('./config/dbconfig')
-const mongoose = require('mongoose')
-const mongooselogs = require('./logs/mongoose')
-const logger = require('./logs/logger.js')
-const errorhandler = require('errorhandler')
-const logs = require('./logs/chalk')
+const errors = require('errorhandler')
+const logs = require('./logs/logger')
+const logdb = require('./logs/logdb')
+const log = require('./logs/log')
 const methods = require('methods')
-const path = require('path')
 const cors = require('cors')
+const path = require('path')
+const fs = require('fs')
 const app = express()
 
 const prod = process.env.NODE_ENV === 'production'
 
 connectDB()
-
 app.use(cors())
-app.use(logger())
+app.use(logs())
 app.use(express.json())
 app.use(require('method-override')())
 app.use(express.static(__dirname + '/public'))
@@ -30,15 +29,23 @@ app.use(session({
     saveUninitialized: false,
 }))
 
-if (!prod) app.use(errorhandler())
+if (!prod) app.use(errors())
 
 require('./models/User')
-require('./models/Profile')
+require('./models/Artist')
 require('./models/Comment')
 require('./models/Post')
 require('./models/Message')
 
 require('./routes/auth/local')
+
+app.get('/api', (req, res, next) => {
+    fs.readFile('docs/routes.json', (err, data) => {
+        if (err) res.status(400).json({ err: err })
+        const docs = JSON.parse(data)
+        res.json(docs)
+    })
+})
 
 app.use(require('./routes'))
 
@@ -69,4 +76,4 @@ if (prod) {
 
 const PORT = process.env.PORT || 5025
 
-app.listen(PORT, () => logs.exp(`[express] running on port ${PORT} ✔️`))
+app.listen(PORT, () => log.exp(`[express] running on port ${PORT} ✔️`))

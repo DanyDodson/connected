@@ -1,6 +1,6 @@
 const colors = require('colors')
 
-const dblog = function (collectionName, method, query, doc) {
+const logdb = function (collectionName, method, query, doc) {
     console.log(
         'Mongoose: '.cyan
         + collectionName.yellow + '.' + method.magenta
@@ -10,4 +10,4 @@ const dblog = function (collectionName, method, query, doc) {
     )
 }
 
-module.exports = dblog
+module.exports = logdb

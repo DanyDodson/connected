@@ -740,7 +740,7 @@
 			"name": "Profiles",
 			"item": [
 				{
-					"name": "Get profile using username",
+					"name": "Get artist using username",
 					"event": [
 						{
 							"listen": "test",
@@ -801,7 +801,7 @@
 					"response": []
 				},
 				{
-					"name": "Get profile using id",
+					"name": "Get artist using id",
 					"event": [
 						{
 							"listen": "test",
@@ -862,7 +862,7 @@
 					"response": []
 				},
 				{
-					"name": "Create new profile",
+					"name": "Create new artist",
 					"event": [
 						{
 							"listen": "test",
@@ -916,7 +916,7 @@
 					"response": []
 				},
 				{
-					"name": "Update profile by username",
+					"name": "Update artist by username",
 					"event": [
 						{
 							"listen": "test",
@@ -1128,7 +1128,7 @@
 					"response": []
 				},
 				{
-					"name": "Delete Profile",
+					"name": "Delete Artist",
 					"event": [
 						{
 							"listen": "test",

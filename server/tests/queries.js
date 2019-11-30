@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 const casual = require('casual')
 const logs = require('../logs/chalk')
 const User = require('../models/User')
-const Profile = require('../models/Profile')
+const Artist = require('../models/Artist')
 const Post = require('../models/Post')
 const Note = require('../models/Note')
 const Upload = require('../models/Upload')
@@ -23,7 +23,7 @@ async function clean(amount) {
     logs.data(`[mongodb] cleaning items from db...`)
     await Promise.all(
         [User.deleteMany({})],
-        [Profile.insertMany({})],
+        [Artist.insertMany({})],
     )
     logs.data(`[mongodb] cleaning complete`)
 }
