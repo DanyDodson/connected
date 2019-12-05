@@ -1,0 +1,2118 @@
+{
+	"info": {
+		"_postman_id": "b56c1499-153a-4c13-9e92-0f49f063abfd",
+		"name": "seesee",
+		"description": "SeeSee API v1",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Signup User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "9d942365-5da5-428e-95ac-0281a470ac79",
+								"exec": [
+									"pm.test(\"User signup response status was 201 or 202\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([201, 202])",
+									"})",
+									"",
+									"",
+									"pm.test(\"Response is valid json data\", function () {",
+									"    pm.response.to.be.json;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "3194fcd1-80c2-4a13-8cc4-d8d4928ffc6c",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"devseesee@gmail.com\",\n    \"username\": \"seesee\",\n    \"password\": \"W2O7%%3R3QyDMue9\",\n    \"password2\": \"W2O7%%3R3QyDMue9\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/signup",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"signup"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Create User",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"username\": \"Daniel Dodson\",\n    \"email\": \"dany@gmail.com\",\n    \"password\": \"W2O7%%3R3QyDMue9\",\n    \"confirm\": \"W2O7%%3R3QyDMue9\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5025/api/users",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5025",
+									"path": [
+										"api",
+										"users"
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						}
+					]
+				},
+				{
+					"name": "Signin User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "67476eaf-a293-49b4-9364-6440fe837ed0",
+								"exec": [
+									"pm.test('User sigin response status was 200', function () { ",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response is valid json data\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"",
+									"var jsonData = pm.response.json();",
+									"",
+									"try {",
+									"    postman.setEnvironmentVariable('auth_token', jsonData.user.token);",
+									"    tests['Set env variable auth_token to response user token'] = true;",
+									"}",
+									"catch(e) {",
+									"    tests['Set var auth_token to equal response user token'] = false;",
+									"}",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"devseesee@gmail.com\",\n    \"password\": \"W2O7%%3R3QyDMue9\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/signin",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"signin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Email",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "62e61165-c11b-4edc-b8c4-b822ed9e9d7e",
+								"exec": [
+									"pm.test(\"Send verification email response status was 200\", function () {",
+									"     pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response is valid json data\", function () {",
+									"     pm.response.to.be.json;",
+									"});",
+									"",
+									"var jsonData = pm.response.json();",
+									"",
+									"try {",
+									"    postman.setEnvironmentVariable('verify_token', jsonData.token);",
+									"    tests['Set env variable verify_token to response jwt token'] = true;",
+									"}",
+									"catch(e) {",
+									"    tests['Set env variable verify_token to response jwt token'] = false;",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/verify/send",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"verify",
+								"send"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verified Email",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "fb47ae3e-b314-424c-aa69-e9d853162c29",
+								"exec": [
+									"pm.test(\"Send verified email response status was 200\", function () {",
+									"     pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response is valid json data\", function () {",
+									"     pm.response.to.be.json;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"token\": \"{{verify_token}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/verify/return",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"verify",
+								"return"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Forgot Password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "20821491-b6dd-4ab5-9ad9-b64a04ca0727",
+								"exec": [
+									"pm.test(\"Send forgot password email response status was 200\", function () {",
+									"     pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response is valid json data\", function () {",
+									"     pm.response.to.be.json;",
+									"});",
+									"",
+									"var jsonData = pm.response.json();",
+									"",
+									"try {",
+									"    postman.setEnvironmentVariable('reset_token', jsonData.token);",
+									"    tests['Set env variable reset_token to response jwt token'] = true;",
+									"}",
+									"catch(e) {",
+									"    tests['Set env variable reset_token to response jwt token'] = false;",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/forgot/send",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"forgot",
+								"send"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reset Password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "40759bbe-043c-4556-8313-d06027b6d1bf",
+								"exec": [
+									"pm.test(\"Send reset password response status was 200\", function () {",
+									"     pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response is valid json data\", function () {",
+									"     pm.response.to.be.json;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"token\": \"{{reset_token}}\",\n    \"newPassword\": \"W2O7%%3R3QyDMue9\",\n    \"newPassword2\": \"W2O7%%3R3QyDMue9\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/forgot/return",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"forgot",
+								"return"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "67476eaf-a293-49b4-9364-6440fe837ed0",
+								"exec": [
+									"pm.test(\"Delete user response status was 204\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/destroy",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"destroy"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "User Info",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "2209c718-4696-4177-abac-2fdaab6bc6d5",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "2368a5bf-ef4f-4c5d-8a05-692b99fa3661",
+								"exec": [
+									"pm.test(\"Get user data by jwt response status was 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response is valid json data\", function () {",
+									"    pm.response.to.be.json;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Get current user",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "x-auth-token",
+										"name": "Content-Type",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:5025/api/auth",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5025",
+									"path": [
+										"api",
+										"auth"
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": "{ response: ok }"
+						}
+					]
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Feeds",
+			"item": [
+				{
+					"name": "Get All Profiles",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "392b8662-f4a0-423e-8448-ef6e6e08d523",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"var responseJSON;",
+									"",
+									"try { ",
+									"    responseJSON = JSON.parse(responseBody); ",
+									"    tests['response is valid JSON'] = true;",
+									"}",
+									"catch (e) { ",
+									"    responseJSON = {}; ",
+									"    tests['response is valid JSON'] = false;",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/artists",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"artists"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all posts",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "fc881a22-1fcc-4c54-b7f0-c633b13ff066",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "2c906dea-bb84-4b57-924b-753e77cf6408",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"var responseJSON;",
+									"",
+									"try { ",
+									"    responseJSON = JSON.parse(responseBody); ",
+									"    tests['response is valid JSON'] = true;",
+									"}",
+									"catch (e) { ",
+									"    responseJSON = {}; ",
+									"    tests['response is valid JSON'] = false;",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/see",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"see"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all mediums",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "ff05d145-9544-4008-a842-e684ecf1d4c0",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"var responseJSON;",
+									"",
+									"try { ",
+									"    responseJSON = JSON.parse(responseBody); ",
+									"    tests['response is valid JSON'] = true;",
+									"}",
+									"catch (e) { ",
+									"    responseJSON = {}; ",
+									"    tests['response is valid JSON'] = false;",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/mediums",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"mediums"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all tags",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "0c21c8de-8a72-4775-8c2a-7587d41d2a57",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"var responseJSON;",
+									"",
+									"try { ",
+									"    responseJSON = JSON.parse(responseBody); ",
+									"    tests['response is valid JSON'] = true;",
+									"}",
+									"catch (e) { ",
+									"    responseJSON = {}; ",
+									"    tests['response is valid JSON'] = false;",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/tags",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tags"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Profiles",
+			"item": [
+				{
+					"name": "Get artist using username",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "39db25b2-3b9c-4842-8713-0cc66e7c38f1",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"var responseJSON;",
+									"",
+									"try { ",
+									"    responseJSON = JSON.parse(responseBody); ",
+									"    tests['response is valid JSON'] = true;",
+									"}",
+									"catch (e) { ",
+									"    responseJSON = {}; ",
+									"    tests['response is valid JSON'] = false;",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/artists/:pro_name",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"artists",
+								":pro_name"
+							],
+							"variable": [
+								{
+									"key": "pro_name",
+									"value": "danydodson"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get artist using id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "39db25b2-3b9c-4842-8713-0cc66e7c38f1",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"var responseJSON;",
+									"",
+									"try { ",
+									"    responseJSON = JSON.parse(responseBody); ",
+									"    tests['response is valid JSON'] = true;",
+									"}",
+									"catch (e) { ",
+									"    responseJSON = {}; ",
+									"    tests['response is valid JSON'] = false;",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/artists/:pro_id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"artists",
+								":pro_id"
+							],
+							"variable": [
+								{
+									"key": "pro_id",
+									"value": "5de0abb9c9ecde47a604356c"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create new artist",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "39db25b2-3b9c-4842-8713-0cc66e7c38f1",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"var responseJSON;",
+									"",
+									"try { ",
+									"    responseJSON = JSON.parse(responseBody); ",
+									"    tests['response is valid JSON'] = true;",
+									"    ",
+									"}",
+									"catch (e) { ",
+									"    responseJSON = {}; ",
+									"    tests['response is valid JSON'] = false;",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/artists/new",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"artists",
+								"new"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update artist by username",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "39db25b2-3b9c-4842-8713-0cc66e7c38f1",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"var responseJSON;",
+									"",
+									"try { ",
+									"    responseJSON = JSON.parse(responseBody); ",
+									"    tests['response is valid JSON'] = true;",
+									"    ",
+									"}",
+									"catch (e) { ",
+									"    responseJSON = {}; ",
+									"    tests['response is valid JSON'] = false;",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Dany Dodson\",\n    \"username\": \"danydodson\",\n    \"about\": \"all about me.\",\n    \"blog\": \"livejournal.com\",\n    \"instagram\": \"instagram.com\",\n    \"twitter\": \"twitter.com\",\n    \"facebook\": \"facebook.com\",\n    \"youtube\": \"youtube.com\",\n    \"linkedin\": \"linkedin.com\",\n    \"bg\": \"#FFFFFF\",\n    \"fg\": \"#AAAAAA\",\n    \"ln\": \"#24DADA\",\n    \"mbg\": \"#FFEDD4\",\n    \"mfg\": \"#7A7A7A\",\n    \"role\": \"seller\",\n    \"status\": \"dormant\",\n    \"phone\": \"8124801692\",\n    \"street\": \"377 Sheridan Ct\",\n    \"city\": \"Evansville\",\n    \"state\": \"Indiana\",\n    \"zip\": \"47710\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/artists/:pro_name",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"artists",
+								":pro_name"
+							],
+							"variable": [
+								{
+									"key": "pro_name",
+									"value": "danydodson"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Follow User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "669a3f1e-9d47-4885-b438-851cf6247173",
+								"exec": [
+									"tests[\"response code is 200\"] = responseCode.code === 200;",
+									"",
+									"var responseJSON;",
+									"",
+									"try { ",
+									"    responseJSON = JSON.parse(responseBody); ",
+									"    tests['response is valid JSON'] = true;",
+									"}",
+									"catch (e) { ",
+									"    responseJSON = {}; ",
+									"    tests['response is valid JSON'] = false;",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"profileId\": \"5de09f5138f1e9427e441960\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/artists/follow",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"artists",
+								"follow"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Unfollow User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "5b0ca9c4-fc71-4fac-8ef4-21168a06b43a",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"var responseJSON;",
+									"",
+									"try { ",
+									"    responseJSON = JSON.parse(responseBody); ",
+									"    tests['response is valid JSON'] = true;",
+									"}",
+									"catch (e) { ",
+									"    responseJSON = {}; ",
+									"    tests['response is valid JSON'] = false;",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"profileId\": \"5de09f5138f1e9427e441960\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/artists/unfollow",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"artists",
+								"unfollow"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Artist",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a7a8749c-cced-43a5-9bc0-f2afbb3ede3d",
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/artists",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"artists"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "8b73b90a-e6df-4851-8c43-43b69b3537bc",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "42f5593a-1150-4159-82b8-a27ad13db65f",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Posts",
+			"item": [
+				{
+					"name": "Create Post",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "771c8c25-e277-406a-9cbd-8e497e7525b1",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"var responseJSON;",
+									"",
+									"try { ",
+									"    responseJSON = JSON.parse(responseBody); ",
+									"    tests['response is valid JSON'] = true;",
+									"}",
+									"catch (e) { ",
+									"    responseJSON = {}; ",
+									"    tests['response is valid JSON'] = false;",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"details.mediums\": \"code\",\n    \"details.title\": \"Post Two\",\n    \"details.description\": \"one description.\",\n    \"options.critique\": true,\n    \"options.shareable\": true,\n    \"options.purchasable\": true,\n    \"details.price\": 100,\n    \"details.tags\": \"foo, bar\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/see",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"see"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Post By Slug",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "328490b6-79fc-41b3-8091-92963ec216fa",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"var responseJSON;",
+									"",
+									"try { ",
+									"    responseJSON = JSON.parse(responseBody); ",
+									"    tests['response is valid JSON'] = true;",
+									"}",
+									"catch (e) { ",
+									"    responseJSON = {}; ",
+									"    tests['response is valid JSON'] = false;",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/see/:post_slug",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"see",
+								":post_slug"
+							],
+							"variable": [
+								{
+									"key": "post_slug",
+									"value": "post-two-code-ees608"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Like Post",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a161600b-ba93-407f-bbd5-0223dbbd7cb5",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"var responseJSON;",
+									"",
+									"try { ",
+									"    responseJSON = JSON.parse(responseBody); ",
+									"    tests['response is valid JSON'] = true;",
+									"}",
+									"catch (e) { ",
+									"    responseJSON = {}; ",
+									"    tests['response is valid JSON'] = false;",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/see/like/:post_slug",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"see",
+								"like",
+								":post_slug"
+							],
+							"variable": [
+								{
+									"key": "post_slug",
+									"value": "post-two-code-z72vga"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Unlike Post",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "cb099fc6-a7c0-48b6-8c84-4312d10af863",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"var responseJSON;",
+									"",
+									"try { ",
+									"    responseJSON = JSON.parse(responseBody); ",
+									"    tests['response is valid JSON'] = true;",
+									"}",
+									"catch (e) { ",
+									"    responseJSON = {}; ",
+									"    tests['response is valid JSON'] = false;",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/see/unlike/:post_slug",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"see",
+								"unlike",
+								":post_slug"
+							],
+							"variable": [
+								{
+									"key": "post_slug",
+									"value": "two-updated-paint-83cdc2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Favorite Post",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a161600b-ba93-407f-bbd5-0223dbbd7cb5",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"var responseJSON;",
+									"",
+									"try { ",
+									"    responseJSON = JSON.parse(responseBody); ",
+									"    tests['response is valid JSON'] = true;",
+									"}",
+									"catch (e) { ",
+									"    responseJSON = {}; ",
+									"    tests['response is valid JSON'] = false;",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/see/favorite/:post_slug",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"see",
+								"favorite",
+								":post_slug"
+							],
+							"variable": [
+								{
+									"key": "post_slug",
+									"value": "post-two-code-ees608"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Unfavorite Post",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "cb099fc6-a7c0-48b6-8c84-4312d10af863",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"var responseJSON;",
+									"",
+									"try { ",
+									"    responseJSON = JSON.parse(responseBody); ",
+									"    tests['response is valid JSON'] = true;",
+									"}",
+									"catch (e) { ",
+									"    responseJSON = {}; ",
+									"    tests['response is valid JSON'] = false;",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/see/unfavorite/:post_slug",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"see",
+								"unfavorite",
+								":post_slug"
+							],
+							"variable": [
+								{
+									"key": "post_slug",
+									"value": "two-updated-paint-83cdc2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Post",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "9ed22dfb-58e2-4acc-acd0-c4e69b17f6b8",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"var responseJSON;",
+									"",
+									"try { ",
+									"    responseJSON = JSON.parse(responseBody); ",
+									"    tests['response is valid JSON'] = true;",
+									"}",
+									"catch (e) { ",
+									"    responseJSON = {}; ",
+									"    tests['response is valid JSON'] = false;",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mediums\": \"paint\",\n    \"title\": \"Two Updated\",\n    \"tags\": \"foo, bar\",\n    \"purchasable\": false\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/see/:post_slug",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"see",
+								":post_slug"
+							],
+							"variable": [
+								{
+									"key": "post_slug",
+									"value": "two-updated-paint-120ktc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete one post",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "5059da51-74a2-427b-bd29-843651c78e48",
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/see/:post_slug",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"see",
+								":post_slug"
+							],
+							"variable": [
+								{
+									"key": "post_slug",
+									"value": "new-title-paint-lcuc8m"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Comments",
+			"item": [
+				{
+					"name": "New Comment",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "903cc818-2a24-437e-b778-24ebc67be89f",
+								"exec": [
+									"var responseJSON;",
+									"",
+									"try { ",
+									"    responseJSON = JSON.parse(responseBody); ",
+									"    tests['response is valid JSON'] = true;",
+									"}",
+									"catch (e) { ",
+									"    responseJSON = {}; ",
+									"    tests['response is valid JSON'] = false;",
+									"}",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"comment\": {\n        \"details.text\": \"two new foo\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/see/:post_slug/comments",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"see",
+								":post_slug",
+								"comments"
+							],
+							"variable": [
+								{
+									"key": "post_slug",
+									"value": "post-two-code-z72vga"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Comments",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/see/:post_slug/comments",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"see",
+								":post_slug",
+								"comments"
+							],
+							"variable": [
+								{
+									"key": "post_slug",
+									"value": "two-updated-paint-83cdc2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Comment",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/see/:post_slug/comments/:comment_slug",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"see",
+								":post_slug",
+								"comments",
+								":comment_slug"
+							],
+							"variable": [
+								{
+									"key": "post_slug",
+									"value": "two-updated-paint-83cdc2"
+								},
+								{
+									"key": "comment_slug",
+									"value": "two-new-foo-gida6u"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Like Comment",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a161600b-ba93-407f-bbd5-0223dbbd7cb5",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"var responseJSON;",
+									"",
+									"try { ",
+									"    responseJSON = JSON.parse(responseBody); ",
+									"    tests['response is valid JSON'] = true;",
+									"}",
+									"catch (e) { ",
+									"    responseJSON = {}; ",
+									"    tests['response is valid JSON'] = false;",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/see/like/:post_slug/comments/:comment_slug",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"see",
+								"like",
+								":post_slug",
+								"comments",
+								":comment_slug"
+							],
+							"variable": [
+								{
+									"key": "post_slug",
+									"value": "post-two-code-z72vga"
+								},
+								{
+									"key": "comment_slug",
+									"value": "two-new-foo-h4shc2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Unlike Comment",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "cb099fc6-a7c0-48b6-8c84-4312d10af863",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"var responseJSON;",
+									"",
+									"try { ",
+									"    responseJSON = JSON.parse(responseBody); ",
+									"    tests['response is valid JSON'] = true;",
+									"}",
+									"catch (e) { ",
+									"    responseJSON = {}; ",
+									"    tests['response is valid JSON'] = false;",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/see/unlike/:post_slug/comments/:comment_slug",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"see",
+								"unlike",
+								":post_slug",
+								"comments",
+								":comment_slug"
+							],
+							"variable": [
+								{
+									"key": "post_slug",
+									"value": "two-updated-paint-83cdc2"
+								},
+								{
+									"key": "comment_slug",
+									"value": "two-new-foo-gida6u"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Comment",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"text\": \"two baz foo\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/see/:post_slug/comments/:comment_slug",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"see",
+								":post_slug",
+								"comments",
+								":comment_slug"
+							],
+							"variable": [
+								{
+									"key": "post_slug",
+									"value": "post-two-updated-paint-83cdc2"
+								},
+								{
+									"key": "comment_slug",
+									"value": "two-new-foo-22ad0d"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Comment",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f31f33da-8458-482b-872d-3515d1e256ce",
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/see/:post_slug/comments/:comment_slug",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"see",
+								":post_slug",
+								"comments",
+								":comment_slug"
+							],
+							"variable": [
+								{
+									"key": "post_slug",
+									"value": "new-title-paint-lcuc8m"
+								},
+								{
+									"key": "comment_slug",
+									"value": "new-one-foo-fkl6x9"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "95261409-1d84-4985-81c7-fcbf733f4480",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "9e353f2a-f2ff-4584-8a18-f7ba33687ddb",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"protocolProfileBehavior": {}
+}
