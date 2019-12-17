@@ -5,6 +5,7 @@
     "main": "./server/server.js",
     "description": "Social network for artists",
     "scripts": {
+        "heroku-postbuild": "npm run build",
         "build": "cd frontend && npm run build",
         "client": "cd frontend && npm start",
         "server": "cd backend/src && nodemon server"
