@@ -7,23 +7,23 @@ if (!envFound) {
 process.env.NODE_ENV = process.env.NODE_ENV || 'development'
 
 module.exports = {
+
   api: {
     prefix: '/api',
+    port: parseInt(process.env.PORT, 10),
   },
 
   url: {
-    api: process.env.API_BASE,
-    client: process.env.CLIENT_BASE
+    api: process.env.BASE_URL,
+    client: process.env.BASE_URL_CLIENT
   },
-
-  port: parseInt(process.env.PORT, 10),
 
   mongo: {
     testing: process.env.MONGODB_TESTING_URI,
     development: process.env.MONGODB_DEVELOPMENT_URI,
     production: process.env.MONGODB_PRODUCTION_URI,
   },
-  
+
   jwtSecret: process.env.JWT_SECRET,
 
   logs: {

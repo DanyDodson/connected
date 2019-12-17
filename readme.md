@@ -5,9 +5,9 @@
 ## Quick Start
 
 ```
-# change default.json file in config folder
+# create .env file in root of api directory
 
-# this file is located in config/default.json
+# create .env file in root of client directory
 
 # add uri of your mongodb connection for example
 
@@ -17,18 +17,18 @@
 
 ```bash
 # Install server dependencies
-cd server && npm install
+cd api && npm install
 
 # Install client dependencies
 cd client && npm install
 
-# Run Express server from root
+# Run api from root
 npm run server
 
-# Run React client from root
+# Run react client from root
 npm run client
 
-# Build for production
+# Build react client for production
 npm run build
 ```
 

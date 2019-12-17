@@ -8,12 +8,7 @@ const path = require('path')
 const cors = require('cors')
 const app = express()
 
-// const Honeybadger = require('honeybadger').configure({ apiKey: '70c65e55' })
-
 const expressLoader = () => {
-
-  // Use *before* all other app middleware.
-  // app.use(Honeybadger.requestHandler)
 
   app.get('/status', (req, res) => res.status(200).end())
 
@@ -42,16 +37,13 @@ const expressLoader = () => {
 
   app.use(config.api.prefix, routes)
 
-  app.listen(config.port, () => {
+  app.listen(config.api.port, () => {
     logger.info(`✌️ ${process.env.NODE_ENV} server is listening on port: ${config.port}!`)
   })
 
   app.use(errors.notFound)
   app.use(errors.unauthErrors)
   app.use(errors.serverErrors)
-
-  // Use *after* all other app middleware.
-  // app.use(Honeybadger.errorHandler)
 
 }
 
