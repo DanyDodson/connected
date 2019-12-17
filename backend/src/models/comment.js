@@ -17,12 +17,12 @@ const CommentSchema = new mongoose.Schema({
     url: String,
   },
   likes: {
-    likedBy: [{ type: mongoose.Schema.Types.String, ref: 'User' }],
+    likedBy: [{ type: ObjectId, ref: 'User' }],
     likesCount: { type: Number, default: 0 },
     liked_by_current: { type: Boolean, default: false },
   },
-  post: { type: mongoose.Schema.Types.String, ref: 'Post' },
-  user: { type: mongoose.Schema.Types.String, ref: 'User' },
+  post: { type: ObjectId, ref: 'Post' },
+  user: { type: ObjectId, ref: 'User' },
   created: { type: Date, default: Date.now },
   updated: { type: Date },
 })

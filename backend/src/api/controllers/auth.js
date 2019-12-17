@@ -75,8 +75,8 @@ exports.setVerifiedCtrl = asyncHandler(async (req, res, next) => {
  * @auth private
  */
 exports.forgotPassCtrl = asyncHandler(async (req, res, next) => {
-  const { user, mailerStatus } = await forgotPassService(req.payload.id)
-  return res.status(200).json({ user, mailerStatus })
+  const { user, resetPassToken, mailerStatus } = await forgotPassService(req.payload.id)
+  return res.status(200).json({ user, resetPassToken, mailerStatus })
 })
 
 /**
@@ -95,8 +95,9 @@ exports.resetPassCtrl = asyncHandler(async (req, res, next) => {
  * @auth private
  */
 exports.signOutCtrl = asyncHandler(async (req, res, next) => {
-  // res.clearCookie('t')
-  return res.status(200).json({ msg: 'signout route working' })
+  // const { headrs } = await signOutService(req.headers['authorization'])
+  const headrs = req.headers['authorization']
+  return res.status(200).json({ headrs })
 })
 
 /**

@@ -68,13 +68,14 @@ UserSchema.methods.generateJWT = function() {
 UserSchema.methods.generateVerifyJWT = (id) => {
   let today = new Date()
   let exp = new Date(today)
-  exp.setMinutes(today.getMinutes() + 10)
+  exp.setMinutes(today.getMinutes() + 2)
   return jwt.sign({
     jti: id,
     iss: 'seesee_api',
     scope: 'verify email',
     username: this.username,
-    getToken: req => { return req.cookies['access_token'] },
+    // getToken: req => { return req.cookies['access_token'] },
+    getToken: req => { return req.cookies['authentication'] },
     exp: parseInt(exp.getTime() / 1000),
   }, config.jwtSecret)
 }

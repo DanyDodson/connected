@@ -16,11 +16,11 @@ const PostSchema = new mongoose.Schema({
     featured: { type: Boolean, default: false },
   },
   likes: {
-    likedBy: [{ type: mongoose.Schema.Types.String, ref: 'User' }],
+    likedBy: [{ type: ObjectId, ref: 'User' }],
     likesCount: { type: Number, default: 0 },
   },
   comments: {
-    commented: [{ type: mongoose.Schema.Types.String, ref: 'Comment' }],
+    commented: [{ type: ObjectId, ref: 'Comment' }],
     commentCount: { type: Number, default: 0 },
   },
   options: {
@@ -135,9 +135,9 @@ PostSchema.methods.addComment = function(id) {
   }
 }
 
-PostSchema.methods.delComment = function(id) {
-  // const found = this.comments.commented.remove(id);
-}
+// PostSchema.methods.delComment = function(id) {
+//   const found = this.comments.commented.remove(id)
+// }
 
 PostSchema.methods.updateCommentCount = function() {
   const count = this.comments.commented.length

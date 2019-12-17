@@ -6,7 +6,6 @@ exports.sendWelcomeEmail = (email, client, token) => {
     from: 'Dany <dany@mg.dany.codes>',
     to: email,
     subject: 'Hello',
-    text: 'Please verify your account.',
     // inline: attachment,
     text: `Please use the following link to verify this email for your account: ${client}/verify${token}`,
     html: `<p>Please use the following link to verify this email for your account:</p> <p>${client}/verify/${token}</p>`
@@ -15,15 +14,14 @@ exports.sendWelcomeEmail = (email, client, token) => {
   return { delivered: 1, status: 'ok' }
 }
 
-exports.sendVerifiedEmail = (email, client, token) => {
+exports.sendVerifiedEmail = (email) => {
   const data = {
     from: 'Dany <dany@mg.dany.codes>',
     to: email,
     subject: 'Hello',
-    text: 'Your accounts been verified!',
     // inline: attachment,
-    text: `Your accounts been verified`,
-    html: `<p>Your accounts been verified</p>`
+    text: 'Your accounts been verified',
+    html: '<p>Your accounts been verified</p>'
   }
   mailgun.messages().send(data)
   return { delivered: 1, status: 'ok' }
@@ -34,7 +32,6 @@ exports.sendForgotPassEmail = (email, client, token) => {
     from: 'Dany <dany@mg.dany.codes>',
     to: email,
     subject: 'Request to reset password!',
-    text: 'Request to reset password!',
     // inline: attachment,
     text: `Reset password link: ${client}/verify${token}`,
     html: `<p>Reset password link:</p> <p>${client}/reset/${token}</p>`
@@ -43,15 +40,14 @@ exports.sendForgotPassEmail = (email, client, token) => {
   return { delivered: 1, status: 'ok' }
 }
 
-exports.sendResetPassEmail = (email, client, token) => {
+exports.sendResetPassEmail = (email) => {
   const data = {
     from: 'Dany <dany@mg.dany.codes>',
     to: email,
     subject: 'Password has been reset!',
-    text: 'Password has been reset!',
     // inline: attachment,
-    text: `Password has been reset!`,
-    html: `<p>Password has been reset!</p>`
+    text: 'Password has been reset!',
+    html: '<p>Password has been reset!</p>'
   }
   mailgun.messages().send(data)
   return { delivered: 1, status: 'ok' }

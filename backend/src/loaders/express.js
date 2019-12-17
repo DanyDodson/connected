@@ -43,7 +43,7 @@ const expressLoader = () => {
   app.use(config.api.prefix, routes)
 
   app.listen(config.port, () => {
-    logger.info(`✌️ server listening on port: ${config.port}!`)
+    logger.info(`✌️ ${process.env.NODE_ENV} server is listening on port: ${config.port}!`)
   })
 
   app.use(errors.notFound)

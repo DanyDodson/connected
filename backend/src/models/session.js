@@ -2,7 +2,7 @@ import mongoose from 'mongoose'
 
 const SessionSchema = new mongoose.Schema({
   jwt: { type: String },
-  user_id: { type: String },
+  user_id: { type: String, unique: true },
 })
 
 // SessionSchema.methods.jwtForSession = function () {
@@ -18,7 +18,7 @@ const SessionSchema = new mongoose.Schema({
 //   }, config.jwtSecret)
 // }
 
-SessionSchema.methods.toSession = function () {
+SessionSchema.methods.toSession = function() {
   return {
     _id: this._id,
     user_id: this.user_id,
