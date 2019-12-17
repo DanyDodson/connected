@@ -1,7 +1,7 @@
-import { check } from 'express-validator'
+const { check } = require('express-validator')
 
-const checkAccountVerification = [
-  check('req').custom((value, { req }) => { if (req.payload.verified === true) { throw new Error('your accounts already been vefrified') } return true }),
+const User = require('../../models/User')
+
+exports.validateIsVerified = [
+  check('req').custom((value, { req }) => { if (req.payload.verified === true || req.payload.verifyToken === {}) { throw new Error('your accounts already been verified') } return true }),
 ]
-
-export default checkAccountVerification

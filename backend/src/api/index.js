@@ -1,24 +1,11 @@
-import { Router } from 'express'
-import auth from './routes/auth'
-import users from './routes/users'
-// import artists from './routes/artists'
-// import posts from './routes/posts'
-// import tags from './routes/tags'
-// import mediums from './routes/mediums'
-// import messages from './routes/messages'
-import agendash from './routes/agendash'
+const router = require('express').Router()
 
-// // guaranteed to get dependencies
-export default () => {
-  const app = Router()
-  auth(app)
-  users(app)
-  //   artists(app)
-  //   posts(app)
-  //   tags(app)
-  //   mediums(app)
-  //   messages(app)
-  agendash(app)
+router.use('/auth', require('./routes/auth'))
+// router.use('/users', require('./users'))
+router.use('/', require('./routes/profiles'))
+// router.use('/see', require('./posts'))
+// router.use('/tags', require('./tags'))
+// router.use('/mediums', require('./mediums'))
+// router.use('/messages', require('./messages'))
 
-  return app
-}
+module.exports = router

@@ -1,10 +1,9 @@
-const { param, query, cookies, header, body, check } = require('express-validator')
-const { sanitizeBody } = require('express-validator')
-const mongoose = require('mongoose')
-const User = mongoose.model('User')
-const Post = mongoose.model('Post')
+const { param, check, sanitizeBody } = require('express-validator')
 
-exports.ckPost = [
+const User = require('../../models/User')
+const Post = require('../../models/Post')
+
+exports.validatePost = [
     param(':post_slug')
         .if(check('post_slug').exists({ checkFalsy: false, checkNull: false })).custom((value, { req }) => { return Post.findOne({ user: req.payload.id }).then(post => { if (!post || post.user.toString() !== req.payload.id.toString()) { return Promise.reject('user not authenticated') } }) })
         .if(check('post_slug').exists({ checkFalsy: false, checkNull: false })).custom((value, { req }) => { return Post.findOne({ 'links.slug': req.params.post_slug }).then(post => { if (!post) { return Promise.reject('post slug doesnt exist') } }) }),

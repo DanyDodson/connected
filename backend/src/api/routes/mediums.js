@@ -1,14 +1,9 @@
-import {
+const {
   mediums
-} from '../../controllers/mediums'
+} = require('../controllers/medium')
 
-import {
-  Router
-} from 'express'
+const router = require('express').Router()
 
-const route = Router()
+router.get('/', mediums)
 
-export default route(app => {
-  app.use('/mediums', route)
-  route.get('/', mediums)
-})
+module.exports = router

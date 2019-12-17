@@ -1,102 +1,121 @@
-import mongoose from 'mongoose'
-import config from '../config'
-import jwt from 'jsonwebtoken'
-import crypto from 'crypto'
+const mongoose = require('mongoose')
+const { ObjectId } = mongoose.Schema
+const config = require('../config')
+const jwt = require('jsonwebtoken')
+const crypto = require('crypto')
 
-const User = new mongoose.Schema({
+const UserSchema = new mongoose.Schema({
   username: String,
   email: { type: String, unique: true, index: 1 },
-  vToken: { data: String },
-  rToken: { data: String },
-  role: { type: String, default: 'user' },
-  verified: { type: Boolean, default: false },
   salt: String,
   hash: String,
-  artist: { type: mongoose.Schema.Types.String, ref: 'artist' },
+  role: {
+    type: String,
+    default: 'basic',
+    enum: ['basic', 'featured', 'admin']
+  },
+  verifyToken: { data: String },
+  resetToken: { data: String },
+  verified: { type: Boolean, default: false },
+  profile: { type: ObjectId, ref: 'Profile' },
   created: { type: Date, default: Date.now },
   updated: { type: Date },
 })
 
-// User.pre('save', function (next) {
-//   next()
-// })
+UserSchema.methods.setPassword = function(password) {
+  this.salt = crypto.randomBytes(16).toString('hex')
+  this.hash = crypto.pbkdf2Sync(password, this.salt, 10000, 512, 'sha512').toString('hex')
+}
 
-// User.methods.validPassword = function (password) {
-//   const hash = crypto.pbkdf2Sync(password, this.salt, 10000, 512, 'sha512').toString('hex')
-//   return this.hash === hash
-// }
+UserSchema.methods.validPassword = function(password) {
+  let hash = crypto.pbkdf2Sync(password, this.salt, 10000, 512, 'sha512').toString('hex')
+  return this.hash === hash
+}
 
-// User.methods.setPassword = function (password) {
-//   this.salt = crypto.randomBytes(16).toString('hex')
-//   this.hash = crypto.pbkdf2Sync(password, this.salt, 10000, 512, 'sha512').toString('hex')
-// }
+/**
+*  @named generateJWT - signs jwt with user data
+*  @desc {Object} user object containing user data to sign JWT with
+*  @sets {Object} json web token for authenticated api requests
+*/
 
-// User.methods.jwtForUser = function () {
-//   const today = new Date()
-//   const exp = new Date(today)
-//   const iat = new Date(today)
-//   iat.setHours(today.getHours() + 0)
-//   exp.setHours(today.getHours() + 2)
-//   return jwt.sign({
-//     id: this._id,
-//     iss: 'SEESEE_API',
-//     iat: parseInt(iat.getTime() / 1000),
-//     nbf: parseInt(iat.getTime() / 1000),
-//     email: this.email,
-//     username: this.username,
-//     artist: this.artist,
-//     verified: this.verified,
-//     role: this.role,
-//     vToken: this.vToken,
-//     rToken: this.rToken,
-//     exp: parseInt(exp.getTime() / 1000),
-//   }, config.jwtSecret)
-// }
+UserSchema.methods.generateJWT = function() {
+  let today = new Date()
+  let exp = new Date(today)
+  let iat = new Date(today)
+  iat.setHours(today.getHours() + 0)
+  exp.setHours(today.getHours() + 2)
+  return jwt.sign({
+    id: this._id,
+    iss: 'SEESEE_API',
+    iat: parseInt(iat.getTime() / 1000),
+    nbf: parseInt(iat.getTime() / 1000),
+    email: this.email,
+    username: this.username,
+    profile: this.profile,
+    verified: this.verified,
+    role: this.role,
+    verifyToken: this.verifyToken,
+    resetToken: this.resetToken,
+    exp: parseInt(exp.getTime() / 1000),
+  }, config.jwtSecret)
+}
 
-// User.methods.jwtForVerify = (id) => {
-//   const today = new Date()
-//   const exp = new Date(today)
-//   exp.setMinutes(today.getMinutes() + 10)
-//   return jwt.sign({
-//     jti: id,
-//     iss: 'SEESEE_API',
-//     scope: 'verify email',
-//     username: this.username,
-//     getToken: req => { return req.cookies.access_token },
-//     exp: parseInt(exp.getTime() / 1000),
-//   }, config.jwtSecret)
-// }
+/**
+ * @call jwtForVerify
+ * @desc jwt for email verification
+*/
 
-// User.methods.jwtForReset = (id) => {
-//   const today = new Date()
-//   const exp = new Date(today)
-//   exp.setMinutes(today.getMinutes() + 10)
-//   return jwt.sign({
-//     jti: id,
-//     iss: 'SEESEE_API',
-//     scope: 'reset password',
-//     username: this.username,
-//     getToken: req => { return req.cookies.access_token },
-//     exp: parseInt(exp.getTime() / 1000),
-//   }, config.jwtSecret)
-// }
+UserSchema.methods.generateVerifyJWT = (id) => {
+  let today = new Date()
+  let exp = new Date(today)
+  exp.setMinutes(today.getMinutes() + 10)
+  return jwt.sign({
+    jti: id,
+    iss: 'seesee_api',
+    scope: 'verify email',
+    username: this.username,
+    getToken: req => { return req.cookies['access_token'] },
+    exp: parseInt(exp.getTime() / 1000),
+  }, config.jwtSecret)
+}
 
-// User.methods.authJson = function () {
-//   return {
-//     _id: this._id,
-//     email: this.email,
-//     username: this.username,
-//     role: this.role,
-//     artist: this.artist,
-//     verified: this.verified,
-//     created: this.created,
-//     updated: this.updated,
-//     vToken: this.vToken,
-//     rToken: this.rToken,
-//     token: this.jwtForUser(),
-//   }
-// }
+/**
+ * @call jwtForReset
+ * @desc jwt for resetting password
+*/
 
-// User.index({ email: 1, }, { unique: true, })
+UserSchema.methods.generateResetJWT = (id) => {
+  let today = new Date()
+  let exp = new Date(today)
+  exp.setMinutes(today.getMinutes() + 10)
+  return jwt.sign({
+    jti: id,
+    iss: 'SEESEE_API',
+    scope: 'reset password',
+    username: this.username,
+    getToken: req => { return req.cookies['access_token'] },
+    exp: parseInt(exp.getTime() / 1000),
+  }, config.jwtSecret)
+}
 
-export default mongoose.model('User', User)
+/**
+ *  returns json {} for user signup & signin response
+*/
+
+UserSchema.methods.authJSON = function() {
+  return {
+    _id: this._id,
+    email: this.email,
+    username: this.username,
+    role: this.role,
+    profile: this.profile,
+    verified: this.verified,
+    created: this.created,
+    updated: this.updated,
+    resetToken: this.resetToken,
+    verifyToken: this.verifyToken,
+    authToken: this.generateJWT(),
+  }
+}
+
+module.exports = mongoose.model('User', UserSchema)

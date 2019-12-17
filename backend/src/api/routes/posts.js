@@ -1,36 +1,36 @@
 const {
-    posts,
-    newPost,
-    post,
-    upPost,
-    like,
-    unlike,
-    favorite,
-    unfavorite,
-    delPost,
-    comments,
-    newComment,
-    comment,
-    upComment,
-    likeComment,
-    unlikeComment,
-    delComment,
-} = require('../../controllers/post')
+  posts,
+  newPost,
+  post,
+  upPost,
+  like,
+  unlike,
+  favorite,
+  unfavorite,
+  delPost,
+  comments,
+  newComment,
+  comment,
+  upComment,
+  likeComment,
+  unlikeComment,
+  delComment,
+} = require('../controllers/post')
 
 const {
-    loadPostSlug,
-    loadCommentSlug,
-} = require('../../controllers/post')
+  loadPostSlug,
+  loadCommentSlug,
+} = require('../controllers/post')
 
 const {
-    preUsername,
-} = require('../../controllers/artist')
+  preUsername,
+} = require('../controllers/artist')
 
 const {
-    ckPost,
-    ckComment,
-    ckResults,
-} = require('../../validator')
+  ckPost,
+  ckComment,
+  ckResults,
+} = require('../validator')
 
 const auth = require('../auth')
 const router = require('express').Router()

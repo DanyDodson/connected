@@ -2,11 +2,10 @@
 /.vscode
 node_modules
 
-# client
-/client/node_modules
-/client/build
+# frontend
+/frontend/node_modules
+/frontend/.env
 
-# server
-/server/node_modules
-/server/config/default.json
-/server/logs/*.log
+# backend
+/backend/node_modules
+/backend/.env

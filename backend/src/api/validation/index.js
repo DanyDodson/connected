@@ -1,33 +1,35 @@
-import { validationResult } from 'express-validator'
-import { signupValidator } from './signup'
-import { signinValidator } from './signin'
-// const { ckVerify } = require('./verify')
-// const { ckReset } = require('./reset')
-// const { ckArtist } = require('./artist')
-// const { ckPost } = require('./post')
-// const { ckComment } = require('./comment')
-// const { ckFavo } = require('./favorite')
+const { validationResult } = require('express-validator')
+const { validateSignUp } = require('./signup')
+const { validateSignIn } = require('./signin')
+const { validateAuth } = require('./auth')
+const { validateReset } = require('./reset')
+const { validateIsVerified } = require('./verify')
+// const { validateProfile } = require('./profile')
+// const { validatePost } = require('./post')
+// const { validateComment } = require('./comment')
+// const { validateFavorite } = require('./favorite')
 
-const resultsValidator = (req, res, next) => {
-  // const format = ({ location, param, msg }) => `${location} [${param}]: ${msg}`
-  const format = ({ location, param, msg }) => `${msg}`
-  const results = validationResult(req).formatWith(format)
-  if (!results.isEmpty()) {
-    return res.status(422).json({
-      errors: results.array({ onlyFirstError: true })
-    })
-  }
-  next()
+let validateResults = (req, res, next) => {
+    // const format = ({ location, param, msg }) => `${location} [${param}]: ${msg}`
+    const format = ({ location, param, msg }) => `${msg}`
+    const results = validationResult(req).formatWith(format)
+    if (!results.isEmpty()) {
+        return res.status(422).json({
+            errors: results.array({ onlyFirstError: true })
+        })
+    }
+    next()
 }
 
-export {
-  signupValidator,
-  signinValidator,
-  // ckReset,
-  // ckVerify,
-  // ckArtist,
-  // ckPost,
-  // ckComment,
-  // ckFavo,
-  resultsValidator,
+module.exports = {
+    validateSignUp,
+    validateSignIn,
+    validateAuth,
+    validateReset,
+    validateIsVerified,
+    // ckvalidateProfile,
+    // ckvalidatePost,
+    // ckvalidateComment,
+    // ckvalidateFavorite,
+    validateResults,
 }

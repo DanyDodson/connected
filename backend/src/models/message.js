@@ -1,12 +1,13 @@
-import mongoose from 'mongoose'
+const mongoose = require('mongoose')
+const { ObjectId } = mongoose.Schema
 
 const MessageSchema = new mongoose.Schema({
   details: {
     message: { type: String, index: 1 },
     message_sent: Boolean,
     message_recieved: Boolean,
-    to: [{ type: mongoose.Schema.Types.String, ref: 'User' }],
-    from: [{ type: mongoose.Schema.Types.String, ref: 'User' }],
+    to: [{ type: ObjectId, ref: 'User' }],
+    from: [{ type: ObjectId, ref: 'User' }],
   },
   created: { type: Date, default: Date.now },
   updated: { type: Date },

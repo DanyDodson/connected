@@ -1,5 +1,9 @@
-import winston from 'winston'
-import config from '../config'
+const winston = require('winston')
+const morgan = require('morgan')
+const rfs = require('rotating-file-stream')
+const path = require('path')
+const chalk = require('chalk')
+const config = require('../config')
 
 const transports = []
 
@@ -18,7 +22,7 @@ if (process.env.NODE_ENV !== 'development') {
   )
 }
 
-const LoggerInstance = winston.createLogger({
+const logger = winston.createLogger({
   level: config.logs.level,
   levels: winston.config.npm.levels,
   format: winston.format.combine(
@@ -32,4 +36,4 @@ const LoggerInstance = winston.createLogger({
   transports
 })
 
-export default LoggerInstance
+module.exports = logger

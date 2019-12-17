@@ -1,12 +1,21 @@
-import mongoose from 'mongoose'
-import config from '../config'
+const mongoose = require('mongoose')
+const logger = require('./logger')
+const config = require('../config')
 
-export default async () => {
-  const connection = await mongoose.connect(config.databaseURL, {
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    useFindAndModify: false,
-    useUnifiedTopology: true
-  })
-  return connection.connection.db
+// mongoose.Promise = global.Promise
+
+const mongooseLoader = async () => {
+  try {
+    await mongoose.connect(config.mongoURL, {
+      useNewUrlParser: true,
+      useCreateIndex: true,
+      useFindAndModify: false,
+      useUnifiedTopology: true,
+    })
+  } catch (err) {
+    logger.error(err.message)
+    process.exit(1)
+  }
 }
+
+module.exports = mongooseLoader 

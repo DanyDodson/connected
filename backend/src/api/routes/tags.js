@@ -1,14 +1,9 @@
-import {
+const {
   tags
-} from '../../controllers/tag'
+} = require('../../controllers/tag')
 
-import {
-  Router
-} from 'express'
+const router = require('express').Router()
 
-const route = Router()
+router.get('/', tags)
 
-export default route(app => {
-  app.use('/tags', route)
-  route.get('/', tags)
-})
+module.exports = router

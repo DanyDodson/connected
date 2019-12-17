@@ -1,17 +1,13 @@
-import mongoose from 'mongoose'
+const { check, sanitizeBody } = require('express-validator')
 
-import {
-  check,
-  sanitizeBody
-} from 'express-validator'
+const User = require('../../models/User')
+const Profile = require('../../models/Profile')
 
-const Artist = mongoose.model('../../models/artist.js')
-
-exports.ckFavo = [
+exports.validateFavorite = [
   check('favorites.favorited')
     .custom((value, { req }) => {
-      return Artist.find({ user: req.payload.id }, { $in: { 'favorites.favorited': req.post.id } }).then(artist => {
-        if (artist) { return Promise.reject(new Error('already favorited')) }
+      return Profile.find({ user: req.payload.id }, { $in: { 'favorites.favorited': req.post.id } }).then(profile => {
+        if (profile) { return Promise.reject('already favorited') }
         return true
       })
     }),

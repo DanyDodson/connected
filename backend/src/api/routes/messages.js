@@ -1,6 +1,6 @@
 const {
-    messages
-} = require('../../controllers/message')
+  messages
+} = require('../controllers/message')
 
 const router = require('express').Router()
 
@@ -41,7 +41,7 @@ module.exports = router
 //     message.content = req.body.content
 //     message.save(function (err) {
 //       if (err)
-//         res.send(err)
+//         res.send(err);
 //       res.json({ message: 'message edited' })
 //     })
 //   })
