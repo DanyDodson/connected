@@ -1,6 +1,6 @@
-const { check, sanitizeBody } = require('express-validator')
+import { check, sanitizeBody } from 'express-validator'
 
-exports.validateSignIn = [
+const validateSignIn = [
     check('email')
         .trim()
         .escape()
@@ -17,3 +17,5 @@ exports.validateSignIn = [
         .exists({ checkFalsy: true, checkNull: true }).withMessage('password is required'),
     sanitizeBody('notifyOnReply').toBoolean()
 ]
+
+export default validateSignIn

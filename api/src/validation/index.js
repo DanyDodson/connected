@@ -1,15 +1,16 @@
-const { validationResult } = require('express-validator')
-const { validateSignUp } = require('./signup')
-const { validateSignIn } = require('./signin')
-const { validateAuth } = require('./auth')
-const { validateReset } = require('./reset')
-const { validateIsVerified } = require('./verify')
-// const { validateProfile } = require('./profile')
-// const { validatePost } = require('./post')
-// const { validateComment } = require('./comment')
-// const { validateFavorite } = require('./favorite')
+import { validationResult } from 'express-validator'
 
-let validateResults = (req, res, next) => {
+import validateSignUp from './signup'
+import validateSignIn from './signin'
+import validateAuth from './auth'
+import validateReset from './reset'
+import validateIsVerified from './verify'
+// const validateProfile = require('./profile')
+// const validatePost = require('./post')
+// const validateComment = require('./comment')
+// const validateFavorite = require('./favorite')
+
+const validateResults = (req, res, next) => {
     // const format = ({ location, param, msg }) => `${location} [${param}]: ${msg}`
     const format = ({ location, param, msg }) => `${msg}`
     const results = validationResult(req).formatWith(format)
@@ -21,7 +22,7 @@ let validateResults = (req, res, next) => {
     next()
 }
 
-module.exports = {
+export {
     validateSignUp,
     validateSignIn,
     validateAuth,

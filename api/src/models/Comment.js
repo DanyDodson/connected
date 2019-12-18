@@ -1,7 +1,6 @@
-const mongoose = require('mongoose')
-const { ObjectId } = mongoose.Schema
-const slugify = require('slugify')
-const config = require('../config')
+import mongoose from 'mongoose'
+import slugify from 'slugify'
+import config from '../config'
 
 const CommentSchema = new mongoose.Schema({
   details: {
@@ -17,12 +16,12 @@ const CommentSchema = new mongoose.Schema({
     url: String,
   },
   likes: {
-    likedBy: [{ type: ObjectId, ref: 'User' }],
+    likedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     likesCount: { type: Number, default: 0 },
     liked_by_current: { type: Boolean, default: false },
   },
-  post: { type: ObjectId, ref: 'Post' },
-  user: { type: ObjectId, ref: 'User' },
+  post: { type: mongoose.Schema.Types.ObjectId, ref: 'Post' },
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   created: { type: Date, default: Date.now },
   updated: { type: Date },
 })
@@ -85,4 +84,4 @@ CommentSchema.methods.commentToJson = function() {
 // CommentSchema.index({ 'links.parent': 1, created: 1 }, { unique: true, })
 // CommentSchema.index({ 'links.parent': 1, 'links.url': 1 }, { unique: true, })
 
-module.exports = mongoose.model('Comment', CommentSchema)
+export default mongoose.model('Comment', CommentSchema)

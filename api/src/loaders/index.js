@@ -1,15 +1,21 @@
-const mongooseLoader = require('./mongoose')
-const agendaLoader = require('./agenda')
-const expressLoader = require('./express')
-const logger = require('./logger')
+import mongooseLoader from './mongoose'
+import depInjectorLoader from './depInjector'
+import expressLoader from './express'
+import jobsLoader from './jobs'
+import logger from './logger'
+import './events'
 
-const expressApp = async (app) => {
+export default async ({ expressApp }) => {
 
-  await mongooseLoader()
-  logger.info(`✌️ mongodb loaded and connected!`)
+  const mongoConnection = await mongooseLoader()
+  logger.info('✌️ mongodb loaded and connected')
 
-  await expressLoader()
-  logger.info(`✌️ express setup and loaded!`)
+  const { agenda } = await depInjectorLoader(mongoConnection)
+  logger.info('✌️ dependency injector loaded')
+
+  await jobsLoader(agenda)
+  logger.info('✌️ agenda jobs loaded')
+
+  await expressLoader({ app: expressApp })
+  logger.info('✌️ express setup and loaded')
 }
-
-module.exports = expressApp

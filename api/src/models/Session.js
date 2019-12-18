@@ -26,4 +26,4 @@ SessionSchema.methods.toSession = function() {
   }
 }
 
-mongoose.model('Session', SessionSchema)
+export default mongoose.model('Session', SessionSchema)

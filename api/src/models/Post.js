@@ -1,7 +1,6 @@
-const mongoose = require('mongoose')
-const { ObjectId } = mongoose.Schema
-const slugify = require('slugify')
-const config = require('../config')
+import mongoose from 'mongoose'
+import slugify from 'slugify'
+import config from '../config'
 
 const PostSchema = new mongoose.Schema({
   details: {
@@ -16,11 +15,11 @@ const PostSchema = new mongoose.Schema({
     featured: { type: Boolean, default: false },
   },
   likes: {
-    likedBy: [{ type: ObjectId, ref: 'User' }],
+    likedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     likesCount: { type: Number, default: 0 },
   },
   comments: {
-    commented: [{ type: ObjectId, ref: 'Comment' }],
+    commented: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }],
     commentCount: { type: Number, default: 0 },
   },
   options: {
@@ -173,4 +172,4 @@ PostSchema.methods.postToJson = function(user) {
 PostSchema.index({ 'links.slug': 1, created: 1, }, { unique: true })
 PostSchema.index({ 'links.slug': 1, 'links.url': 1, }, { unique: true })
 
-module.exports = mongoose.model('Post', PostSchema)
+export default mongoose.model('Post', PostSchema)

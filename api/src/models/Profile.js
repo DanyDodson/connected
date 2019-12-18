@@ -1,6 +1,5 @@
-const mongoose = require('mongoose')
-const { ObjectId } = mongoose.Schema
-const config = require('../config')
+import mongoose from 'mongoose'
+import config from '../config'
 
 const ProfileSchema = new mongoose.Schema({
   details: {
@@ -15,13 +14,13 @@ const ProfileSchema = new mongoose.Schema({
     url: String
   },
   friends: {
-    following: [{ type: ObjectId, ref: 'User' }],
-    followers: [{ type: ObjectId, ref: 'User' }],
+    following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     followingCount: { type: Number, default: 0 },
     followersCount: { type: Number, default: 0 },
   },
   favorites: {
-    favorited: [{ type: ObjectId, ref: 'Post' }],
+    favorited: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }],
     favoritedCount: { type: Number, default: 0 },
   },
   socials: {
@@ -60,8 +59,8 @@ const ProfileSchema = new mongoose.Schema({
       stars: { type: Number, default: 0 },
     },
   },
-  user: { type: ObjectId, ref: 'User' },
-  posts: [{ type: ObjectId, ref: 'Post' }],
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  posts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }],
   created: { type: Date, default: Date.now },
   updated: { type: Date },
 })
@@ -159,4 +158,4 @@ ProfileSchema.methods.profileToJson = function(profile) {
   }
 }
 
-module.exports = mongoose.model('Profile', ProfileSchema)
+export default mongoose.model('Profile', ProfileSchema)

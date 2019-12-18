@@ -1,6 +1,6 @@
-const { check, sanitizeBody } = require('express-validator')
+import { check, sanitizeBody } from 'express-validator'
 
-exports.validateReset = [
+const validateReset = [
     check('newPassword')
         .trim()
         .escape()
@@ -18,3 +18,5 @@ exports.validateReset = [
         .if(check('newPassword').exists({ checkFalsy: false, checkNull: false })).custom((value, { req }) => value === req.body.newPassword).withMessage('passwords dont match'),
     sanitizeBody('notifyOnReply').toBoolean()
 ]
+
+export default validateReset

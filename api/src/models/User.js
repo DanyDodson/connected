@@ -1,12 +1,15 @@
-const mongoose = require('mongoose')
-const { ObjectId } = mongoose.Schema
-const config = require('../config')
-const jwt = require('jsonwebtoken')
-const crypto = require('crypto')
+import mongoose from 'mongoose'
+import config from '../config'
+import jwt from 'jsonwebtoken'
+import crypto from 'crypto'
 
-const UserSchema = new mongoose.Schema({
+const Schema = mongoose.Schema
+const ObjectId = Schema.Types.ObjectId
+
+const UserSchema = new Schema({
   username: String,
-  email: { type: String, unique: true, index: 1 },
+  email: { type: String },
+  // email: { type: String, unique: true, index: 1 },
   salt: String,
   hash: String,
   role: {
@@ -65,7 +68,7 @@ UserSchema.methods.generateJWT = function() {
  * @desc jwt for email verification
 */
 
-UserSchema.methods.generateVerifyJWT = (id) => {
+UserSchema.methods.generateVerifyJWT = (id, username) => {
   let today = new Date()
   let exp = new Date(today)
   exp.setMinutes(today.getMinutes() + 2)
@@ -73,8 +76,8 @@ UserSchema.methods.generateVerifyJWT = (id) => {
     jti: id,
     iss: 'seesee_api',
     scope: 'verify email',
-    username: this.username,
-    // getToken: req => { return req.cookies['access_token'] },
+    username: username,
+    getToken: req => { return req.cookies['access_token'] },
     getToken: req => { return req.cookies['authentication'] },
     exp: parseInt(exp.getTime() / 1000),
   }, config.jwtSecret)
@@ -85,7 +88,7 @@ UserSchema.methods.generateVerifyJWT = (id) => {
  * @desc jwt for resetting password
 */
 
-UserSchema.methods.generateResetJWT = (id) => {
+UserSchema.methods.generateResetJWT = (id, username) => {
   let today = new Date()
   let exp = new Date(today)
   exp.setMinutes(today.getMinutes() + 10)
@@ -93,7 +96,7 @@ UserSchema.methods.generateResetJWT = (id) => {
     jti: id,
     iss: 'SEESEE_API',
     scope: 'reset password',
-    username: this.username,
+    username: username,
     getToken: req => { return req.cookies['access_token'] },
     exp: parseInt(exp.getTime() / 1000),
   }, config.jwtSecret)
@@ -119,4 +122,4 @@ UserSchema.methods.authJSON = function() {
   }
 }
 
-module.exports = mongoose.model('User', UserSchema)
+export default mongoose.model('User', UserSchema)

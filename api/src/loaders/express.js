@@ -1,14 +1,12 @@
-const express = require('express')
-const session = require('express-session')
-const errors = require('../api/middleware/errors')
-const config = require('../config')
-const logger = require('./logger')
-const routes = require('../api')
-const path = require('path')
-const cors = require('cors')
-const app = express()
+import cors from 'cors'
+import express from 'express'
+import path from 'path'
+import session from 'express-session'
+import config from '../config'
+import routes from '../api'
+import errors from '../middleware/errors'
 
-const expressLoader = () => {
+export default ({ app: app }) => {
 
   app.get('/status', (req, res) => res.status(200).end())
 
@@ -27,24 +25,11 @@ const expressLoader = () => {
     saveUninitialized: false,
   }))
 
-  require('../models/User')
-  require('../models/Post')
-  require('../models/Profile')
-  require('../models/Comment')
-  require('../models/Message')
+  require('../auth/passport')
 
-  require('../services/passport')
-
-  app.use(config.api.prefix, routes)
-
-  app.listen(config.api.port, () => {
-    logger.info(`✌️ ${process.env.NODE_ENV} server is listening on port: ${config.port}!`)
-  })
+  app.use(config.api.prefix, routes())
 
   app.use(errors.notFound)
   app.use(errors.unauthErrors)
   app.use(errors.serverErrors)
-
 }
-
-module.exports = expressLoader

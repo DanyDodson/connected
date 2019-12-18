@@ -1,6 +1,6 @@
-const { check, sanitizeBody } = require('express-validator')
+import { check, sanitizeBody } from 'express-validator'
 
-exports.validateComment = [
+const validateComment = [
     check('content')
         .trim()
         .escape()
@@ -9,3 +9,5 @@ exports.validateComment = [
     ,
     sanitizeBody('notifyOnReply').toBoolean()
 ]
+
+export default validateComment

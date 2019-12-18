@@ -1,11 +1,11 @@
-const router = require('express').Router()
+import { Router } from 'express'
+import auth from '../routes/auth'
+import agendash from '../routes/agendash'
 
-router.use('/auth', require('./routes/auth'))
-// router.use('/users', require('./users'))
-router.use('/', require('./routes/profiles'))
-// router.use('/see', require('./posts'))
-// router.use('/tags', require('./tags'))
-// router.use('/mediums', require('./mediums'))
-// router.use('/messages', require('./messages'))
+export default () => {
+  const app = Router()
+  auth(app)
+  agendash(app)
 
-module.exports = router
+  return app
+}

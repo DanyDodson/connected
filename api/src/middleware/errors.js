@@ -1,4 +1,4 @@
-module.exports = {
+export default {
 
   notFound: (req, res, next) => {
     const err = new Error('Not Found')
@@ -24,4 +24,5 @@ module.exports = {
     res.status(status)
     res.json({ error })
   }
+
 }

@@ -1,9 +1,8 @@
-const { param, body, check, sanitizeBody } = require('express-validator')
+import { param, body, check, sanitizeBody } from 'express-validator'
+import Artist from '../../models/Artist'
+import User from '../../models/User'
 
-const Artist = require('../../models/Artist')
-const User = require('../../models/User')
-
-exports.validateProfile = [
+const validateProfile = [
   check('artists')
     .custom((value, { req }) => { return Artist.find().then(artists => { if (!artists) { return Promise.reject(new Error('no artists found')) } return true }) }),
   param(':pro_name')
@@ -47,3 +46,5 @@ exports.validateProfile = [
     .unescape(),
   sanitizeBody('notifyOnReply').toBoolean()
 ]
+
+export default validateProfile
