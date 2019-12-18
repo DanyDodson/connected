@@ -8,8 +8,7 @@ const ObjectId = Schema.Types.ObjectId
 
 const UserSchema = new Schema({
   username: String,
-  email: { type: String },
-  // email: { type: String, unique: true, index: 1 },
+  email: { type: String, unique: true, index: 1 },
   salt: String,
   hash: String,
   role: {
@@ -50,6 +49,7 @@ UserSchema.methods.generateJWT = function() {
   return jwt.sign({
     id: this._id,
     iss: 'SEESEE_API',
+    scope: 'user_auth',
     iat: parseInt(iat.getTime() / 1000),
     nbf: parseInt(iat.getTime() / 1000),
     email: this.email,
@@ -64,7 +64,7 @@ UserSchema.methods.generateJWT = function() {
 }
 
 /**
- * @call jwtForVerify
+ * @call generateVerifyJWT
  * @desc jwt for email verification
 */
 
@@ -75,7 +75,7 @@ UserSchema.methods.generateVerifyJWT = (id, username) => {
   return jwt.sign({
     jti: id,
     iss: 'seesee_api',
-    scope: 'verify email',
+    scope: 'verify_email',
     username: username,
     getToken: req => { return req.cookies['access_token'] },
     getToken: req => { return req.cookies['authentication'] },
@@ -84,7 +84,7 @@ UserSchema.methods.generateVerifyJWT = (id, username) => {
 }
 
 /**
- * @call jwtForReset
+ * @call generateResetJWT
  * @desc jwt for resetting password
 */
 
@@ -94,8 +94,8 @@ UserSchema.methods.generateResetJWT = (id, username) => {
   exp.setMinutes(today.getMinutes() + 10)
   return jwt.sign({
     jti: id,
-    iss: 'SEESEE_API',
-    scope: 'reset password',
+    iss: 'seesee_api',
+    scope: 'reset_password',
     username: username,
     getToken: req => { return req.cookies['access_token'] },
     exp: parseInt(exp.getTime() / 1000),
@@ -103,7 +103,8 @@ UserSchema.methods.generateResetJWT = (id, username) => {
 }
 
 /**
- *  returns json {} for user signup & signin response
+ * @call authJSON
+ * @desc jwt for payload
 */
 
 UserSchema.methods.authJSON = function() {

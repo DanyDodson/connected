@@ -12,9 +12,10 @@ export default ({ app: app }) => {
 
   app.head('/status', (req, res) => res.status(200).end())
 
-  app.enable('trust proxy')
   app.use(cors())
+  app.enable('trust proxy')
   app.use(require('method-override')())
+
   app.use(express.json())
   app.use(express.static(path.join(__dirname, '/public')))
 
@@ -25,7 +26,7 @@ export default ({ app: app }) => {
     saveUninitialized: false,
   }))
 
-  require('../auth/passport')
+  require('../auth')
 
   app.use(config.api.prefix, routes())
 

@@ -1,7 +1,7 @@
 import { check, sanitizeBody } from 'express-validator'
 import User from '../models/User'
 
-const validateSignUp = [
+export default [
     check('email')
         .trim()
         .escape()
@@ -38,5 +38,3 @@ const validateSignUp = [
         .if(check('password').exists({ checkFalsy: false, checkNull: false })).custom((value, { req }) => value === req.body.password).withMessage('passwords dont match'),
     sanitizeBody('notifyOnReply').toBoolean()
 ]
-
-export default validateSignUp

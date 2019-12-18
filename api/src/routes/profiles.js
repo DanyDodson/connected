@@ -1,41 +1,42 @@
-const {
+import {
   testingCtrl,
   profilesFeedCtrl,
   newProfileCtrl,
-  // proName,
-  // artists,
-  // newArtist,
-  // artist,
-  // upArtist,
-  // addFollowing,
-  // addFollower,
-  // delFollowing,
-  // delFollower,
-  // delArtist,
+  getProfileCtrl,
+  updateProfileCtrl,
+  addFollowingCtrl,
+  addFollowerCtrl,
+  delFollowingCtrl,
+  delFollowerCtrl,
+  delProfileCtrl,
   loadUsernamesCtrl,
-} = require('../controllers/profile')
+} from '../controllers/profile'
 
-// const {
-// ckArtist,
-// ckResults,
-// } = require('../validation')
+import {
+  validateProfile,
+  validateResults,
+} from '../validation'
 
-const auth = require('../middleware/auth')
-const router = require('express').Router()
-const asyncHandler = require('express-async-handler')
+import { Router } from 'express'
+import auth from '../middleware/auth'
+import asyncHandler from 'express-async-handler'
 
-router.get('/artists/testing', auth.optional, testingCtrl)
-router.get('/artists', auth.optional, asyncHandler(profilesFeedCtrl))
+export default (app, route = Router()) => {
 
-router.post('/artist/create', auth.required, newProfileCtrl)
-// router.get('/:pro_name', auth.opt, profile)
-// router.put('/:pro_name', auth.req, ckArtist, ckResults, upProfile)
+  app.use('/', route)
 
-// router.put('/follow', auth.req, addFollowing, addFollower)
-// router.put('/unfollow', auth.req, delFollowing, delFollower)
+  route.get('/artists/testing', auth.optional, testingCtrl)
+  route.get('/artists', auth.optional, asyncHandler(profilesFeedCtrl))
 
-// router.delete('/delete', auth.req, delProfile)
+  route.post('/artist/create', auth.required, asyncHandler(newProfileCtrl))
+  route.get('/artist/:username', auth.optional, asyncHandler(getProfileCtrl))
+  route.put('/artist/:username', auth.required, validateProfile, validateResults, asyncHandler(updateProfileCtrl))
 
-router.param('username', loadUsernamesCtrl)
+  route.put('/follow', auth.required, addFollowingCtrl, asyncHandler(addFollowerCtrl))
+  route.put('/unfollow', auth.required, delFollowingCtrl, asyncHandler(delFollowerCtrl))
 
-module.exports = router
+  route.delete('/delete', auth.required, asyncHandler(delProfileCtrl))
+
+  route.param('username', loadUsernamesCtrl)
+
+}

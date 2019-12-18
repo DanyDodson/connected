@@ -1,14 +1,14 @@
-import { validationResult } from 'express-validator'
-
 import validateSignUp from './signup'
 import validateSignIn from './signin'
 import validateAuth from './auth'
 import validateReset from './reset'
 import validateIsVerified from './verify'
-// const validateProfile = require('./profile')
-// const validatePost = require('./post')
-// const validateComment = require('./comment')
-// const validateFavorite = require('./favorite')
+import validateProfile from './profile'
+import validatePost from './post'
+import validateComment from './comment'
+import validateFavorite from './favorite'
+
+import { validationResult } from 'express-validator'
 
 const validateResults = (req, res, next) => {
     // const format = ({ location, param, msg }) => `${location} [${param}]: ${msg}`
@@ -28,9 +28,9 @@ export {
     validateAuth,
     validateReset,
     validateIsVerified,
-    // ckvalidateProfile,
-    // ckvalidatePost,
-    // ckvalidateComment,
-    // ckvalidateFavorite,
+    validateProfile,
+    validatePost,
+    validateComment,
+    validateFavorite,
     validateResults,
 }

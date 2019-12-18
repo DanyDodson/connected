@@ -1,8 +1,8 @@
 import { param, check, sanitizeBody } from 'express-validator'
-import User from '../../models/User'
-import Post from '../../models/Post'
+import User from '../models/User'
+import Post from '../models/Post'
 
-const validatePost = [
+export default [
     param(':post_slug')
         .if(check('post_slug').exists({ checkFalsy: false, checkNull: false })).custom((value, { req }) => { return Post.findOne({ user: req.payload.id }).then(post => { if (!post || post.user.toString() !== req.payload.id.toString()) { return Promise.reject('user not authenticated') } }) })
         .if(check('post_slug').exists({ checkFalsy: false, checkNull: false })).custom((value, { req }) => { return Post.findOne({ 'links.slug': req.params.post_slug }).then(post => { if (!post) { return Promise.reject('post slug doesnt exist') } }) }),
@@ -44,5 +44,3 @@ const validatePost = [
         .unescape(),
     sanitizeBody('notifyOnReply').toBoolean()
 ]
-
-export default validatePost

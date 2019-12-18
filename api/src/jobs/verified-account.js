@@ -1,24 +1,24 @@
 import { Container } from 'typedi'
 import MailerService from '../services/mailer'
 
-export default class SendWelcomeJob {
+export default class SendVerifiedJob {
 
   async handler (job, done) {
     const logger = Container.get('logger')
 
     try {
 
-      logger.debug('✔️ send verify account job triggered')
+      logger.debug('✔️ send verified account confirmation job triggered')
 
       const { email } = job.attrs.data
       const mailerServiceInstance = Container.get(MailerService)
-      await mailerServiceInstance.sendVerifyEmail(email)
+      await mailerServiceInstance.sendVerifiedEmail(email)
 
-      logger.debug('✔️ send verify account job finished')
+      logger.debug('✔️ send verified account confirmation job finished')
 
       done()
     } catch (e) {
-      logger.error('❌ error with send verify account job: %o', e)
+      logger.error('❌ error with send verify account confirmation job: %o', e)
       done(e)
     }
   }

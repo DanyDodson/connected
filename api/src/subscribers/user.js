@@ -1,5 +1,4 @@
 import { Container } from 'typedi'
-import EventDispatcher from '../decorators/dispatcher'
 import events from './events'
 import mongoose from 'mongoose'
 
@@ -19,7 +18,6 @@ export default class UserSubscriber {
       throw e
     }
   }
-
 
   /**
    * A great example of an event that you want to handle

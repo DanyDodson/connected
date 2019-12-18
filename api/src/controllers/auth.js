@@ -1,8 +1,9 @@
 import { Container } from 'typedi'
-import asyncHandler from 'express-async-handler'
 import AuthService from '../services/auth'
 import passport from 'passport'
-import logger from '../loaders/logger'
+
+import asyncHandler from 'express-async-handler'
+
 /**
  * @desc auth test route
  * @route GET /api/auth
@@ -58,8 +59,9 @@ export const getUserCtrl = asyncHandler(async (req, res, next) => {
  */
 export const setVerifiedCtrl = asyncHandler(async (req, res, next) => {
   const authServiceInstance = await Container.get(AuthService)
-  const { user, mailerStatus } = await authServiceInstance.setVerifiedService(req.payload.verifyToken)
-  return res.status(200).json({ user, mailerStatus })
+  const { user } = await authServiceInstance.setVerifiedService(req.payload.verifyToken)
+  // return res.status(200).json({ user })
+  next()
 })
 
 /**
@@ -69,8 +71,8 @@ export const setVerifiedCtrl = asyncHandler(async (req, res, next) => {
  */
 export const forgotPassCtrl = asyncHandler(async (req, res, next) => {
   const authServiceInstance = await Container.get(AuthService)
-  const { user, resetPassToken, mailerStatus } = await authServiceInstance.forgotPassService(req.payload.id)
-  return res.status(200).json({ user, resetPassToken, mailerStatus })
+  const { user, resetPassToken } = await authServiceInstance.forgotPassService(req.payload.id)
+  return res.status(200).json({ user, resetPassToken })
 })
 
 /**
@@ -80,8 +82,8 @@ export const forgotPassCtrl = asyncHandler(async (req, res, next) => {
  */
 export const resetPassCtrl = asyncHandler(async (req, res, next) => {
   const authServiceInstance = await Container.get(AuthService)
-  const { user, mailerStatus } = await authServiceInstance.resetPassService(req.body, req.payload.id)
-  return res.status(200).json({ user, mailerStatus })
+  const { user } = await authServiceInstance.resetPassService(req.body, req.payload.id)
+  return res.status(200).json({ user })
 })
 
 /**

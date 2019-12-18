@@ -4,22 +4,19 @@ export default class MailerService {
 
   constructor (container) {
     this.emailClient = container.get('emailClient')
+    this.mailData = {
+      from: `Dany Dodson ❤️ ${config.mailgun.name}`,
+    }
   }
 
   async sendVerifyEmail (email, client, verifyToken) {
-    // sendWelcomeEmail (email) {
     const data = {
-      from: 'Dany ❤️ <dany@mg.dany.codes>',
-      // from: `Dany <${this.emailClient.domain}>`,
+      from: this.mailData.from,
       to: email,
       subject: 'Welocome, Please verify your email address to get started !',
-      // inline: attachment,
-      // text: `Please use the following link to verify this email for your account: ${client}/verify${verifyToken}`,
-      // html: `<p>Please use the following link to verify this email for your account:</p> <p>${client}/verify/${verifyToken}</p>`,
       template: "verify_email",
-      // 'h:X-Mailgun-Variables': { "verifyToken": `${verifyToken}`, "client": `${client}` },
-      'v:verifyToken': verifyToken,
       'v:client': client,
+      'v:verifyToken': verifyToken,
       'o:tag': ['automated', 'signup'],
     }
     await this.emailClient.messages().send(data)
@@ -28,60 +25,55 @@ export default class MailerService {
 
   async sendVerifiedEmail (email) {
     const data = {
-      from: 'Dany <dany@mg.dany.codes>',
+      from: this.mailData.from,
       to: email,
-      subject: 'Hello',
-      // inline: attachment,
+      subject: 'Your accounts been verified !',
       text: 'Your accounts been verified',
       html: '<p>Your accounts been verified</p>',
       'o:tag': ['automated', 'verified'],
     }
-    this.emailClient.messages().send(data)
+    await this.emailClient.messages().send(data)
     return { delivered: 1, status: 'ok' }
   }
 
-  async sendForgotPassEmail (email, client, token) {
+  async sendForgotPasswordEmail (email, client, resetPassToken) {
     const data = {
-      from: 'Dany <dany@mg.dany.codes>',
+      from: this.mailData.from,
       to: email,
-      subject: 'Request to reset password!',
-      // inline: attachment,
-      text: `Reset password link: ${client}/verify${token}`,
-      html: `<p>Reset password link:</p> <p>${client}/reset/${token}</p>`,
+      subject: 'Request to reset password ?',
+      text: `Reset password link: ${client}/verify${resetPassToken}`,
+      html: `<p>Reset password link:</p> <p>${client}/reset/${resetPassToken}</p>`,
       'o:tag': ['automated', 'forgot password']
     }
     await this.emailClient.messages().send(data)
     return { delivered: 1, status: 'ok' }
   }
 
-  async sendResetPassEmail (email) {
+  async sendPasswordResetEmail (email) {
     const data = {
-      from: 'Dany <dany@mg.dany.codes>',
+      from: this.mailData.from,
       to: email,
-      subject: 'Password has been reset!',
-      // inline: attachment,
-      text: 'Password has been reset!',
-      html: '<p>Password has been reset!</p>',
+      subject: 'Your password has been reset !',
+      text: 'Password has been reset !',
+      html: '<p>Password has been reset !</p>',
       'o:tag': ['automated', 'reset password']
     }
     await this.emailClient.messages().send(data)
     return { delivered: 1, status: 'ok' }
   }
 
-  // startEmailSequence (sequence, user) {
-
-  //   if (!user.email) {
-  //     throw new Error('No email provided')
-  //   }
-  //   // @TODO Add example of an email sequence implementation
-  //   // Something like
-  //   // 1 - Send first email of the sequence
-  //   // 2 - Save the step of the sequence in database
-  //   // 3 - Schedule job for second email in 1-3 days or whatever
-  //   // Every sequence can have its own behavior so maybe
-  //   // the pattern Chain of Responsibility can help here.
-  //   return { delivered: 1, status: 'ok' }
-  // }
+  async startEmailSequence (sequence, user) {
+    if (!user.email) {
+      throw new Error('no email provided')
+    }
+    /** @TODO Add example of an email sequence implementation
+     * Something like
+     * 1 - Send first email of the sequence
+     * 2 - Save the step of the sequence in database
+     * 3 - Schedule job for second email in 1-3 days or whatever
+     * Every sequence can have its own behavior so maybe
+     * the pattern Chain of Responsibility can help here.
+     * return { delivered: 1, status: 'ok' }
+   */
+  }
 }
-
-// export default MailerService

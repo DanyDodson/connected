@@ -1,8 +1,8 @@
 import { check, sanitizeBody } from 'express-validator'
-import Profile from '../../models/Profile'
-import User from '../../models/User'
+import Profile from '../models/Profile'
+import User from '../models/User'
 
-const validateFavorite = [
+export default [
   check('favorites.favorited')
     .custom((value, { req }) => {
       return Profile.find({ user: req.payload.id }, { $in: { 'favorites.favorited': req.post.id } }).then(profile => {
@@ -12,5 +12,3 @@ const validateFavorite = [
     }),
   sanitizeBody('notifyOnReply').toBoolean()
 ]
-
-export default validateFavorite

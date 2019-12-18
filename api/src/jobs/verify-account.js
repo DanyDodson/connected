@@ -10,9 +10,9 @@ export default class SendWelcomeJob {
 
       logger.debug('✔️ send verify account job triggered')
 
-      const { email } = job.attrs.data
+      const { email, client, verifyToken } = job.attrs.data
       const mailerServiceInstance = Container.get(MailerService)
-      await mailerServiceInstance.sendVerifyEmail(email)
+      await mailerServiceInstance.sendVerifyEmail(email, client, verifyToken)
 
       logger.debug('✔️ send verify account job finished')
 

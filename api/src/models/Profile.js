@@ -1,7 +1,10 @@
 import mongoose from 'mongoose'
 import config from '../config'
 
-const ProfileSchema = new mongoose.Schema({
+const Schema = mongoose.Schema
+const ObjectId = Schema.Types.ObjectId
+
+const ProfileSchema = new Schema({
   details: {
     name: String,
     email: String,
@@ -14,13 +17,13 @@ const ProfileSchema = new mongoose.Schema({
     url: String
   },
   friends: {
-    following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-    followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    following: [{ type: ObjectId, ref: 'User' }],
+    followers: [{ type: ObjectId, ref: 'User' }],
     followingCount: { type: Number, default: 0 },
     followersCount: { type: Number, default: 0 },
   },
   favorites: {
-    favorited: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }],
+    favorited: [{ type: ObjectId, ref: 'Post' }],
     favoritedCount: { type: Number, default: 0 },
   },
   socials: {
@@ -59,8 +62,8 @@ const ProfileSchema = new mongoose.Schema({
       stars: { type: Number, default: 0 },
     },
   },
-  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  posts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }],
+  user: { type: ObjectId, ref: 'User' },
+  posts: [{ type: ObjectId, ref: 'Post' }],
   created: { type: Date, default: Date.now },
   updated: { type: Date },
 })
@@ -71,7 +74,7 @@ ProfileSchema.pre('findOneAndUpdate', function(next) {
 })
 
 ProfileSchema.methods.setProfileUrl = function() {
-  this.links.url = config.url.client + '/artists/' + this.details.username
+  this.links.url = config.url.client + '/profiles/' + this.details.username
   this.save()
 }
 

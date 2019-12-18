@@ -26,7 +26,8 @@ export default {
   jwtSecret: `${process.env.JWT_SECRET}`,
   mailgun: {
     apiKey: `${process.env.MAILGUN_API_KEY}`,
-    domain: `${process.env.MAILGUN_DOMAIN}`
+    domain: `${process.env.MAILGUN_DOMAIN}`,
+    name: `${process.env.MAILGUN_SMTP_NAME}`,
   },
   agenda: {
     collection: process.env.AGENDA_DB_COLLECTION,

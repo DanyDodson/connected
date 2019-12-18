@@ -11,6 +11,10 @@ import {
 } from '../controllers/auth'
 
 import {
+  newProfileCtrl,
+} from '../controllers/profile'
+
+import {
   validateSignUp,
   validateSignIn,
   validateIsVerified,
@@ -27,13 +31,12 @@ export default (app, route = Router()) => {
   app.use('/auth', route)
 
   route.get('/testing', testingCtrl)
-  route.post('/signup', asyncHandler(signUpCtrl))
-  // route.post('/signup', validateSignUp, validateResults, asyncHandler(signUpCtrl))
+  route.post('/signup', validateSignUp, validateResults, asyncHandler(signUpCtrl))
   route.post('/signin', validateSignIn, validateResults, asyncHandler(signInCtrl))
 
   route.get('/details', auth.required, asyncHandler(getUserCtrl))
 
-  route.put('/verify-email', auth.required, validateIsVerified, validateResults, asyncHandler(setVerifiedCtrl))
+  route.put('/verify-email', auth.required, validateIsVerified, validateResults, asyncHandler(setVerifiedCtrl), asyncHandler(newProfileCtrl))
   route.put('/forgot-password', auth.required, asyncHandler(forgotPassCtrl))
   route.put('/reset-password', auth.required, validateReset, validateResults, asyncHandler(resetPassCtrl))
 

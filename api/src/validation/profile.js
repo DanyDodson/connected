@@ -1,34 +1,34 @@
 import { param, body, check, sanitizeBody } from 'express-validator'
-import Artist from '../../models/Artist'
-import User from '../../models/User'
+import Profile from '../models/Profile'
+import User from '../models/User'
 
-const validateProfile = [
-  check('artists')
-    .custom((value, { req }) => { return Artist.find().then(artists => { if (!artists) { return Promise.reject(new Error('no artists found')) } return true }) }),
-  param(':pro_name')
-    .custom((value, { req }) => { return User.findById(req.payload.id).then(user => { if (!user) { return Promise.reject(new Error('you must be logged in')) } }) })
-    .custom((value, { req }) => { return User.findById(req.payload.id).then(user => { if (user.verified !== true) { return Promise.reject(new Error('you must verify your account before modifying your artist')) } }) })
-    .custom((value, { req }) => { return Artist.findOne({ 'details.username': req.params.pro_name }).then(Artist => { if (!Artist) { return Promise.reject(new Error('artist doesnt exist')) } }) }),
+export default [
+  check('profiles')
+    .custom((value, { req }) => { return Profile.find().then(profiles => { if (!profiles) { return Promise.reject(new Error('(validation) no profiles found')) } return true }) }),
+  param(':username')
+    .custom((value, { req }) => { return User.findById(req.payload.id).then(user => { if (!user) { return Promise.reject(new Error('(validation) you must be logged in')) } }) })
+    .custom((value, { req }) => { return User.findById(req.payload.id).then(user => { if (user.verified !== true) { return Promise.reject(new Error('(validation) you must verify your account before modifying your profile')) } }) }),
+  // .custom((value, { req }) => { return Profile.findOne({ 'details.username': req.params.username }).then(profile => { if (!profile) { return Promise.reject(new Error('(validation) profile doesnt exist')) } }) }),
   body('username')
     .trim()
     .escape()
     .unescape()
     .isString()
-    .exists({ checkFalsy: true, checkNull: true }).withMessage('username cant be empty')
+    .exists({ checkFalsy: true, checkNull: true }).withMessage('(validation) username cant be empty')
     .bail()
-    .isAlphanumeric().withMessage('username can only contain letters and numbers')
-    .isLength({ min: 3, max: 30 }).withMessage('username requires a minimum of 3 characters')
-    .custom((value, { req }) => { return Artist.findOne({ 'details.username': value }).then(artist => { if (artist && artist.details.username !== req.payload.username) { return Promise.reject(new Error('username already in use')) } }) }),
+    .isAlphanumeric().withMessage('(validation) username can only contain letters and numbers')
+    .isLength({ min: 3, max: 30 }).withMessage('(validation) username requires a minimum of 3 characters')
+    .custom((value, { req }) => { return Profile.findOne({ 'details.username': value }).then(profile => { if (profile && profile.details.username !== req.payload.username) { return Promise.reject(new Error('(validation) username already in use')) } }) }),
   body('details.name')
     .trim()
     .escape()
     .unescape()
-    .isLength({ min: 0, max: 25 }).withMessage('maxium of 25 characters'),
+    .isLength({ min: 0, max: 25 }).withMessage('(validation) maxium of 25 characters'),
   body('details.about')
     .trim()
     .escape()
     .unescape()
-    .isLength({ min: 0, max: 25 }).withMessage('maxium of 25 characters'),
+    .isLength({ min: 0, max: 25 }).withMessage('(validation) maxium of 25 characters'),
   body('socials.*')
     .trim()
     .escape()
@@ -46,5 +46,3 @@ const validateProfile = [
     .unescape(),
   sanitizeBody('notifyOnReply').toBoolean()
 ]
-
-export default validateProfile
