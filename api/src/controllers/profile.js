@@ -77,15 +77,10 @@ export const updateProfileCtrl = asyncHandler(async (req, res, next) => {
  * @auth private
  */
 export const addFollowingCtrl = asyncHandler(async (req, res, next) => {
-    // const profileServiceInstance = await Container.get(ProfileService)
-    // const { profile } = await profileServiceInstance.addFollowingService(req.payload.id, req.body)
-
-    // const profile = await Profile.findOne({ user: req.payload.id })
-    // if (profile.isFollowing(req.body.profileId)) return res.status(200).json({ msg: `your already following this user` })
-    // await profile.setFollowing(req.body.profileId)
-    // await profile.followingCount()
-    // next()
-    return
+    const profileServiceInstance = await Container.get(ProfileService)
+    await profileServiceInstance.addFollowingService(req.payload.id, req.body.profile_id)
+    next()
+    // next(req.body.profile)
 })
 
 /**
@@ -94,15 +89,9 @@ export const addFollowingCtrl = asyncHandler(async (req, res, next) => {
  * @auth private
  */
 export const addFollowerCtrl = asyncHandler(async (req, res, next) => {
-    // const profileServiceInstance = await Container.get(ProfileService)
-    // const { profile } = await profileServiceInstance.addFollowerService(req.payload.id, req.body)
-
-    // const follower = await Profile.findOne({ user: req.payload.id })
-    // const profile = await Profile.findOne({ _id: req.body.profileId })
-    // await profile.setFollower(follower._id)
-    // await profile.followerCount()
-    // return res.status(200).json({ msg: `your now following ${profile.details.username}` })
-    return
+    const profileServiceInstance = await Container.get(ProfileService)
+    const { otherProfile } = await profileServiceInstance.addFollowerService(req.payload.id, req.body.profile_id)
+    return res.status(200).json({ msg: `your now following ${otherProfile.details.username}` })
 })
 
 /**
@@ -111,15 +100,9 @@ export const addFollowerCtrl = asyncHandler(async (req, res, next) => {
  * @auth private
 */
 export const delFollowingCtrl = asyncHandler(async (req, res, next) => {
-    // const profileServiceInstance = await Container.get(ProfileService)
-    // const { profile } = await profileServiceInstance.delFollowingService(req.payload.id, req.body)
-
-    // const profile = await Profile.findOne({ user: req.payload.id })
-    // if (!profile.isFollowing(req.body.profileId)) return res.status(200).json({ msg: `your not following this user` })
-    // await profile.delFollowing(req.body.profileId)
-    // await profile.followingCount()
-    // next()
-    return
+    const profileServiceInstance = await Container.get(ProfileService)
+    await profileServiceInstance.delFollowingService(req.payload.id, req.body.profile_id)
+    next()
 })
 
 /**
@@ -128,15 +111,10 @@ export const delFollowingCtrl = asyncHandler(async (req, res, next) => {
  * @auth private
 */
 export const delFollowerCtrl = asyncHandler(async (req, res, next) => {
-    // const profileServiceInstance = await Container.get(ProfileService)
-    // const { profile } = await profileServiceInstance.delFollowerService(req.payload.id, req.body)
+    const profileServiceInstance = await Container.get(ProfileService)
+    const { follower } = await profileServiceInstance.delFollowerService(req.payload.id, req.body.profile_id)
+    return res.status(200).json({ msg: `your no longer following ${follower.details.username}` })
 
-    // const follower = await Profile.findOne({ user: req.payload.id })
-    // const followed = await Profile.findOne({ _id: req.body.profileId })
-    // await followed.delFollower(follower._id)
-    // await followed.followerCount()
-    // return res.status(200).json({ msg: `your no longer following ${followed.details.username}` })
-    return
 })
 
 /**
@@ -145,13 +123,7 @@ export const delFollowerCtrl = asyncHandler(async (req, res, next) => {
  * @auth private
 */
 export const delProfileCtrl = asyncHandler(async (req, res, next) => {
-    // const profileServiceInstance = await Container.get(ProfileService)
-    // const { profile } = await profileServiceInstance.delProfileService(req.payload.id)
-
-    // const profile = await Profile.findOne({ user: req.payload.id })
-    // if (!profile) return res.status(404).json({ msg: 'cannot remove null profile' })
-    // if (profile.user.toString() !== req.payload.id.toString()) return res.status(401).json({ msg: 'user not authenticated to do that' })
-    // await profile.remove()
-    // return res.status(204).json({ msg: 'successfully removed profile' })
-    return
+    const profileServiceInstance = await Container.get(ProfileService)
+    await profileServiceInstance.delProfileService(req.payload.id)
+    return res.status(204).json({ msg: 'successfully removed profile' })
 })

@@ -6,9 +6,9 @@
     "description": "Social network for artists",
     "scripts": {
         "heroku-postbuild": "npm run build",
-        "build": "cd frontend && npm run build",
-        "client": "cd frontend && npm start",
-        "server": "cd backend/src && nodemon server"
+        "build": "cd client && npm run build",
+        "client": "cd client && npm start",
+        "server": "cd api/src && nodemon app"
     },
     "repository": {
         "type": "git",

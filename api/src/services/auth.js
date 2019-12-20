@@ -14,7 +14,7 @@ export default class AuthService {
   }
 
   async signUpService (userInput) {
-    this.logger.debug('0️⃣ calling sign up endpoint with body')
+    this.logger.debug('0️⃣  calling sign up endpoint')
     const user = await new this.userModel(userInput)
     if (!user) throw new Error(err)
     await user.setPassword(userInput.password)

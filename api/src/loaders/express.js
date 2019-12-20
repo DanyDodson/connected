@@ -3,7 +3,7 @@ import express from 'express'
 import path from 'path'
 import session from 'express-session'
 import config from '../config'
-import routes from '../api'
+import routes from '../routes'
 import errors from '../middleware/errors'
 
 export default ({ app: app }) => {

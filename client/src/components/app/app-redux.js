@@ -13,7 +13,7 @@ import Routes from '../routes/routes-view'
 
 import './App.css'
 
-// LogRocket.init('r5uhu6/seesee')
+// LogRocket.init(`${process.env.REACT_APP_LOG_ROCKET_ID})
 // setupLogRocketReact(LogRocket)
 
 // LogRocket.identify('r5uhu6', {
@@ -38,7 +38,7 @@ const App = () => {
           <Navbar />
           <Switch>
             <Route exact path='/' component={Landing} />
-            <Route component={Routes} />
+            {/* <Route component={Routes} /> */}
           </Switch>
         </Fragment>
       </Router>

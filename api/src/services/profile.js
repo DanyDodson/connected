@@ -90,29 +90,57 @@ export default class ProfileService {
     return { profile }
   }
 
-  async addFollowingService (id, body) {
-    logger.debug('0️⃣  calling service: %o')
-    return { user }
+  async addFollowingService (user_id, profile_id) {
+    logger.debug('0️⃣  calling add following endpoint')
+    const userProfile = await this.ProfileModel.findOne({ user: user_id })
+    /**
+     * @fix get user profile object instead of profile index
+     * 
+     * if (userProfile.isFollowing(profile)) return res.status(200).json({ msg: `your already following this user` })
+    */
+    await userProfile.setFollowing(profile_id)
+    await userProfile.followingCount()
+    return { userProfile }
   }
 
-  async addFollowerService (id, body) {
-    logger.debug('0️⃣  calling service: %o')
-    return { user }
+  async addFollowerService (user_id, profile_id) {
+    logger.debug('0️⃣  calling add follower endpoint')
+    const follower = await this.ProfileModel.findOne({ user: user_id })
+    const otherProfile = await this.ProfileModel.findOne({ _id: profile_id })
+    await otherProfile.setFollower(follower._id)
+    await otherProfile.followerCount()
+    return { otherProfile }
   }
 
-  async delFollowingService (id, body) {
-    logger.debug('0️⃣  calling service: %o')
-    return { user }
+  async delFollowingService (user_id, profile_id) {
+    logger.debug('0️⃣  calling delete following endpoint')
+    const userProfile = await this.ProfileModel.findOne({ user: user_id })
+    /**
+     * @fix get user profile object instead of profile index
+     * 
+     * if (!userProfile.isFollowing(req.body.profileId)) return res.status(200).json({ msg: `your not following this user` })
+    */
+    await userProfile.delFollowing(profile_id)
+    await userProfile.followingCount()
+    return { userProfile }
   }
 
-  async delFollowerService (id, body) {
-    logger.debug('0️⃣  calling service: %o')
-    return { user }
+  async delFollowerService (user_id, profile_id) {
+    logger.debug('0️⃣  calling delete follower endpoint')
+    const follower = await this.ProfileModel.findOne({ user: user_id })
+    const followed = await this.ProfileModel.findOne({ _id: profile_id })
+    await followed.delFollower(follower._id)
+    await followed.followerCount()
+    return { follower }
   }
 
-  async delProfileService (id) {
-    logger.debug('0️⃣  calling service: %o')
-    return { user }
+  async delProfileService (user_id) {
+    logger.debug('0️⃣  calling delete profile endpoint')
+    const profile = await this.ProfileModel.findOne({ user: user_id })
+    if (!profile) return res.status(404).json({ msg: 'cannot remove null profile' })
+    if (profile.user.toString() !== user_id.toString()) return res.status(401).json({ msg: 'user not authenticated to do that' })
+    await profile.remove()
+    return
   }
 
 }
