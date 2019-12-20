@@ -24,8 +24,6 @@ import {
 } from '../validation'
 
 import auth from '../middleware/auth'
-import roles from '../middleware/roles'
-
 import { Router } from 'express'
 import asyncHandler from 'express-async-handler'
 

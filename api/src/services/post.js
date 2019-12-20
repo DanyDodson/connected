@@ -38,7 +38,7 @@ export default class PostService {
     await post.save()
     await this.ProfileModel.updateOne({ user: user_id }, { $push: { posts: post._id } })
     this.logger.debug('✔️  new post created and pushed to profile')
-    return { post, user }
+    return { post }
   }
 
   async getPostService (post) {
@@ -48,45 +48,45 @@ export default class PostService {
     return { post }
   }
 
-  // async updatePostService () {
-  //   this.logger.debug('0️⃣  calling update post endpoint')
-  //   let post = req.post
-  //   const {
-  //     mediums,
-  //     title,
-  //     description,
-  //     tags,
-  //     price,
-  //     critique,
-  //     shareable,
-  //     purchasable,
-  //   } = req.body
-  //   if (mediums) post.details.mediums = mediums.split(', ').map(medium => medium.trim()) || post.details.mediums
-  //   if (title) post.details.title = title || post.details.title
-  //   if (description) post.details.description = description || post.details.description
-  //   if (tags) post.details.tags = tags.split(', ').map(tag => tag.trim()) || post.details.tags
-  //   if (price) post.details.price = price || post.details.price
-  //   if (critique) post.options.critique = critique || post.options.critique
-  //   if (shareable) post.options.shareable = shareable || post.options.shareable
-  //   if (purchasable) post.options.purchasable = purchasable || post.options.purchasable
-  //   // post.updated = Date.now()
-  //   await Post.findOneAndUpdate({ 'links.slug': req.post.links.slug }, { $set: post }, { new: true, upsert: true })
-  //   if (post.options.purchasable) { await artist.addListed(post._id) }
-  //   if (!post.options.purchasable) { await artist.addPosted(post._id) }
-  //   // await post.setslug()
-  //   // await post.seturl()
-  //   // await post.save()
-  //   if (post.comments.commentCount > 0) {
-  //     await Comment.updateMany({ post: { $in: [post._id] } }, { $set: { 'links.parent': post.links.slug } }, { upsert: true })
-  //     let comments = await Comment.find({ post: { $in: [post._id] } })
-  //     comments.forEach(comment => {
-  //       comment.seturl()
-  //       comment.save()
-  //     })
-  //   }
-  //   this.logger.debug('✔️  post updated and returned')
-  //   return { post }
-  // }
+  async updatePostService () {
+    this.logger.debug('0️⃣  calling update post endpoint')
+    let post = req.post
+    const {
+      mediums,
+      title,
+      description,
+      tags,
+      price,
+      critique,
+      shareable,
+      purchasable,
+    } = req.body
+    if (mediums) post.details.mediums = mediums.split(', ').map(medium => medium.trim()) || post.details.mediums
+    if (title) post.details.title = title || post.details.title
+    if (description) post.details.description = description || post.details.description
+    if (tags) post.details.tags = tags.split(', ').map(tag => tag.trim()) || post.details.tags
+    if (price) post.details.price = price || post.details.price
+    if (critique) post.options.critique = critique || post.options.critique
+    if (shareable) post.options.shareable = shareable || post.options.shareable
+    if (purchasable) post.options.purchasable = purchasable || post.options.purchasable
+    // post.updated = Date.now()
+    await Post.findOneAndUpdate({ 'links.slug': req.post.links.slug }, { $set: post }, { new: true, upsert: true })
+    if (post.options.purchasable) { await artist.addListed(post._id) }
+    if (!post.options.purchasable) { await artist.addPosted(post._id) }
+    // await post.setslug()
+    // await post.seturl()
+    // await post.save()
+    if (post.comments.commentCount > 0) {
+      await Comment.updateMany({ post: { $in: [post._id] } }, { $set: { 'links.parent': post.links.slug } }, { upsert: true })
+      let comments = await Comment.find({ post: { $in: [post._id] } })
+      comments.forEach(comment => {
+        comment.seturl()
+        comment.save()
+      })
+    }
+    this.logger.debug('✔️  post updated and returned')
+    return { post }
+  }
 
   // async likePostService () {
   //   this.logger.debug('0️⃣  calling new post endpoint')

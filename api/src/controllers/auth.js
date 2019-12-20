@@ -61,7 +61,6 @@ export const getUserCtrl = asyncHandler(async (req, res, next) => {
 export const setVerifiedCtrl = asyncHandler(async (req, res, next) => {
   const authServiceInstance = await Container.get(AuthService)
   const { user } = await authServiceInstance.setVerifiedService(req.payload.verifyToken)
-  // return res.status(200).json({ user })
   next()
 })
 

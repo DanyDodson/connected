@@ -40,7 +40,7 @@ export default (app, route = Router()) => {
 
   route.post('/see/new', auth.required, validatePost, validateResults, asyncHandler(newPostCtrl))
   route.get('/see/one/:post_slug', auth.optional, asyncHandler(getPostCtrl))
-  // route.put('/see/it/:post_slug', auth.required, validatePost, validateResults, asyncHandler(updatePostCtrl))
+  route.put('/see/one/:post_slug', auth.required, validatePost, validateResults, asyncHandler(updatePostCtrl))
   // route.delete('/delete', auth.required, asyncHandler(delPostCtrl))
 
   // route.put('/see/like/:post_slug', auth.required, asyncHandler(likePostCtrl))

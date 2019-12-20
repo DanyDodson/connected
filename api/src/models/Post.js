@@ -2,6 +2,8 @@ import mongoose from 'mongoose'
 import slugify from 'slugify'
 import config from '../config'
 
+import User from './User'
+
 const PostSchema = new mongoose.Schema({
   details: {
     mediums: { type: [String], index: 1 },
@@ -63,7 +65,7 @@ const PostSchema = new mongoose.Schema({
     colors: Object,
   },
   user: { type: mongoose.Schema.Types.String, ref: 'User' },
-  artist: { type: mongoose.Schema.Types.String, ref: 'Artist' },
+  profile: { type: mongoose.Schema.Types.String, ref: 'Profile' },
   created: { type: Date, default: Date.now },
   updated: { type: Date },
 })
@@ -150,7 +152,7 @@ PostSchema.methods.isFavorite = function(id) {
   })
 }
 
-PostSchema.methods.postToJson = function(user) {
+PostSchema.methods.postToJson = function(profile) {
   return {
     _id: this._id,
     details: this.details,
@@ -163,8 +165,8 @@ PostSchema.methods.postToJson = function(user) {
     uploads: this.uploads,
     created: this.created,
     updated: this.updated,
-    user: this.user.authJson(user),
-    profile: this.profile.profileToJson(user),
+    user: this.user.authJson(),
+    profile: this.profile.profileToJson(profile),
     favorite: user ? user.isFavorite(this._id) : false,
   }
 }

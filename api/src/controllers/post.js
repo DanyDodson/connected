@@ -45,7 +45,7 @@ export const loadCommentSlugService = asyncHandler(async (req, res, next, commen
 export const getAllPostsCtrl = asyncHandler(async (req, res, next) => {
     const postServiceInstance = await Container.get(PostService)
     const { posts } = await postServiceInstance.getAllPostsService()
-    return res.status(200).send(posts)
+    return res.status(200).json(posts)
 })
 
 /**
@@ -56,7 +56,7 @@ export const getAllPostsCtrl = asyncHandler(async (req, res, next) => {
 export const newPostCtrl = asyncHandler(async (req, res, next) => {
     const postServiceInstance = await Container.get(PostService)
     const { post, user } = await postServiceInstance.newPostService(req.payload.id, req.body)
-    return res.status(200).send(post.postToJson(user))
+    return res.status(200).json(post)
 })
 
 /**
@@ -66,7 +66,7 @@ export const newPostCtrl = asyncHandler(async (req, res, next) => {
 */
 export const getPostCtrl = asyncHandler(async (req, res, next) => {
     const postServiceInstance = await Container.get(PostService)
-    const { post } = await postServiceInstance.getPostService(req.post)
+    const { post, profile } = await postServiceInstance.getPostService(req.post)
     return res.status(200).json(post)
 })
 
@@ -75,14 +75,11 @@ export const getPostCtrl = asyncHandler(async (req, res, next) => {
  * @route PUT /api/see/:post_slug
  * @auth private
 */
-// export const updatePostCtrl = asyncHandler(async (req, res, next) => {
-//     const postServiceInstance = await Container.get(PostService)
-//     const { post } = await postServiceInstance.updatePostService()
-
-//     const artist = await Artist.findOne({ user: req.payload.id })
-
-//     return res.status(200).json(post)
-// })
+export const updatePostCtrl = asyncHandler(async (req, res, next) => {
+    const postServiceInstance = await Container.get(PostService)
+    const { post } = await postServiceInstance.updatePostService()
+    return res.status(200).json(post)
+})
 
 /**
  * @desc like a post

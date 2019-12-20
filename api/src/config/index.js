@@ -15,7 +15,7 @@ export default {
 
   env: process.env.NODE_ENV,
 
-  jwtSecret: `${process.env.JWT_SECRET}`,
+  jwtSecret: process.env.JWT_SECRET,
 
   url: {
     api: process.env.BASE_URL,
