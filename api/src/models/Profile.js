@@ -103,8 +103,8 @@ ProfileSchema.methods.favoriteCount = function() {
 }
 
 ProfileSchema.methods.isFollowing = function(id) {
-  return this.friends.following.some(function(followId) {
-    return followId.toString() === id.toString()
+  return this.friends.following.some(function(foundId) {
+    return foundId.toString() === id.toString()
   })
 }
 

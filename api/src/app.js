@@ -4,11 +4,14 @@ import expressApp from './loaders'
 import express from 'express'
 const app = express()
 
+// require('newrelic')
+
 const startServer = async () => {
+
   await expressApp({ expressApp: app })
 
-  app.listen(config.api.port, () => {
-    logger.info(`✌️ ${process.env.NODE_ENV} server port: ${config.api.port}`)
+  app.listen(config.port, () => {
+    logger.info(`✌️ ${config.env} server listening on port ${config.port}`)
   })
 
 }

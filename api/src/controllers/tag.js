@@ -1,30 +1,40 @@
-// cleans up async
-const ash = require('express-async-handler')
+// import { Container } from 'typedi'
+// import AuthService from '../services/tag'
 
-// db schemas
-const mongoose = require('mongoose')
-const Post = mongoose.model('Post')
+// import asyncHandler from 'express-async-handler'
+
+/**
+ * @desc tags test route
+ * @route GET /api/tags
+ * @auth public
+*/
+// export const testingCtrl = asyncHandler(async (req, res, next) => {
+//   const authServiceInstance = await Container.get(AuthService)
+//   const msg = await authServiceInstance.testingService()
+//   return res.status(201).json({ msg: msg })
+//   return
+// })
 
 /**
  * @desc runs on paths containing :tags
  * @route PARAM /:tags
  * @auth public
-*/
-
-exports.loadTags = ash(async (req, res, next, tag) => {
-  const tags = await Post.find({ 'details.tags': tag })
-  if (!tags) return res.status(400).json({ err: 'no tags found' })
-  req.tags = tags
-  return next()
-})
+ */
+// export const loadTagsCtrl = asyncHandler(async (req, res, next) => {
+//   const tags = await Post.find({ 'details.tags': tag })
+//   if (!tags) return res.status(400).json({ err: 'no tags found' })
+//   req.tags = tags
+//   return next()
+//   return
+// })
 
 /**
  * @desc gets all tags
  * @route GET /api/tags
  * @auth public
-*/
-
-exports.tags = ash(async (req, res) => {
-  const tags = await Post.find().distinct('details.tags')
-  return res.status(200).json(tags)
-})
+ */
+// export const getAllTagsCtrl = asyncHandler(async (req, res, next) => {
+//   const tags = await Post.find().distinct('details.tags')
+//   return res.status(200).json(tags)
+//   return
+// })

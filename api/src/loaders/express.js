@@ -28,7 +28,7 @@ export default ({ app: app }) => {
 
   require('../auth')
 
-  app.use(config.api.prefix, routes())
+  app.use(config.apiPrefix, routes())
 
   app.use(errors.notFound)
   app.use(errors.unauthErrors)

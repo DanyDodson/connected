@@ -45,10 +45,10 @@ UserSchema.methods.generateJWT = function() {
   let exp = new Date(today)
   let iat = new Date(today)
   iat.setHours(today.getHours() + 0)
-  exp.setHours(today.getHours() + 2)
+  exp.setHours(today.getHours() + 1)
   return jwt.sign({
     id: this._id,
-    iss: 'SEESEE_API',
+    iss: 'seesee_api',
     scope: 'user_auth',
     iat: parseInt(iat.getTime() / 1000),
     nbf: parseInt(iat.getTime() / 1000),
@@ -77,8 +77,7 @@ UserSchema.methods.generateVerifyJWT = (id, username) => {
     iss: 'seesee_api',
     scope: 'verify_email',
     username: username,
-    getToken: req => { return req.cookies['access_token'] },
-    getToken: req => { return req.cookies['authentication'] },
+    // getToken: req => { return req.cookies['authentication'] },
     exp: parseInt(exp.getTime() / 1000),
   }, config.jwtSecret)
 }
@@ -97,7 +96,7 @@ UserSchema.methods.generateResetJWT = (id, username) => {
     iss: 'seesee_api',
     scope: 'reset_password',
     username: username,
-    getToken: req => { return req.cookies['access_token'] },
+    // getToken: req => { return req.cookies['authentication'] },
     exp: parseInt(exp.getTime() / 1000),
   }, config.jwtSecret)
 }

@@ -1,9 +1,15 @@
-const {
-  mediums
-} = require('../controllers/medium')
+import {
+  testingCtrl,
+} from '../controllers/medium'
 
-const router = require('express').Router()
+import auth from '../middleware/auth'
+import asyncHandler from 'express-async-handler'
+import { Router } from 'express'
 
-router.get('/', mediums)
+export default (app, route = Router()) => {
 
-module.exports = router
+  app.use('/mediums', route)
+
+  route.get('/testing', auth.optional, asyncHandler(testingCtrl))
+
+}

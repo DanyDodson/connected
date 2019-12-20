@@ -1,12 +1,13 @@
-const {
-  messages
-} = require('../controllers/message')
+import { Router } from 'express'
 
-const router = require('express').Router()
+export default (app, route = Router()) => {
 
-router.get('/test', messages)
+  app.use('/messages', route)
 
-module.exports = router
+  route.get('/')
+  
+}
+
 
 
 // router.get('/', auth, async (req, res) => {

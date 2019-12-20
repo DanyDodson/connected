@@ -1,57 +1,59 @@
 {
-    "name": "connected-server",
-    "version": "0.1.0",
-    "engines": {
-        "node": ">=12.x.x"
-    },
-    "description": "Social network for artists",
-    "main": "src/app.js",
-    "scripts": {
-        "server": "nodemon --exec babel-node src/app.js",
-        "start": "node --exec babel-node src/app.js",
-        "pm2": "pm2 start src/app.js --name seesee --watch",
-        "inspect": "nodemon --inspect src/app.js",
-        "test": "cross-env NODE_ENV=test jest --testTimeout=10000",
-        "lint": "npm run lint:js ",
-        "lint:eslint": "eslint --ignore-path .gitignore",
-        "lint:js": "npm run lint:eslint src/",
-        "lint:fix": "npm run lint:js -- --fix"
-    },
-    "dependencies": {
-        "agenda": "^2.3.0",
-        "cors": "^2.8.5",
-        "dotenv": "^8.2.0",
-        "errorhandler": "^1.5.1",
-        "express": "^4.17.1",
-        "express-async-handler": "^1.1.4",
-        "express-basic-auth": "^1.2.0",
-        "express-jwt": "^5.3.1",
-        "express-session": "^1.17.0",
-        "express-validator": "^6.3.0",
-        "helmet": "^3.21.2",
-        "jsonwebtoken": "^8.5.1",
-        "mailgun-js": "^0.22.0",
-        "method-override": "^3.0.0",
-        "mongoose": "^5.8.1",
-        "passport": "^0.4.0",
-        "passport-local": "^1.0.0",
-        "rotating-file-stream": "^2.0.0",
-        "slugify": "^1.3.6",
-        "typedi": "^0.8.0",
-        "winston": "^3.2.1"
-    },
-    "devDependencies": {
-        "@babel/core": "^7.7.7",
-        "@babel/node": "^7.7.7",
-        "@babel/preset-env": "^7.7.7",
-        "cross-env": "^6.0.3",
-        "jest": "^24.9.0",
-        "nodemon": "^2.0.2"
-    },
-    "jest": {
-        "testEnvironment": "node",
-        "coveragePathIgnorePatterns": [
-            "/node_modules/"
-        ]
-    }
+  "name": "connected-server",
+  "version": "0.1.0",
+  "engines": {
+    "node": ">=12.x.x"
+  },
+  "description": "Social network for artists",
+  "main": "src/app.js",
+  "scripts": {
+    "server": "nodemon --exec babel-node src/app.js",
+    "start": "node --exec babel-node src/app.js",
+    "pm2": "pm2 start src/app.js --name seesee --watch",
+    "inspect": "nodemon --inspect src/app.js",
+    "test": "cross-env NODE_ENV=test jest --testTimeout=10000",
+    "lint:eslint": "eslint --ignore-path .gitignore",
+    "lint:js": "npm run lint:eslint src/",
+    "lint": "npm run lint:js",
+    "lint:fix": "npm run lint:js -- --fix"
+  },
+  "dependencies": {
+    "agenda": "^2.3.0",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "errorhandler": "^1.5.1",
+    "express": "^4.17.1",
+    "express-async-handler": "^1.1.4",
+    "express-basic-auth": "^1.2.0",
+    "express-jwt": "^5.3.1",
+    "express-session": "^1.17.0",
+    "express-validator": "^6.3.0",
+    "helmet": "^3.21.2",
+    "jsonwebtoken": "^8.5.1",
+    "mailgun-js": "^0.22.0",
+    "method-override": "^3.0.0",
+    "mongoose": "^5.8.1",
+    "newrelic": "^6.2.0",
+    "passport": "^0.4.0",
+    "passport-local": "^1.0.0",
+    "rotating-file-stream": "^2.0.0",
+    "slugify": "^1.3.6",
+    "typedi": "^0.8.0",
+    "winston": "^3.2.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.7.7",
+    "@babel/node": "^7.7.7",
+    "@babel/preset-env": "^7.7.7",
+    "cross-env": "^6.0.3",
+    "eslint": "^6.7.2",
+    "jest": "^24.9.0",
+    "nodemon": "^2.0.2"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ]
+  }
 }

@@ -30,8 +30,8 @@ export default (app, route = Router()) => {
 
   route.post('/artist/create', auth.required, asyncHandler(newProfileCtrl))
 
-  route.put('/artist/follow', auth.required, asyncHandler(addFollowingCtrl), asyncHandler(addFollowerCtrl))
-  route.put('/artist/unfollow', auth.required, asyncHandler(delFollowingCtrl), asyncHandler(delFollowerCtrl))
+  route.put('/artist/follow/:username', auth.required, asyncHandler(addFollowingCtrl), asyncHandler(addFollowerCtrl))
+  route.put('/artist/unfollow/:username', auth.required, asyncHandler(delFollowingCtrl), asyncHandler(delFollowerCtrl))
 
   route.get('/artist/:username', auth.optional, asyncHandler(getProfileCtrl))
   route.put('/artist/:username', auth.required, validateProfile, validateResults, asyncHandler(updateProfileCtrl))

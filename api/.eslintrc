@@ -1,18 +1,24 @@
-// {
-//     "parserOptions": {
-//         "ecmaVersion": 2017
-//     },
-//     "env": {
-//         "browser": true,
-//         "commonjs": true,
-//         "node": true,
-//         "es6": true
-//     },
-//     "extends": "eslint:recommended",
-//     "rules": {
-//         // "indent": ["error", "tab"],
-//         // "linebreak-style": ["error", "unix"],
-//         "quotes": ["error", "single"],
-//         "semi": ["error", "never"]
-//     }
-// }
+{
+  "env": {
+    "browser": true,
+    "es6": true
+    // "node": true, ?
+    // "commonjs": true, ?
+  },
+  "extends": "eslint:recommended",
+  "globals": {
+    "Atomics": "readonly",
+    "SharedArrayBuffer": "readonly"
+  },
+  "parserOptions": {
+    "ecmaVersion": 2018,
+    // "ecmaVersion": 2017 ?
+    "sourceType": "module"
+  },
+  "rules": {
+    "semi": ["error", "never"],
+    "quotes": ["error", "single"],
+    "no-unused-vars": "off",
+    "no-undef": "off"
+  }
+}

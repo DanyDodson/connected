@@ -12,11 +12,11 @@ import Message from '../models/Message'
 
 export default (mongoConnection) => {
   try {
-    Container.set('userModal', User)
-    Container.set('profileModal', Profile)
-    Container.set('postModal', Post)
-    Container.set('commentModal', Comment)
-    Container.set('messageModal', Message)
+    Container.set('UserModel', User)
+    Container.set('ProfileModel', Profile)
+    Container.set('PostModel', Post)
+    Container.set('CommentModel', Comment)
+    Container.set('MessageModel', Message)
 
     const agendaInstance = agendaFactory(mongoConnection)
 

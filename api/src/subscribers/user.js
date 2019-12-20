@@ -9,8 +9,8 @@ export default class UserSubscriber {
     const logger = Container.get('logger')
     try {
 
-      const userModel = Container.get('userModel')
-      userModel.update({ _id }, { $set: { lastLogin: new Date() } })
+      const UserModel = Container.get('UserModel')
+      UserModel.update({ _id }, { $set: { lastLogin: new Date() } })
       // MailService.startSequence('user.welcome', { email, name })
     } catch (e) {
       logger.error(`🔥 Error on event ${events.user.signUp}: %o`, e)

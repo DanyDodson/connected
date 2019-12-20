@@ -1,64 +1,66 @@
-const {
-  posts,
-  newPost,
-  post,
-  upPost,
-  like,
-  unlike,
-  favorite,
-  unfavorite,
-  delPost,
-  comments,
-  newComment,
-  comment,
-  upComment,
-  likeComment,
-  unlikeComment,
-  delComment,
-} = require('../controllers/post')
+import {
+  testingCtrl,
+  getAllPostsCtrl,
+  newPostCtrl,
+  getPostCtrl,
+  updatePostCtrl,
+  likePostCtrl,
+  unLikePostCtrl,
+  favoritePostCtrl,
+  unFavoritePostCtrl,
+  delPostCtrl,
+  getAllCommentsCtrl,
+  newCommentCtrl,
+  getCommentCtrl,
+  updateCommentCtrl,
+  likeCommentCtrl,
+  unlikeCommentCtrl,
+  delCommentCtrl,
+  loadPostSlugCtrl,
+  loadCommentSlugCtrl,
+} from '../controllers/post'
 
-const {
-  loadPostSlug,
-  loadCommentSlug,
-} = require('../controllers/post')
+import {
+  validatePost,
+  validateComment,
+  validateResults,
+} from '../validation'
 
-const {
-  preUsername,
-} = require('../controllers/artist')
+import { Router } from 'express'
+import auth from '../middleware/auth'
+import asyncHandler from 'express-async-handler'
 
-const {
-  ckPost,
-  ckComment,
-  ckResults,
-} = require('../validator')
+export default (app, route = Router()) => {
 
-const auth = require('../auth')
-const router = require('express').Router()
+  app.use('/', route)
 
-router.put('/like/:post_slug', auth.req, like)
-router.put('/unlike/:post_slug', auth.req, unlike)
+  route.get('/see/testing', auth.optional, asyncHandler(testingCtrl))
 
-router.put('/favorite/:post_slug', auth.req, favorite)
-router.put('/unfavorite/:post_slug', auth.req, unfavorite)
+  route.get('/see/all', auth.optional, asyncHandler(getAllPostsCtrl))
 
-router.put('/:post_slug/comments/like/:comment_slug', auth.req, likeComment)
-router.put('/:post_slug/comments/unlike/:comment_slug', auth.req, unlikeComment)
+  route.post('/see/new', auth.required, validatePost, validateResults, asyncHandler(newPostCtrl))
+  route.get('/see/one/:post_slug', auth.optional, asyncHandler(getPostCtrl))
+  // route.put('/see/it/:post_slug', auth.required, validatePost, validateResults, asyncHandler(updatePostCtrl))
+  // route.delete('/delete', auth.required, asyncHandler(delPostCtrl))
 
-router.get('/', auth.opt, posts)
+  // route.put('/see/like/:post_slug', auth.required, asyncHandler(likePostCtrl))
+  // route.put('/see/unlike/:post_slug', auth.required, asyncHandler(unLikePostCtrl))
 
-router.post('/create', auth.req, ckPost, ckResults, newPost)
-router.get('/see/:post_slug', auth.opt, post)
-router.put('/see/:post_slug', auth.req, ckPost, ckResults, upPost)
-router.delete('/delete', auth.req, delPost)
 
-router.get('/:post_slug/comments', auth.opt, comments)
+  // route.put('/see-one/favorite/:post_slug', auth.required, asyncHandler(favoritePostCtrl))
+  // route.put('/see-one/unfavorite/:post_slug', auth.required, asyncHandler(unFavoritePostCtrl))
 
-router.post('/:post_slug/comments', auth.req, ckComment, ckResults, newComment)
-router.get('/:post_slug/comments/:comment_slug', auth.opt, comment)
-router.put('/:post_slug/comments/:comment_slug', auth.req, ckComment, ckResults, upComment)
-router.delete('/:post_slug/comments/delete', auth.req, delComment)
+  // route.put('/:post_slug/comments/like/:comment_slug', auth.req, asyncHandler(likeCommentCtrl))
+  // route.put('/:post_slug/comments/unlike/:comment_slug', auth.req, asyncHandler(unlikeCommentCtrl))
 
-router.param('post_slug', loadPostSlug)
-router.param('comment_slug', loadCommentSlug)
+  // route.get('/:post_slug/comments', auth.optional, asyncHandler(getAllCommentsCtrl))
 
-module.exports = router
+  // route.post('/:post_slug/comments', auth.required, validateComment, validateResults, asyncHandler(newCommentCtrl))
+  // route.get('/:post_slug/comments/:comment_slug', auth.optional, asyncHandler(getCommentCtrl))
+  // route.put('/:post_slug/comments/:comment_slug', auth.required, validateComment, validateResults, asyncHandler(updateCommentCtrl))
+  // route.delete('/:post_slug/comments/delete', auth.required, asyncHandler(delCommentCtrl))
+
+  route.param('post_slug', loadPostSlugCtrl)
+  // route.param('comment_slug', loadCommentSlugCtrl)
+
+}

@@ -1,36 +1,31 @@
-import config from '../config'
-import logger from '../loaders/logger'
-import User from '../models/User'
-import Profile from '../models/Profile'
-
 export default class ProfileService {
 
   constructor (container) {
     this.logger = container.get('logger')
-    this.ProfileModel = container.get('profileModal')
-    this.UserModel = container.get('userModal')
+    this.ProfileModel = container.get('ProfileModel')
+    this.UserModel = container.get('UserModel')
   }
 
   async testingService () {
-    logger.debug('0️⃣  calling profiles test endpoint')
+    this.logger.debug('0️⃣  calling profiles test endpoint')
     return { msg: 'profiles test route working' }
   }
 
   async loadUsernamesService (username) {
-    logger.debug('0️⃣  calling preload username endpoint')
+    this.logger.debug('0️⃣  calling preload username endpoint')
     const profile = await this.ProfileModel.findOne({ 'details.username': username })
     if (!profile) throw new Error('profile with that username not found')
     return { profile }
   }
 
   async profilesFeedService () {
-    logger.debug('0️⃣  calling profiles feed endpoint')
+    this.logger.debug('0️⃣  calling profiles feed endpoint')
     const profiles = await this.ProfileModel.find()
     return { profiles }
   }
 
   async newProfileService (payload) {
-    logger.debug('0️⃣  calling new profile endpoint')
+    this.logger.debug('0️⃣  calling new profile endpoint')
     const user = await this.UserModel.findOne({ _id: payload.id })
     const profile = new this.ProfileModel({ user: user._id, 'details.username': payload.username })
     await profile.save()
@@ -40,13 +35,13 @@ export default class ProfileService {
   }
 
   async getProfileService (foundProfile) {
-    logger.debug('0️⃣  calling get profile endpoint')
+    this.logger.debug('0️⃣  calling get profile endpoint')
     const profile = foundProfile
     return { profile }
   }
 
   async updateProfileService (id, body) {
-    logger.debug('0️⃣  calling update profile endpoint')
+    this.logger.debug('0️⃣  calling update profile endpoint')
     const user = await this.UserModel.findOne({ _id: id })
     const { name, username, about, image } = body
     const { blog, instagram, twitter, facebook, youtube, linkedin } = body
@@ -85,60 +80,54 @@ export default class ProfileService {
     // zip ? fresh.vender.contact.address.zip = zip : fresh.vender.contact.address.zip = old.vender.contact.address.zip
     let profile = await this.ProfileModel.findOneAndUpdate({ user: user._id }, { $set: fresh }, { new: true, upsert: true })
     await profile.setProfileUrl()
-    username ? user.username = username : user.username = user.username
+    username ? user.username = username : user.username
     await user.save()
     return { profile }
   }
 
-  async addFollowingService (user_id, profile_id) {
-    logger.debug('0️⃣  calling add following endpoint')
-    const userProfile = await this.ProfileModel.findOne({ user: user_id })
-    /**
-     * @fix get user profile object instead of profile index
-     * 
-     * if (userProfile.isFollowing(profile)) return res.status(200).json({ msg: `your already following this user` })
-    */
-    await userProfile.setFollowing(profile_id)
-    await userProfile.followingCount()
-    return { userProfile }
+  async addFollowingService (user_id, username) {
+    this.logger.debug('0️⃣  calling add following endpoint')
+    const isAuthUsersProfile = await this.ProfileModel.findOne({ user: user_id })
+    const noAuthUserProfile = await this.ProfileModel.findOne({ 'details.username': username })
+    if (isAuthUsersProfile.isFollowing(noAuthUserProfile._id)) throw new Error('your already following this user')
+    await isAuthUsersProfile.setFollowing(noAuthUserProfile._id)
+    await isAuthUsersProfile.followingCount()
+    return { isAuthUsersProfile }
   }
 
-  async addFollowerService (user_id, profile_id) {
-    logger.debug('0️⃣  calling add follower endpoint')
-    const follower = await this.ProfileModel.findOne({ user: user_id })
-    const otherProfile = await this.ProfileModel.findOne({ _id: profile_id })
-    await otherProfile.setFollower(follower._id)
-    await otherProfile.followerCount()
-    return { otherProfile }
+  async addFollowerService (user_id, username) {
+    this.logger.debug('0️⃣  calling add follower endpoint')
+    const isAuthUsersProfile = await this.ProfileModel.findOne({ user: user_id })
+    const noAuthUserProfile = await this.ProfileModel.findOne({ 'details.username': username })
+    await noAuthUserProfile.setFollower(isAuthUsersProfile._id)
+    await noAuthUserProfile.followerCount()
+    return { noAuthUserProfile }
   }
 
-  async delFollowingService (user_id, profile_id) {
-    logger.debug('0️⃣  calling delete following endpoint')
-    const userProfile = await this.ProfileModel.findOne({ user: user_id })
-    /**
-     * @fix get user profile object instead of profile index
-     * 
-     * if (!userProfile.isFollowing(req.body.profileId)) return res.status(200).json({ msg: `your not following this user` })
-    */
-    await userProfile.delFollowing(profile_id)
-    await userProfile.followingCount()
-    return { userProfile }
+  async delFollowingService (user_id, username) {
+    this.logger.debug('0️⃣  calling delete following endpoint')
+    const isAuthUsersProfile = await this.ProfileModel.findOne({ user: user_id })
+    const noAuthUserProfile = await this.ProfileModel.findOne({ 'details.username': username })
+    if (!isAuthUsersProfile.isFollowing(noAuthUserProfile._id)) throw new Error('your not following this user')
+    await isAuthUsersProfile.delFollowing(noAuthUserProfile._id)
+    await isAuthUsersProfile.followingCount()
+    return { isAuthUsersProfile }
   }
 
-  async delFollowerService (user_id, profile_id) {
-    logger.debug('0️⃣  calling delete follower endpoint')
-    const follower = await this.ProfileModel.findOne({ user: user_id })
-    const followed = await this.ProfileModel.findOne({ _id: profile_id })
-    await followed.delFollower(follower._id)
-    await followed.followerCount()
-    return { follower }
+  async delFollowerService (user_id, username) {
+    this.logger.debug('0️⃣  calling delete follower endpoint')
+    const isAuthUsersProfile = await this.ProfileModel.findOne({ user: user_id })
+    const noAuthUserProfile = await this.ProfileModel.findOne({ 'details.username': username })
+    await noAuthUserProfile.delFollower(isAuthUsersProfile._id)
+    await noAuthUserProfile.followerCount()
+    return { noAuthUserProfile }
   }
 
   async delProfileService (user_id) {
-    logger.debug('0️⃣  calling delete profile endpoint')
+    this.logger.debug('0️⃣  calling delete profile endpoint')
     const profile = await this.ProfileModel.findOne({ user: user_id })
-    if (!profile) return res.status(404).json({ msg: 'cannot remove null profile' })
-    if (profile.user.toString() !== user_id.toString()) return res.status(401).json({ msg: 'user not authenticated to do that' })
+    if (!profile) throw new Error('cannot remove null profile')
+    if (profile.user.toString() !== user_id.toString()) throw new Error('user not authenticated to do that')
     await profile.remove()
     return
   }

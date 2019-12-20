@@ -7,11 +7,12 @@ import {
   forgotPassCtrl,
   resetPassCtrl,
   signOutCtrl,
-  destroyCtrl,
+  delUserCtrl,
 } from '../controllers/auth'
 
 import {
   newProfileCtrl,
+  delProfileCtrl,
 } from '../controllers/profile'
 
 import {
@@ -22,8 +23,10 @@ import {
   validateResults,
 } from '../validation'
 
-import { Router } from 'express'
 import auth from '../middleware/auth'
+import roles from '../middleware/roles'
+
+import { Router } from 'express'
 import asyncHandler from 'express-async-handler'
 
 export default (app, route = Router()) => {
@@ -41,6 +44,6 @@ export default (app, route = Router()) => {
   route.put('/reset-password', auth.required, validateReset, validateResults, asyncHandler(resetPassCtrl))
 
   route.get('/signout', auth.required, asyncHandler(signOutCtrl))
-  route.delete('/destroy', auth.required, asyncHandler(destroyCtrl))
+  route.delete('/destroy', auth.required, asyncHandler(delProfileCtrl), asyncHandler(delUserCtrl))
 
 }

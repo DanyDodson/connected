@@ -14,7 +14,7 @@ export default class MailerService {
       from: this.mailData.from,
       to: email,
       subject: 'Welocome, Please verify your email address to get started !',
-      template: "verify_email",
+      template: 'verify_email',
       'v:client': client,
       'v:verifyToken': verifyToken,
       'o:tag': ['automated', 'signup'],

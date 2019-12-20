@@ -1,7 +1,6 @@
-import { Container } from 'typedi'
-import ProfileService from '../services/profile'
-
 import asyncHandler from 'express-async-handler'
+import ProfileService from '../services/profile'
+import { Container } from 'typedi'
 
 /**
  * @desc auth test route
@@ -11,7 +10,7 @@ import asyncHandler from 'express-async-handler'
 export const testingCtrl = asyncHandler(async (req, res, next) => {
     const profileServiceInstance = await Container.get(ProfileService)
     const msg = await profileServiceInstance.testingService()
-    return res.status(201).json({ msg: msg })
+    return res.status(201).json(msg)
 })
 
 /**
@@ -75,23 +74,23 @@ export const updateProfileCtrl = asyncHandler(async (req, res, next) => {
  * @desc adds profile to following
  * @route PUT /api/profiles/unfollow
  * @auth private
- */
+*/
 export const addFollowingCtrl = asyncHandler(async (req, res, next) => {
     const profileServiceInstance = await Container.get(ProfileService)
-    await profileServiceInstance.addFollowingService(req.payload.id, req.body.profile_id)
+    await profileServiceInstance.addFollowingService(req.payload.id, req.params.username)
+    // await profileServiceInstance.addFollowingService(req.payload.id, req.body.profile_id)
     next()
-    // next(req.body.profile)
 })
 
 /**
  * @desc adds profile to followers
  * @route PUT /api/profiles/unfollow
  * @auth private
- */
+*/
 export const addFollowerCtrl = asyncHandler(async (req, res, next) => {
     const profileServiceInstance = await Container.get(ProfileService)
-    const { otherProfile } = await profileServiceInstance.addFollowerService(req.payload.id, req.body.profile_id)
-    return res.status(200).json({ msg: `your now following ${otherProfile.details.username}` })
+    const { noAuthUserProfile } = await profileServiceInstance.addFollowerService(req.payload.id, req.params.username)
+    return res.status(200).json({ msg: `your now following ${noAuthUserProfile.details.username}` })
 })
 
 /**
@@ -101,7 +100,7 @@ export const addFollowerCtrl = asyncHandler(async (req, res, next) => {
 */
 export const delFollowingCtrl = asyncHandler(async (req, res, next) => {
     const profileServiceInstance = await Container.get(ProfileService)
-    await profileServiceInstance.delFollowingService(req.payload.id, req.body.profile_id)
+    await profileServiceInstance.delFollowingService(req.payload.id, req.params.username)
     next()
 })
 
@@ -112,8 +111,8 @@ export const delFollowingCtrl = asyncHandler(async (req, res, next) => {
 */
 export const delFollowerCtrl = asyncHandler(async (req, res, next) => {
     const profileServiceInstance = await Container.get(ProfileService)
-    const { follower } = await profileServiceInstance.delFollowerService(req.payload.id, req.body.profile_id)
-    return res.status(200).json({ msg: `your no longer following ${follower.details.username}` })
+    const { noAuthUserProfile } = await profileServiceInstance.delFollowerService(req.payload.id, req.params.username)
+    return res.status(200).json({ msg: `your no longer following ${noAuthUserProfile.details.username}` })
 
 })
 
@@ -125,5 +124,6 @@ export const delFollowerCtrl = asyncHandler(async (req, res, next) => {
 export const delProfileCtrl = asyncHandler(async (req, res, next) => {
     const profileServiceInstance = await Container.get(ProfileService)
     await profileServiceInstance.delProfileService(req.payload.id)
-    return res.status(204).json({ msg: 'successfully removed profile' })
+    // return res.status(204).json({ msg: 'successfully removed profile' })
+    next()
 })

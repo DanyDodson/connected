@@ -72,7 +72,7 @@ PostSchema.post('save', function() {
   if (!this.links.key) this.setkey()
   this.setslug()
   this.seturl()
-  this.save()
+  // this.save()
 })
 
 PostSchema.pre('findOneAndUpdate', function() {
@@ -164,7 +164,7 @@ PostSchema.methods.postToJson = function(user) {
     created: this.created,
     updated: this.updated,
     user: this.user.authJson(user),
-    artist: this.artist.artistToJson(user),
+    profile: this.profile.profileToJson(user),
     favorite: user ? user.isFavorite(this._id) : false,
   }
 }

@@ -1,9 +1,15 @@
-const {
-  tags
-} = require('../../controllers/tag')
+import {
+  testingCtrl,
+} from '../controllers/tag'
 
-const router = require('express').Router()
+import auth from '../middleware/auth'
+import asyncHandler from 'express-async-handler'
+import { Router } from 'express'
 
-router.get('/', tags)
+export default (app, route = Router()) => {
 
-module.exports = router
+  app.use('/tags', route)
+
+  route.get('/testing', auth.optional, asyncHandler(testingCtrl))
+
+}

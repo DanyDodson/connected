@@ -9,7 +9,7 @@ function getTokenFromHeader (req) {
   return null
 }
 
-const auth = {
+export default {
   required: jwt({
     secret: config.jwtSecret,
     userProperty: 'payload',
@@ -22,5 +22,3 @@ const auth = {
     getToken: getTokenFromHeader
   })
 }
-
-export default auth
