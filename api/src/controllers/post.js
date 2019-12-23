@@ -77,7 +77,7 @@ export const getPostCtrl = asyncHandler(async (req, res, next) => {
 */
 export const updatePostCtrl = asyncHandler(async (req, res, next) => {
     const postServiceInstance = await Container.get(PostService)
-    const { post } = await postServiceInstance.updatePostService()
+    const { post } = await postServiceInstance.updatePostService(rec.post, rec.body)
     return res.status(200).json(post)
 })
 

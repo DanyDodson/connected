@@ -5,11 +5,12 @@
 
 # frontend
 /client/.env
+/api/*.log
 /client/node_modules
 /client/package-lock.json
 
 # backend
 /api/.env
+/api/*.log
 /api/node_modules
 /api/package-lock.json
-/api/src/loaders/mongoose.js

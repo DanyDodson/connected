@@ -48,19 +48,9 @@ export default class PostService {
     return { post }
   }
 
-  async updatePostService () {
+  async updatePostService (post, body) {
     this.logger.debug('0️⃣  calling update post endpoint')
-    let post = req.post
-    const {
-      mediums,
-      title,
-      description,
-      tags,
-      price,
-      critique,
-      shareable,
-      purchasable,
-    } = req.body
+    const { mediums, title, description, tags, price, critique, shareable, purchasable } = body
     if (mediums) post.details.mediums = mediums.split(', ').map(medium => medium.trim()) || post.details.mediums
     if (title) post.details.title = title || post.details.title
     if (description) post.details.description = description || post.details.description
@@ -70,9 +60,9 @@ export default class PostService {
     if (shareable) post.options.shareable = shareable || post.options.shareable
     if (purchasable) post.options.purchasable = purchasable || post.options.purchasable
     // post.updated = Date.now()
-    await Post.findOneAndUpdate({ 'links.slug': req.post.links.slug }, { $set: post }, { new: true, upsert: true })
-    if (post.options.purchasable) { await artist.addListed(post._id) }
-    if (!post.options.purchasable) { await artist.addPosted(post._id) }
+    await this.PostModel.findOneAndUpdate({ 'links.slug': post.links.slug }, { $set: post }, { new: true, upsert: true })
+    if (post.options.purchasable) { await this.ProfileModel.addListed(post._id) }
+    if (!post.options.purchasable) { await this.ProfileModel.addPosted(post._id) }
     // await post.setslug()
     // await post.seturl()
     // await post.save()
