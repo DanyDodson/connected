@@ -6,6 +6,7 @@
 # frontend
 /client/.env
 /api/*.log
+/client/build
 /client/node_modules
 /client/package-lock.json
 
