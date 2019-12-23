@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { Link, Redirect } from 'react-router-dom'
 import { setAlert } from '../../actions/alert'
 import { register } from '../../actions/auth'
-import PropTypes from 'prop-types'
+// import PropTypes from 'prop-types'
 
 const Register = ({ setAlert, register, isAuthenticated }) => {
 
@@ -80,11 +80,11 @@ const Register = ({ setAlert, register, isAuthenticated }) => {
   )
 }
 
-Register.propTypes = {
-  setAlert: PropTypes.func.isRequired,
-  register: PropTypes.func.isRequired,
-  isAuthenticated: PropTypes.bool
-}
+// Register.propTypes = {
+// setAlert: PropTypes.func.isRequired,
+// register: PropTypes.func.isRequired,
+// isAuthenticated: PropTypes.bool
+// }
 
 const mapStateToProps = state => ({ isAuthenticated: state.auth.isAuthenticated })
 

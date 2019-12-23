@@ -1,23 +1,23 @@
-// import { USER_LOADED } from '../actions/types'
+import { USER_LOADED } from '../actions/types'
 
-// const initialState = {
-//   loading: true,
-//   user: null
-// }
+const initialState = {
+  loading: true,
+  user: null
+}
 
-// export default function (state = initialState ,action) {
-//   const { type, payload } = action
+export default function(state = initialState, action) {
+  const { type, payload } = action
 
-//   switch (type) {
+  switch (type) {
 
-//     case USER_LOADED:
-//       return {
-//         ...state,
-//         loading: false,
-//         user: payload
-//       }
+    case USER_LOADED:
+      return {
+        ...state,
+        loading: false,
+        user: payload
+      }
 
-//     default:
-//       return state
-//   }
-// }
+    default:
+      return state
+  }
+}

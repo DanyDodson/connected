@@ -6,8 +6,6 @@ import {
   GET_PROFILES,
   PROFILE_ERROR,
   UPDATE_PROFILE,
-  // CLEAR_POST,
-  // CLEAR_POSTS,
   CLEAR_PROFILE,
   CLEAR_PROFILES,
   ACCOUNT_DELETED,
@@ -39,7 +37,7 @@ export const getProfiles = () => async dispatch => {
   dispatch({ type: CLEAR_PROFILE })
 
   try {
-    const res = await axios.get('/api/profile')
+    const res = await axios.get('/api/artists')
 
     dispatch({
       type: GET_PROFILES,
@@ -58,7 +56,7 @@ export const getProfileById = userId => async dispatch => {
   dispatch({ type: CLEAR_PROFILES })
 
   try {
-    const res = await axios.get(`/api/profile/user/${userId}`)
+    const res = await axios.get(`/api/artist/${userId}`)
 
     dispatch({
       type: GET_PROFILE,

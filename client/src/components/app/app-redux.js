@@ -1,32 +1,35 @@
 import React, { Fragment, useEffect } from 'react'
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
+
 import { Provider } from 'react-redux'
 import store from '../../store'
 import setToken from '../../utils/set-token'
+
 import { loadUser } from '../../actions/auth'
+
 import Navbar from '../navbar'
 import Landing from '../landing'
 import Routes from '../routes/routes-view'
-
-// import LogRocket from 'logrocket'
-// import setupLogRocketReact from 'logrocket-react'
+import LogRocket from 'logrocket'
+import setupLogRocketReact from 'logrocket-react'
 
 import './App.css'
 
-// LogRocket.init(`${process.env.REACT_APP_LOG_ROCKET_ID})
-// setupLogRocketReact(LogRocket)
+LogRocket.init('r5uhu6/seesee')
+setupLogRocketReact(LogRocket)
 
-// LogRocket.identify('r5uhu6', {
-//   name: 'Dany Dodson',
-//   email: 'danydodson@gmail.com',
-//   subscriptionType: 'pro'
-// })
+LogRocket.identify('r5uhu6', {
+  name: 'Dany Dodson',
+  email: 'danydodson@gmail.com',
+  subscriptionType: 'pro'
+})
 
 if (localStorage.token) {
   setToken(localStorage.token)
 }
 
 const App = () => {
+
   useEffect(() => {
     store.dispatch(loadUser())
   }, [])
@@ -38,7 +41,7 @@ const App = () => {
           <Navbar />
           <Switch>
             <Route exact path='/' component={Landing} />
-            {/* <Route component={Routes} /> */}
+            <Route component={Routes} />
           </Switch>
         </Fragment>
       </Router>

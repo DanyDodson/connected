@@ -32,7 +32,7 @@
     "jsonwebtoken": "^8.5.1",
     "mailgun-js": "^0.22.0",
     "method-override": "^3.0.0",
-    "mongoose": "^5.8.1",
+    "mongoose": "^5.8.2",
     "newrelic": "^6.2.0",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
@@ -46,7 +46,7 @@
     "@babel/node": "^7.7.7",
     "@babel/preset-env": "^7.7.7",
     "cross-env": "^6.0.3",
-    "eslint": "^6.7.2",
+    "eslint": "^6.8.0",
     "jest": "^24.9.0",
     "nodemon": "^2.0.2"
   },

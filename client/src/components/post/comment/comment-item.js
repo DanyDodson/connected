@@ -3,13 +3,13 @@ import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import Moment from 'react-moment'
-import { deletedeleteNote } from '../../../actions/post'
+import { deleteComment } from '../../../actions/post'
 
-const NoteItem = ({
+const CommentItem = ({
   postId,
-  note: { _id, content, name, avatar, user, date },
+  comment: { _id, content, name, avatar, user, date },
   auth,
-  deletedeleteNote
+  deleteComment
 }) => (
     <div className='post bg-white p-1 my-1'>
       <div>
@@ -25,7 +25,7 @@ const NoteItem = ({
         </p>
         {!auth.loading && user === auth.user._id && (
           <button
-            onClick={() => deletedeleteNote(postId, _id)}
+            onClick={() => deleteComment(postId, _id)}
             type='button'
             className='btn btn-danger'
           >
@@ -36,15 +36,15 @@ const NoteItem = ({
     </div>
   )
 
-NoteItem.propTypes = {
+CommentItem.propTypes = {
   postId: PropTypes.string.isRequired,
-  note: PropTypes.object.isRequired,
+  comment: PropTypes.object.isRequired,
   auth: PropTypes.object.isRequired,
-  deletedeleteNote: PropTypes.func.isRequired
+  deleteComment: PropTypes.func.isRequired
 }
 
 const mapStateToProps = state => ({
   auth: state.auth
 })
 
-export default connect(mapStateToProps, { deletedeleteNote })(NoteItem)
+export default connect(mapStateToProps, { deleteComment })(CommentItem)

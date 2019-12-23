@@ -492,7 +492,7 @@ button {
   width: 100px;
 }
 
-.post .note-count {
+.post .comment-count {
   background: var(--light-color);
   color: var(--primary-color);
   padding: 0.1rem 0.2rem;

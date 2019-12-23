@@ -4,8 +4,6 @@ import expressApp from './loaders'
 import express from 'express'
 const app = express()
 
-// require('newrelic')
-
 const startServer = async () => {
 
   await expressApp({ expressApp: app })
