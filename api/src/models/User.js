@@ -1,25 +1,26 @@
 import mongoose from 'mongoose'
 import config from '../config'
-import jwt from 'jsonwebtoken'
+import logger from '../loaders/logger'
+import bcrypt from 'bcryptjs'
 import crypto from 'crypto'
 
-const Schema = mongoose.Schema
-const ObjectId = Schema.Types.ObjectId
+import {
+  setAuthToken,
+  setVerifyEmailToken,
+  setForgotPasswordToken,
+} from '../utilities/tokens'
 
-const UserSchema = new Schema({
-  username: String,
-  email: { type: String, unique: true, index: 1 },
+const UserSchema = new mongoose.Schema({
   salt: String,
   hash: String,
-  role: {
-    type: String,
-    default: 'basic',
-    enum: ['basic', 'featured', 'admin']
-  },
-  verifyToken: { data: String },
-  resetToken: { data: String },
+  username: String,
+  email: { type: String, unique: true, index: 1 },
+  role: { type: String, default: 'basic', enum: ['basic', 'featured', 'admin'] },
+  authToken: { data: String },
+  resetToken: { type: String },
+  verifyToken: { type: String },
   verified: { type: Boolean, default: false },
-  profile: { type: ObjectId, ref: 'Profile' },
+  profile: { type: mongoose.Schema.Types.ObjectId, ref: 'Profile' },
   created: { type: Date, default: Date.now },
   updated: { type: Date },
 })
@@ -34,81 +35,30 @@ UserSchema.methods.validPassword = function(password) {
   return this.hash === hash
 }
 
-/**
-*  @named generateJWT - signs jwt with user data
-*  @desc {Object} user object containing user data to sign JWT with
-*  @sets {Object} json web token for authenticated api requests
-*/
-
-UserSchema.methods.generateJWT = function() {
-  let today = new Date()
-  let exp = new Date(today)
-  let iat = new Date(today)
-  iat.setHours(today.getHours() + 0)
-  exp.setHours(today.getHours() + 1)
-  return jwt.sign({
-    id: this._id,
-    iss: 'seesee_api',
-    scope: 'user_auth',
-    iat: parseInt(iat.getTime() / 1000),
-    nbf: parseInt(iat.getTime() / 1000),
-    email: this.email,
-    username: this.username,
-    profile: this.profile,
-    verified: this.verified,
-    role: this.role,
-    verifyToken: this.verifyToken,
-    resetToken: this.resetToken,
-    exp: parseInt(exp.getTime() / 1000),
-  }, config.jwtSecret)
+UserSchema.methods.authUserToken = function() {
+  const payload = { id: this.id, role: this.role, email: this.email, username: this.username, verified: this.verified }
+  return setAuthToken(payload)
 }
 
-/**
- * @call generateVerifyJWT
- * @desc jwt for email verification
-*/
-
-UserSchema.methods.generateVerifyJWT = (id, username) => {
-  let today = new Date()
-  let exp = new Date(today)
-  exp.setMinutes(today.getMinutes() + 2)
-  return jwt.sign({
-    jti: id,
-    iss: 'seesee_api',
-    scope: 'verify_email',
-    username: username,
-    // getToken: req => { return req.cookies['authentication'] },
-    exp: parseInt(exp.getTime() / 1000),
-  }, config.jwtSecret)
+UserSchema.methods.verifyEmailToken = function() {
+  const payload = { id: this.id, email: this.email, username: this.username }
+  return setVerifyEmailToken(payload)
 }
 
-/**
- * @call generateResetJWT
- * @desc jwt for resetting password
-*/
-
-UserSchema.methods.generateResetJWT = (id, username) => {
-  let today = new Date()
-  let exp = new Date(today)
-  exp.setMinutes(today.getMinutes() + 10)
-  return jwt.sign({
-    jti: id,
-    iss: 'seesee_api',
-    scope: 'reset_password',
-    username: username,
-    // getToken: req => { return req.cookies['authentication'] },
-    exp: parseInt(exp.getTime() / 1000),
-  }, config.jwtSecret)
+UserSchema.methods.forgotPasswordToken = function() {
+  const payload = { id: this.id, email: this.email, username: this.username }
+  return setForgotPasswordToken(payload)
 }
 
-/**
- * @call authJSON
- * @desc jwt for payload
-*/
+// UserSchema.methods.getUserByUsername = function(username) {
+//   let user = this.findOne({ username: username })
+//   return user
+// }
 
-UserSchema.methods.authJSON = function() {
+UserSchema.methods.authUserToJSON = function() {
+  logger.debug(this)
   return {
-    _id: this._id,
+    id: this.id,
     email: this.email,
     username: this.username,
     role: this.role,
@@ -118,7 +68,7 @@ UserSchema.methods.authJSON = function() {
     updated: this.updated,
     resetToken: this.resetToken,
     verifyToken: this.verifyToken,
-    authToken: this.generateJWT(),
+    authToken: this.authUserToken(),
   }
 }
 

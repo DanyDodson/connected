@@ -10,9 +10,9 @@ export default class sendForgotPasswordJob {
 
       logger.debug('✔️ send forgot password job triggered')
 
-      const { email, client, resetPassToken } = job.attrs.data
+      const { email, client, token } = job.attrs.data
       const mailerServiceInstance = Container.get(MailerService)
-      await mailerServiceInstance.sendForgotPasswordEmail(email, client, resetPassToken)
+      await mailerServiceInstance.sendForgotPasswordEmail(email, client, token)
 
       logger.debug('✔️ send forgot password job finished')
 

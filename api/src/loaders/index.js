@@ -1,21 +1,35 @@
 import mongooseLoader from './mongoose'
-import depInjectorLoader from './depInjector'
-import expressLoader from './express'
-import jobsLoader from './jobs'
 import logger from './logger'
-import './events'
+import depInjectorLoader from './depInjector'
+import jobsLoader from './jobs'
+import expressLoader from './express'
+import UserModel from '../models/User'
+import ProfileModel from '../models/Profile'
+import PostModel from '../models/Post'
+import CommentModel from '../models/Comment'
+import MessageModel from '../models/Message'
 
 export default async ({ expressApp }) => {
 
   const mongoConnection = await mongooseLoader()
-  logger.info('✌️ mongodb loaded and connected')
+  logger.info('✨ mongodb loaded and connected')
 
-  const { agenda } = await depInjectorLoader(mongoConnection)
-  logger.info('✌️ dependency injector loaded')
+  const userModel = { name: 'userModel', model: UserModel }
+  const profileModel = { name: 'profileModel', model: ProfileModel }
+  const postModel = { name: 'postModel', model: PostModel }
+  const commentModel = { name: 'commentModel', model: CommentModel }
+  const messageModel = { name: 'messageModel', model: MessageModel }
+
+  const { agenda } = await depInjectorLoader({
+    mongoConnection,
+    models: [userModel, profileModel, postModel, commentModel, messageModel],
+  })
+
+  logger.info('✨ dependency injector loaded')
 
   await jobsLoader(agenda)
-  logger.info('✌️ agenda jobs loaded')
+  logger.info('✨ agenda jobs loaded')
 
   await expressLoader({ app: expressApp })
-  logger.info('✌️ express setup and loaded')
+  logger.info('✨ express setup and loaded')
 }

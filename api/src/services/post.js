@@ -2,10 +2,10 @@ export default class PostService {
 
   constructor (container) {
     this.logger = container.get('logger')
-    this.PostModel = container.get('PostModel')
-    this.CommentModel = container.get('CommentModel')
-    this.UserModel = container.get('UserModel')
-    this.ProfileModel = container.get('ProfileModel')
+    this.userModel = container.get('userModel')
+    this.profileModel = container.get('profileModel')
+    this.postModel = container.get('postModel')
+    this.commentModel = container.get('commentModel')
     this.agendaJob = container.get('agendaInstance')
   }
 

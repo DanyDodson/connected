@@ -15,7 +15,7 @@ const SessionSchema = new mongoose.Schema({
 //     nbf: parseInt(iat.getTime() / 1000),
 //     jti: this._id,
 //     exp: parseInt(exp.getTime() / 1000),
-//   }, config.jwtSecret)
+//   }, config.app.jwtSecret)
 // }
 
 SessionSchema.methods.toSession = function() {

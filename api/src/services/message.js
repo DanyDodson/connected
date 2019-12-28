@@ -4,7 +4,7 @@ export default class PostService {
 
   constructor (container) {
     this.logger = container.get('logger')
-    this.MessageModel = container.get('MessageModel')
+    this.messageModel = container.get('messageModel')
     this.agendaJob = container.get('agendaInstance')
   }
 

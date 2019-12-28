@@ -1,0 +1,9 @@
+{
+  "restartable": "rs",
+  "verbose": true,
+  "watch": ["src"],
+  "exec": "NODE_ENV=development babel-node src/app.js",
+  "ignore": [".git", "node_modules/**/node_modules"],
+  "ext": "js",
+  "env": { "NODE_ENV": "development" }
+}

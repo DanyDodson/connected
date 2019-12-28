@@ -1,7 +1,7 @@
 import { Container } from 'typedi'
 import MailerService from '../services/mailer'
 
-export default class SendVerifiedJob {
+export default class SendVerifiedEmailJob {
 
   async handler (job, done) {
     const logger = Container.get('logger')

@@ -2,8 +2,8 @@ export default class ProfileService {
 
   constructor (container) {
     this.logger = container.get('logger')
-    this.ProfileModel = container.get('ProfileModel')
-    this.UserModel = container.get('UserModel')
+    this.ProfileModel = container.get('profileModel')
+    this.UserModel = container.get('userModel')
   }
 
   async testingService () {

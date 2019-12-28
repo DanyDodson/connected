@@ -9,7 +9,6 @@ import {
   delFollowingCtrl,
   delFollowerCtrl,
   delProfileCtrl,
-  loadUsernamesCtrl,
 } from '../controllers/profile'
 
 import {
@@ -37,7 +36,4 @@ export default (app, route = Router()) => {
   route.put('/artist/:username', auth.required, validateProfile, validateResults, asyncHandler(updateProfileCtrl))
 
   route.delete('/artist/delete', auth.required, asyncHandler(delProfileCtrl))
-
-  route.param('username', loadUsernamesCtrl)
-
 }

@@ -14,30 +14,6 @@ export const testingCtrl = asyncHandler(async (req, res, next) => {
 })
 
 /**
- * @desc runs on paths containing :post_slug
- * @route PARAM /:post_slug
- * @auth public
-*/
-export const loadPostSlugCtrl = asyncHandler(async (req, res, next, post_slug) => {
-    const postServiceInstance = await Container.get(PostService)
-    const { post } = await postServiceInstance.loadPostSlugCtrl(post_slug)
-    req.post = post
-    return next()
-})
-
-/**
- * @desc runs on paths containing :comment_slug
- * @route PARAM /:comment_slug
- * @auth public
-*/
-export const loadCommentSlugService = asyncHandler(async (req, res, next, comment_slug) => {
-    const postServiceInstance = await Container.get(PostService)
-    const msg = await postServiceInstance.loadCommentService(comment_slug)
-    req.comment = comment
-    return next()
-})
-
-/**
  * @desc gets all posts
  * @route GET /api/see
  * @auth public

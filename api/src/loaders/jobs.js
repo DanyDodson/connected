@@ -1,23 +1,31 @@
+import Agenda from 'agenda'
 import config from '../config'
 
-import Agenda from 'agenda'
-import SendVerifyJob from '../jobs/verify-account'
-import SendVerifiedJob from '../jobs/verified-account'
-import SendForgotPasswordJob from '../jobs/forgot-password'
-import SendPasswordResetJob from '../jobs/reset-password'
+import CreateVerifyTokenJob from '../jobs/verify-token'
+import SendVerifyEmailJob from '../jobs/verify-email'
+import SendVerifiedEmailJob from '../jobs/verified-email'
+
+import SendForgotPasswordJob from '../jobs/password-forgot'
+import SendPasswordResetJob from '../jobs/password-reset'
 
 export default (agenda = new Agenda) => {
 
   agenda.define(
+    'create-new-verify-token',
+    { priority: 'high', concurrency: config.agenda.concurrency, },
+    new CreateVerifyTokenJob().handler,
+  )
+
+  agenda.define(
     'send-verify-account-email',
     { priority: 'high', concurrency: config.agenda.concurrency, },
-    new SendVerifyJob().handler,
+    new SendVerifyEmailJob().handler,
   )
 
   agenda.define(
     'send-verified-account-email',
     { priority: 'high', concurrency: config.agenda.concurrency, },
-    new SendVerifiedJob().handler,
+    new SendVerifiedEmailJob().handler,
   )
 
   agenda.define(

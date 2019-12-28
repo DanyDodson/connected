@@ -11,12 +11,12 @@ function getTokenFromHeader (req) {
 
 export default {
   required: jwt({
-    secret: config.jwtSecret,
+    secret: config.app.jwtSecret,
     userProperty: 'payload',
     getToken: getTokenFromHeader
   }),
   optional: jwt({
-    secret: config.jwtSecret,
+    secret: config.app.jwtSecret,
     userProperty: 'payload',
     credentialsRequired: false,
     getToken: getTokenFromHeader

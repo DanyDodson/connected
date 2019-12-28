@@ -1,8 +1,6 @@
+import asyncHandler from 'express-async-handler'
 import { Container } from 'typedi'
 import AuthService from '../services/auth'
-import passport from 'passport'
-
-import asyncHandler from 'express-async-handler'
 
 /**
  * @desc auth test route
@@ -12,7 +10,7 @@ import asyncHandler from 'express-async-handler'
 export const testingCtrl = asyncHandler(async (req, res, next) => {
   const authServiceInstance = await Container.get(AuthService)
   const msg = await authServiceInstance.testingService()
-  return res.status(201).json(msg)
+  return res.status(201).json({ msg })
 })
 
 /**
@@ -22,24 +20,20 @@ export const testingCtrl = asyncHandler(async (req, res, next) => {
 */
 export const signUpCtrl = asyncHandler(async (req, res, next) => {
   const authServiceInstance = await Container.get(AuthService)
-  const { user, verifyToken } = await authServiceInstance.signUpService(req.body)
-  return res.status(201).json(user, verifyToken)
+  const { userData } = await authServiceInstance.signUpService(req.body)
+  return res.status(201).json(userData)
 })
 
 /**
  * @desc user signin
  * @route POST /api/auth/signin
  * @auth public
-*/
+ */
 export const signInCtrl = asyncHandler(async (req, res, next) => {
   const authServiceInstance = await Container.get(AuthService)
-  await authServiceInstance.signInService()
-  await passport.authenticate('local', { session: false }, (err, user, info) => {
-    if (err) return next(err)
-    if (!user) return res.status(422).json(info)
-    user.token = user.generateJWT()
-    return res.status(200).json(user.authJSON())
-  })(req, res, next)
+  const { userData } = await authServiceInstance.signInService(req.body)
+  // await res.cookie('jwt', jwt, { httpOnly: true, secure: true })
+  return res.status(201).json(userData)
 })
 
 /**
@@ -49,8 +43,9 @@ export const signInCtrl = asyncHandler(async (req, res, next) => {
 */
 export const getUserCtrl = asyncHandler(async (req, res, next) => {
   const authServiceInstance = await Container.get(AuthService)
-  const { user } = await authServiceInstance.getUserService(req.payload.id)
-  return res.status(200).json(user.authJSON())
+  const { userData } = await authServiceInstance.getUserService(req.payload.id)
+  if (userData) req.jwt = userData
+  return res.status(200).json(req)
 })
 
 /**
@@ -71,8 +66,8 @@ export const setVerifiedCtrl = asyncHandler(async (req, res, next) => {
 */
 export const forgotPassCtrl = asyncHandler(async (req, res, next) => {
   const authServiceInstance = await Container.get(AuthService)
-  const { user, resetPassToken } = await authServiceInstance.forgotPassService(req.payload.id)
-  return res.status(200).json({ user, resetPassToken })
+  const { userData } = await authServiceInstance.forgotPassService(req.payload.id)
+  return res.status(200).json(userData)
 })
 
 /**
@@ -82,8 +77,8 @@ export const forgotPassCtrl = asyncHandler(async (req, res, next) => {
 */
 export const resetPassCtrl = asyncHandler(async (req, res, next) => {
   const authServiceInstance = await Container.get(AuthService)
-  const { user } = await authServiceInstance.resetPassService(req.body, req.payload.id)
-  return res.status(200).json({ user })
+  const { userData } = await authServiceInstance.resetPassService(req.payload.id, req.body)
+  return res.status(200).json(userData)
 })
 
 /**
@@ -95,9 +90,8 @@ export const resetPassCtrl = asyncHandler(async (req, res, next) => {
 */
 export const signOutCtrl = asyncHandler(async (req, res, next) => {
   const authServiceInstance = await Container.get(AuthService)
-  // const { headrs } = await authServiceInstance.signOutService(req.headers['authorization'])
-  const headrs = req.headers['authorization']
-  return res.status(200).json({ headrs })
+  const { token } = await authServiceInstance.signOutService(req.headers['authorization'])
+  return res.status(200).json(token)
 })
 
 /**

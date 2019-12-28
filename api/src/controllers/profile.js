@@ -14,18 +14,6 @@ export const testingCtrl = asyncHandler(async (req, res, next) => {
 })
 
 /**
- * @desc runs on paths containing :pro_name
- * @route PARAM /:profile_name
- * @auth public
-*/
-export const loadUsernamesCtrl = asyncHandler(async (req, res, next, username) => {
-    const profileServiceInstance = await Container.get(ProfileService)
-    const { profile } = await profileServiceInstance.loadUsernamesService(username)
-    req.profile = profile
-    return next()
-})
-
-/**
  * @desc get all profiles
  * @route GET /api/profiles
  * @auth public

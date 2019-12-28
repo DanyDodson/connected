@@ -16,8 +16,6 @@ import {
   likeCommentCtrl,
   unlikeCommentCtrl,
   delCommentCtrl,
-  loadPostSlugCtrl,
-  loadCommentSlugCtrl,
 } from '../controllers/post'
 
 import {
@@ -59,8 +57,4 @@ export default (app, route = Router()) => {
   // route.get('/:post_slug/comments/:comment_slug', auth.optional, asyncHandler(getCommentCtrl))
   // route.put('/:post_slug/comments/:comment_slug', auth.required, validateComment, validateResults, asyncHandler(updateCommentCtrl))
   // route.delete('/:post_slug/comments/delete', auth.required, asyncHandler(delCommentCtrl))
-
-  route.param('post_slug', loadPostSlugCtrl)
-  // route.param('comment_slug', loadCommentSlugCtrl)
-
 }

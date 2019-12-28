@@ -1,7 +1,7 @@
 import { Container } from 'typedi'
 import MailerService from '../services/mailer'
 
-export default class SendWelcomeJob {
+export default class SendVerifyEmailJob {
 
   async handler (job, done) {
     const logger = Container.get('logger')
@@ -10,9 +10,9 @@ export default class SendWelcomeJob {
 
       logger.debug('✔️ send verify account job triggered')
 
-      const { email, client, verifyToken } = job.attrs.data
+      const { email, client, token } = job.attrs.data
       const mailerServiceInstance = Container.get(MailerService)
-      await mailerServiceInstance.sendVerifyEmail(email, client, verifyToken)
+      await mailerServiceInstance.sendVerifyEmail(email, client, token)
 
       logger.debug('✔️ send verify account job finished')
 
