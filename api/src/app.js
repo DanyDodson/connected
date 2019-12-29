@@ -12,7 +12,7 @@ const startServer = async () => {
   await expressApp({ expressApp: app })
 
   app.listen(port, () => {
-    logger.info(`✌ ${env} server listening on port ${port}`)
+    logger.info(`✌  ${env} server listening on port ${port}`)
   })
 
 }

@@ -18,7 +18,7 @@ export default ({ mongoConnection, models }) => {
       domain: config.mailgun.domain
     }))
 
-    loggerInstance.info('✨ agenda injected into container')
+    loggerInstance.info('✨  agenda injected into container')
 
     return { agenda: agendaInstance }
 

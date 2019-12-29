@@ -8,7 +8,7 @@ import SendVerifiedEmailJob from '../jobs/verified-email'
 import SendForgotPasswordJob from '../jobs/password-forgot'
 import SendPasswordResetJob from '../jobs/password-reset'
 
-export default (agenda = new Agenda) => {
+export default ({ agenda = new Agenda }) => {
 
   agenda.define(
     'create-new-verify-token',

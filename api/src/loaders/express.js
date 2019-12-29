@@ -7,7 +7,6 @@ import config from '../config'
 import routes from '../routes'
 import errors from '../middleware/errors'
 import helmet from 'helmet'
-import { initialiseAuthentication, utils } from '../auth'
 
 export default ({ app: app }) => {
 
@@ -24,7 +23,7 @@ export default ({ app: app }) => {
   app.use(cookieParser())
 
   app.use(passport.initialize())
-  initialiseAuthentication(app)
+  // initialiseAuthentication(app)
 
   require('../auth')
 

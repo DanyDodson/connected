@@ -2,7 +2,7 @@ import React, { Fragment } from 'react'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
-import { logout } from '../../actions/auth'
+import { logoutUser } from '../../actions/auth'
 
 const Navbar = ({ setToast, auth: { isAuthenticated, loading }, logout }) => {
 
@@ -35,10 +35,10 @@ const Navbar = ({ setToast, auth: { isAuthenticated, loading }, logout }) => {
         <Link to='/profiles'>Developers</Link>
       </li>
       <li>
-        <Link to='/register'>Register</Link>
+        <Link to='/signup'>Signup</Link>
       </li>
       <li>
-        <Link to='/login'>Login</Link>
+        <Link to='/signin'>Sign In</Link>
       </li>
     </ul>
   )
@@ -58,7 +58,7 @@ const Navbar = ({ setToast, auth: { isAuthenticated, loading }, logout }) => {
 }
 
 Navbar.propTypes = {
-  logout: PropTypes.func.isRequired,
+  logoutUser: PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired
 }
 
@@ -66,4 +66,4 @@ const mapStateToProps = state => ({
   auth: state.auth
 })
 
-export default connect(mapStateToProps, { logout })(Navbar)
+export default connect(mapStateToProps, { logoutUser })(Navbar)

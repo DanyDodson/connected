@@ -48,6 +48,7 @@ const LoggerInstance = winston.createLogger({
     winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
     winston.format.errors({ stack: true }),
     winston.format.colorize(),
+    
     logFormat,
   ),
   transports

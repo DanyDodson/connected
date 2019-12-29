@@ -2,7 +2,7 @@ import { USER_LOADED } from '../actions/types'
 
 const initialState = {
   loading: true,
-  user: null
+  user: {}
 }
 
 export default function(state = initialState, action) {

@@ -1,67 +1,55 @@
-import axios from 'axios'
-import { setAlert } from './alert'
-
 import {
-  REGISTER_SUCCESS,
+  // REGISTER_SUCCESS,
   REGISTER_FAIL,
-  USER_LOADED,
-  AUTH_ERROR,
+  // USER_LOADED,
+  // AUTH_ERROR,
   LOGIN_SUCCESS,
   LOGIN_FAIL,
-  LOGOUT,
-  CLEAR_POST,
-  CLEAR_POSTS,
-  CLEAR_PROFILE
+  SET_CURRENT_USER,
 } from './types'
 
-import setToken from '../utils/set-token'
+import setAuthToken from '../utils/set-token'
+import jwt_decode from 'jwt-decode'
+import axios from 'axios'
 
-// Load User
-export const loadUser = () => async dispatch => {
-  if (localStorage.token) setToken(localStorage.token)
-  try {
-    const res = await axios.get('/api/auth/details')
-    dispatch({ type: USER_LOADED, payload: res.data })
-  } catch (err) {
-    dispatch({ type: AUTH_ERROR })
+import { setAlert } from './alert'
+
+// register user
+export const registerUser = (userData, history) => async dispatch => {
+  await axios.post('/api/auth/signup', userData)
+    .then(res => history.push('/signin'))
+    .catch(err => dispatch({ type: REGISTER_FAIL, payload: err }))
+}
+
+// login - get user token
+export const loginUser = userData => async dispatch => {
+  await axios.post('/api/auth/signin', userData)
+    .then(res => {
+      const { authToken } = res.data
+      localStorage.setItem('jwtToken', authToken)
+      setAuthToken(authToken)
+      const decoded = jwt_decode(authToken)
+      dispatch(setCurrentUser(decoded))
+      dispatch({ type: LOGIN_SUCCESS })
+    })
+    .catch(err => {
+      const errors = err.response.data.errors
+      if (errors) errors.forEach(error => dispatch(setAlert(error.msg, 'error')))
+      dispatch({ type: LOGIN_FAIL })
+    })
+}
+
+// set logged in user
+export const setCurrentUser = decoded => {
+  return {
+    type: SET_CURRENT_USER,
+    payload: decoded
   }
 }
 
-// Register User
-export const register = ({ username, email, password }) => async dispatch => {
-  const config = { headers: { 'Content-Type': 'application/json' } }
-  const body = JSON.stringify({ username, email, password })
-  try {
-    const res = await axios.post('/api/auth/signup', body, config)
-    dispatch({ type: REGISTER_SUCCESS, payload: res.data })
-    dispatch(loadUser())
-  } catch (err) {
-    const errors = err.response.data.errors
-    if (errors) errors.forEach(error => dispatch(setAlert(error.msg, 'error')))
-    if (errors) errors.forEach(error => dispatch(setAlert(error.msg, 'error')))
-    dispatch({ type: REGISTER_FAIL })
-  }
-}
-
-// Login User
-export const login = (email, password) => async dispatch => {
-  const config = { headers: { 'Content-Type': 'application/json' } }
-  const body = JSON.stringify({ email, password })
-  try {
-    const res = await axios.post('/api/auth/signin', body, config)
-    dispatch({ type: LOGIN_SUCCESS, payload: res.data })
-    dispatch(loadUser())
-  } catch (err) {
-    const errors = err.response.data.errors
-    if (errors) errors.forEach(error => dispatch(setAlert(error.msg, 'error')))
-    dispatch({ type: LOGIN_FAIL })
-  }
-}
-
-// Logout / Clear Profile
-export const logout = () => dispatch => {
-  dispatch({ type: CLEAR_PROFILE })
-  dispatch({ type: CLEAR_POST })
-  dispatch({ type: CLEAR_POSTS })
-  dispatch({ type: LOGOUT })
+// log user out
+export const logoutUser = () => dispatch => {
+  localStorage.removeItem('jwtToken')
+  setAuthToken(false)
+  dispatch(setCurrentUser({}))
 }

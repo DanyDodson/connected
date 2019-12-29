@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "axios": "^0.19.0",
+    "jwt-decode": "^2.2.0",
     "logrocket": "^1.0.4",
     "logrocket-react": "^4.0.1",
     "moment": "^2.24.0",
@@ -21,7 +22,7 @@
     "react-router-dom": "^5.1.2",
     "react-scripts": "^3.2.0",
     "react-toastify": "^5.4.1",
-    "redux": "^4.0.4",
+    "redux": "^4.0.5",
     "redux-devtools-extension": "^2.13.8",
     "redux-thunk": "^2.3.0",
     "uuid": "^3.3.3"

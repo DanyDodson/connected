@@ -24,8 +24,10 @@ const Routes = () => {
     <section className='container'>
       <Alert />
       <Switch>
-        <Route exact path='/register' component={Register} />
-        <Route exact path='/login' component={Login} />
+        <Route exact path='/signup' component={Register} />
+        {/* <Route exact path='/register' component={Register} /> */}
+        <Route exact path='/signin' component={Login} />
+        {/* <Route exact path='/login' component={Login} /> */}
         <Route exact path='/profiles' component={Profiles} />
         <Route exact path='/profile/:id' component={Profile} />
         <Private exact path='/dashboard' component={Dashboard} />
